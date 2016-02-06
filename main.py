@@ -21,8 +21,8 @@ __name__ = "Fire Emblem Alex Legion"
 __copyright__ = "Yttrium Z 2015-2016"
 #----SETUP----#
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
-display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
 screen = display.set_mode((1200,736))
+display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
 #----COLORS----#
 BLACK = (0,0,0,255)
 WHITE = (255,255,255,255)
@@ -32,7 +32,7 @@ BLUE = (0,0,255,255)
 YELLOW = (255,255,0,255)
 #----FONTS----#
 timesnr = font.SysFont("Times New Roman",15)
-comicsans = font.SysFont("Comic Sans MS",15)
+comicsans = font.SysFont("Comic Sans MS",25)
 arial = font.SysFont("Arial",15)
 monospace = font.SysFont("Monospace",15)
 #----IMAGE LOAD----#
@@ -96,12 +96,14 @@ class Button():
 class StartMenu():
     #start menu mode
     def __init__(self,screen):
-        #draws screen when defined
-        screen.blit(logo,(300,50))
         #sets button list of mode
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",BLACK,font.SysFont("Monospace",30),(50,10)),
-                               FilledSurface((200,50),YELLOW,"START",WHITE,font.SysFont("Monospace",30),(50,10)),
-                               ["global running","running = False"])] #START BUTTON
+        self.stopped = False
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",BLACK,font.SysFont("Monospace",30),(30,10)),
+                               FilledSurface((200,50),YELLOW,"NEW GAME",WHITE,font.SysFont("Monospace",30),(30,10)),
+                               ["changemode(NewGame(screen))"])] #START BUTTON
+    def draw(self,screen):
+        #draws mode on screen
+        screen.blit(logo,(300,50))
     def run(self,screen):
         global running
         #runs the mode as if it were in the running loop
@@ -114,13 +116,72 @@ class StartMenu():
                 for b in self.buttons:
                     if b.istouch():
                         b.click()
+        if self.stopped:
+            return 0 #if we have stopped, we return to stop the method
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
-        
+class NewGame():
+    #this class let's user choose his name and class
+    def __init__(self,screen):
+        self.selectingname = True #is the user choosing his name?
+        self.typing = False #is the user typing his name?
+        self.tbrect = Rect(500,300,200,50)
+        self.name = "" #name user chosen
+        self.ipos = 0 #insertion point position
+    def draw(self,screen):
+        #draws newgame screen
+        screen.fill(BLACK)
+        screen.blit(comicsans.render("ENTER NAME: ",True,WHITE),(self.tbrect[0]-300,self.tbrect[1]+10))
+        draw.rect(screen,WHITE,self.tbrect)
+    def run(self,screen):
+        global running
+        #runs new game screen
+        for e in event.get():
+            if e.type == QUIT:
+                running = False
+            if e.type == MOUSEBUTTONDOWN:
+                if self.selectingname:
+                    #if the user is selecting his name
+                    if self.tbrect.collidepoint(e.pos):
+                        #if we are touching the textbox
+                        self.typing = True
+                    else:
+                        self.typing = False
+            if e.type == KEYDOWN:
+                if self.typing:
+                    if key.get_pressed()[K_BACKSPACE]:
+                        self.name = self.name[:-1] #deletes last character in name if user backspaced
+                        self.ipos -= 1
+                    else:
+                        self.name += e.unicode #Otherwise it adds what they typed to name
+                        self.ipos += 1
+        if self.selectingname:
+            #if we are selecting name, we draw the textbox and what they typed
+            draw.rect(screen,WHITE,self.tbrect)
+            if self.typing:
+                if time() % 1 < 0.5:
+                    #draws insertion point at right times to make it look like it's flashing
+                    draw.line(screen,BLACK,(self.tbrect[0]+comicsans.render(self.name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]),
+                              (self.tbrect[0]+comicsans.render(self.name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]+self.tbrect[3]))
+            screen.blit(comicsans.render(self.name,True,BLACK),self.tbrect) #blits text on
+#----CHANGE MODE FUNCTION----#
+def changemode(mode):
+    global currmode
+    currmode.stopped = True
+    blackTransSurface = Surface((1200,736),SRCALPHA)
+    blackTransSurface.fill((0,0,0,50))
+    #blits translucent surface many times to make it black
+    for i in range(100):
+        screen.blit(blackTransSurface,(0,0))
+        display.flip()
+        sleep(0.01) #delays it to make it look like it's fading
+    currmode = mode
+    mode.draw(screen)
 #----FINALIZES SCREEN----#
 running = True
 currmode = StartMenu(screen) #sets current mode
+currmode.draw(screen)
 while running:
     currmode.run(screen) #runs current mode
     display.flip() #updates screen
