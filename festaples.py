@@ -1,6 +1,22 @@
 #FE Staples keeps important functions and classes
+#pretty much "staples" for my program
+#mostly to make main.py easier to read...
 from pygame import *
-from copy import deepcopy
+from random import *
+
+#----COLORS----#
+BLACK = (0,0,0,255)
+WHITE = (255,255,255,255)
+RED = (255,0,0,255)
+GREEN = (0,255,0,255)
+BLUE = (0,0,255,255)
+YELLOW = (255,255,0,255)
+
+#----FONT----#
+font.init()
+sans = font.SysFont("Comic Sans MS",20)
+papyrus = font.SysFont("Papyrus",20)
+
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
     "gets all moveable squares for a person"
     moveable = [] #moveable squares
@@ -106,3 +122,95 @@ def getExpGain(ally,enemy,kill=False):
     hitgain = max(1,hitgain)
     killgain = max(7,killgain)
     return min(100,hitgain + killgain)
+
+def drawHealthBar(screen,person,x,y):
+    "draws a health bar"
+    hpx,hpy = x,y #x,y for each health point line
+    for i in range(person.maxhp):
+        if i == 40:
+            hpy += 30
+            hpx -= 160
+        if i == 80:
+            hpy += 30
+            hpx -= 160
+        draw.line(screen,(0,120,0),(hpx+i*4,hpy),(hpx+i*4,hpy+30),3)
+    hpx,hpy = x,y
+    for i in range(person.hp):
+        if i == 40:
+            hpy += 30
+            hpx -= 160
+        if i == 80:
+            hpy += 30
+            hpx -= 160
+        draw.line(screen,GREEN,(hpx+i*4,hpy),(hpx+i*4,hpy+30),3)
+        
+def drawHealthLoss(screen,person,dam,x,y,enemy=True):
+    "draws a depleting health bar"
+    for i in range(dam):
+        #for every point of damage we loop and remove it
+        if person.hp == 0:
+            break
+        person.hp -= 1
+        if enemy:
+            draw.rect(screen,(255,0,0),(0,600,500,100))
+        else:
+            draw.rect(screen,BLUE,(700,600,500,100))
+        drawHealthBar(screen,person,x,y)
+        screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
+        display.flip()
+        time.wait(50)
+        
+def getAttackResults(person,enemy,stage):
+    "performs an attack on enemy by person, returns if it hit or crit and total damage"
+    hit,dam,crit = False,0,False #hit = did it hit?; dam = damage; crit = did it crit?
+    if randint(0,99) < person.getHit(enemy,stage):
+        hit = True
+        dam = person.getDamage(enemy,stage)
+        if randint(0,99) < person.getCritical(enemy):
+            crit = True
+            dam *= 3 #damage is tripled
+    return (hit,dam,crit) #returns (hit,dam,crit)
+
+def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
+    "animates a single attack"
+    hit,dam,crit = getAttackResults(person,person2,stage) #gets attack results
+    #draws person 2's standing sprite
+    screen.blit(person2.anims["stand"],(0,200))
+    filler = screen.copy().subsurface(Rect(0,0,1200,600))
+    if not crit or not hit:
+        #draws non-crit attack animation
+        frames,hitFrame = person.anims[person.equip.typ]
+    if crit and hit:
+        #draws crit attack animation
+        frames,hitFrame = person.anims[person.equip.typ+"crit"]
+    for i in range(hitFrame):
+        screen.blit(filler,(0,0))
+        screen.blit(frames[i],(0,200))
+        time.wait(50)
+        display.flip()
+    if not hit:
+        screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y))
+        display.flip()
+        time.wait(500)
+    elif dam == 0:
+        screen.blit(papyrus.render("NO DAMAGE!",True,(0,0,0)),(x,y))
+        display.flip()
+        time.wait(500)
+    else:
+        drawHealthLoss(screen,person2,dam,hpx,hpy,isenemy)
+    for i in range(hitFrame,len(frames)):
+        screen.blit(filler,(0,0))
+        screen.blit(frames[i],(0,200))
+        time.wait(50)
+        display.flip()
+    screen.blit(filler,(0,0))
+    screen.blit(frames[0],(0,200)) #draws first frame again
+    display.flip()
+    person.equip.dur -= 1
+    if person.equip.dur == 0:
+        person.items.remove(person.equip)
+        person.equip = None
+        for w in [item for item in person.items if type(item) == Weapon]:
+            if person.equipWeapon(w):
+                break
+    time.wait(300)
