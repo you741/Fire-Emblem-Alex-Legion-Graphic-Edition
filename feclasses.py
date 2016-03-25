@@ -103,12 +103,14 @@ class Person():
     def canEquip(self,weapon):
         "returns if person can equip weapon"
         if weapon not in self.items:
-            return False
+            return False #if we do not have the item we can't equip
+        if weapon.prf.lower() == self.name.lower():
+            return True #if the weapon has a preference to self, we can equip
         if weapon.typ not in self.mast:
-            return False
+            return False #if we have no mastery we can't equip
         if self.mast[weapon.typ] >= weapon.mast:
-            return True
-        return False
+            return True #if we have enough mastery we can equip
+        return False #if we do not have enough mastery we cannot equip
     def gainExp(self,exp):
         "gains exp, returns whether should level up or not"
         self.exp += exp
@@ -159,3 +161,12 @@ class Knight(Person):
 class Myrmidon(Person):
     "myrmidon class"
     pass
+class Lord(Person):
+    "lord class"
+    pass
+class Brigand(Person):
+    "brigand class"
+    def __init__(self,name,x,y,stats,growth,items,mast,anims,gift=0):
+        super(Brigand,self).__init__(name,x,y,stats,growth,items,mast,anims,gift)
+        self.mountainous = True
+    

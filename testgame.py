@@ -19,6 +19,16 @@ plain = Terrain("Plain",0,0,1)
 #WEAPONS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,0,2,46,False,[],2)
+iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100)
+silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",100)
+fire = Weapon("Fire",5,4,40,95,"Anima",100,0,1,40,True,"",2)
+slim_sword = Weapon("Slim Sword",3,2,35,100,"Sword",200,5)
+steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200)
+iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100)
+iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
+rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
+vulnerary = Item("Vulnerary",3,"Heals for 10 HP")
+
 #TRANSLUCENT SQUARES
 transBlue = Surface((30,30), SRCALPHA)
 transBlue.fill((0,0,255,122))
@@ -27,17 +37,17 @@ transRed.fill((255,0,0,122))
 transBlack = Surface((1200,720), SRCALPHA)
 transBlack.fill((0,0,0,122))
 #PERSONS
-chara = Person("Chara",0,0,
-               {"lv":19,"stren":7,"defen":7,"skl":7,"lck":7,
-                "spd":7,"con":7,"move":5,"res":2,"hp":92,"maxhp":92},
+yoyo = Lord("Yoyo",0,0,
+               {"lv":1,"stren":5,"defen":4,"skl":7,"lck":7,
+                "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
                {"stren":40,"defen":30,"skl":70,"lck":70,
                 "spd":40,"res":50,"maxhp":60},
-               [real_knife.getInstance(),iron_bow.getInstance()],{"Sword":600,"Bow":100},
+               [rapier.getInstance(),iron_bow.getInstance(),vulnerary.getInstance()],{"Sword":200},
                {"attack":(yoyoAttackSprite,5),"stand":yoyoStandSprite,"crit":(yoyoCritSprite,29)}) #test person
-allies = [chara] #allies
+allies = [yoyo] #allies
 #ENEMIES
-dummy = Person("Dummy",0,0,
-                  {"stren":8,"defen":3,"skl":8,"lck":0,
+dummy = Brigand("Dummy",0,0,
+                  {"stren":3,"defen":3,"skl":3,"lck":0,
                    "spd":3,"con":3,"move":3,"res":0,"hp":33,"maxhp":33},{},[iron_bow.getInstance()],{"Bow":600},{})
 enemies = []
 #CHAPTERS
@@ -127,11 +137,11 @@ def drawHealthLoss(person,dam,x,y,enemy=True):
         time.wait(50)
 def drawItemMenu(person,x,y):
     "draws an item menu for a person"
-    if x + 4 > 39:
-        x -= 5
+    if x + 8 > 39:
+        x -= 9
     if y + 5 > 24:
         y -= 4
-    draw.rect(screen,(0,0,255),(x*30,y*30,120,150))
+    draw.rect(screen,(0,0,255),(x*30,y*30,240,150))
     for i in range(5):
         if i < len(person.items):
             col = (255,255,255)
@@ -140,7 +150,8 @@ def drawItemMenu(person,x,y):
                     #if the person cannot equip, the color goes grey
                     col = (160,160,160)
             screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
-    draw.rect(screen,(255,255,255),(x*30,(y+menuselect)*30,120,30),1) #draws selected item
+            screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
+    draw.rect(screen,(255,255,255),(x*30,(y+menuselect)*30,240,30),1) #draws selected item
 #USER INTERFACE FUNCTION
 def moveSelect():
     "moves selector"
@@ -486,7 +497,7 @@ while running:
     if mode == "gameover":
         continue
     screen.blit(filler,(0,0)) #blits the filler
-    if chara.hp == 0 and mode != "gameover":
+    if yoyo.hp == 0 and mode != "gameover":
         gameOver()
         mode = "gameover"
         continue
