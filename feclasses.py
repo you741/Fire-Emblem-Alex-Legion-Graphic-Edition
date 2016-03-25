@@ -5,7 +5,7 @@ from feweapons import *
 from random import *
 class Person():
     "person class - root of all classes"
-    def __init__(self,name,x,y,stats,growth,items,mast,gift=0):
+    def __init__(self,name,x,y,stats,growth,items,mast,anims,gift=0):
         "initializes person"
         #takes in stats and growth - dictionaries
         self.name = name
@@ -14,6 +14,11 @@ class Person():
         self.growth = growth #growth percentage
         self.items = items #items
         self.mast = mast #mastery of weapons
+        self.anims = anims #animations
+        #the way animations are stored is through a dictionary
+        #each key points to a list of frames
+        #some items will be a tuple that represents
+        #(listOfFrames,frameWherePersonHitTarget)
         self.equip = None
         for w in [i for i in items if type(i) == Weapon]:
             if self.equipWeapon(w):
@@ -125,7 +130,7 @@ class Person():
         "gets instance of person"
         return Person(self.name,self.x,self.y,self.stats,self.growth,
                       [i.getInstance() for i in self.items],
-                      self.mast,self.gift)
+                      self.mast,self.anims,self.gift)
     def getMinRange(self):
         "returns minimum range of weapons, returns False if no weapons"
         if len([i for i in self.items if type(i) == Weapon]) > 0:
@@ -145,8 +150,8 @@ class Person():
         return internalLV
 class Mage(Person):
     "mage class"
-    def __init__(self,name,x,y,stats,growth,items,mast,gift=0):
-        super(Mage,self).__init__(name,x,y,stats,growth,items,mast,gift)
+    def __init__(self,name,x,y,stats,growth,items,mast,anims,gift=0):
+        super(Mage,self).__init__(name,x,y,stats,growth,items,mast,anims,gift)
         self.magical = True
 class Knight(Person):
     "knight class"

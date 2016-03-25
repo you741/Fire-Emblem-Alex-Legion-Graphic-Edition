@@ -11,9 +11,10 @@ from math import *
 from random import *
 #----CUSTOM MODULE IMPORTS
 from feclasses import *
-from feweapons import *
-from feterrain import *
 from festaples import *
+from feterrain import *
+from feweapons import *
+from fesprites import *
 font.init()
 #----METADATA----#
 __author__ = "Yttrium Z (You Zhou)"
@@ -100,8 +101,8 @@ class StartMenu():
     def __init__(self,screen):
         "sets button list of mode"
         self.stopped = False
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",BLACK,font.SysFont("Monospace",30),(30,10)),
-                               FilledSurface((200,50),YELLOW,"NEW GAME",WHITE,font.SysFont("Monospace",30),(30,10)),
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",WHITE,font.SysFont("Monospace",30),(30,10)),
+                               FilledSurface((200,50),YELLOW,"NEW GAME",BLACK,font.SysFont("Monospace",30),(30,10)),
                                ["changemode(NewGame(screen))"])] #START BUTTON
     def draw(self,screen):
         #draws mode on screen
@@ -133,11 +134,11 @@ class NewGame():
         self.name = "" #name user chosen
         self.ipos = 0 #insertion point position
         #name select buttons
-        self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
+        self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",WHITE,font.SysFont("Monospace",30),(30,10)),
                                FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
                                ["currmode.selectingname = False","currmode.selectingclass = True","screen.fill(BLACK)"])]
         #class select buttons
-        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",BLACK,font.SysFont("Monospace",30),(30,10)),
+        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,font.SysFont("Monospace",30),(30,10)),
                                 FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
                                 ["global player",
                                  "player = Mage(self.name,0,0,{'stren':5,'defen':3,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},{},[],{})"])]

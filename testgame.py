@@ -2,6 +2,8 @@ from pygame import *
 from feclasses import *
 from festaples import *
 from feterrain import *
+from feweapons import *
+from fesprites import *
 from copy import deepcopy
 from random import *
 screen = display.set_mode((1200,720))
@@ -22,23 +24,28 @@ transBlue = Surface((30,30), SRCALPHA)
 transBlue.fill((0,0,255,122))
 transRed = Surface((30,30), SRCALPHA)
 transRed.fill((255,0,0,122))
+transBlack = Surface((1200,720), SRCALPHA)
+transBlack.fill((0,0,0,122))
 #PERSONS
 chara = Person("Chara",0,0,
-               {"lv":19,"stren":7,"defen":30,"skl":7,"lck":7,
+               {"lv":19,"stren":7,"defen":7,"skl":7,"lck":7,
                 "spd":7,"con":7,"move":5,"res":2,"hp":92,"maxhp":92},
                {"stren":40,"defen":30,"skl":70,"lck":70,
                 "spd":40,"res":50,"maxhp":60},
-               [real_knife.getInstance(),iron_bow.getInstance()],{"Sword":600,"Bow":100}) #test person
+               [real_knife.getInstance(),iron_bow.getInstance()],{"Sword":600,"Bow":100},
+               {"attack":(yoyoAttackSprite,5),"stand":yoyoStandSprite,"crit":(yoyoCritSprite,29)}) #test person
 allies = [chara] #allies
 #ENEMIES
 dummy = Person("Dummy",0,0,
-                  {"stren":333,"defen":3,"skl":3,"lck":0,
-                   "spd":3,"con":3,"move":3,"res":0,"hp":33,"maxhp":33},{},[iron_bow.getInstance()],{"Bow":600})
+                  {"stren":8,"defen":3,"skl":8,"lck":0,
+                   "spd":3,"con":3,"move":3,"res":0,"hp":33,"maxhp":33},{},[iron_bow.getInstance()],{"Bow":600},{})
 enemies = []
 #CHAPTERS
 #MAPS
 chapter0 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
+#Stored in tuples
+#(allyCoordinates,Enemies,Goal)
 chapterData = [([(0,0)],createEnemyList([dummy],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies")] #chapter data, chapter is determined by index
 oldAllies = [a.getInstance() for a in allies] #keeps track of allies before the fight
 moved,attacked = set(),set() #sets of allies that already moved or attacked
@@ -49,23 +56,21 @@ selectx,selecty = 0,0 #select points
 def startTurn():
     "starts the turn"
     global allies,enemies,moved,attacked
-    screenBuff = screen.copy()
-    screen.blit(transform.scale(transBlue,(1200,60)),(0,330))
+    screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+    screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
     screen.blit(papyrus.render("PLAYER PHASE",True,(255,255,255)),(450,340))
     moved.clear() #empties moved and attacked
     attacked.clear()
-    display.flip()
+    display.flip() #updates screen
     time.wait(1000)
     screen.blit(screenBuff,(0,0)) #covers up text
     display.flip()
 def gameOver():
     "game over screen - might be a class later"
-    translucentBlack = Surface((1200,720),SRCALPHA)
-    translucentBlack.fill((0,0,0,150))
     for i in range(50):
-        screen.blit(translucentBlack,(0,0))
+        screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
         display.flip()
-        time.wait(20)
+        time.wait(50)
     screen.blit(papyrus.render("GAME OVER",True,(255,0,0)),(500,300))
     display.flip()
 def start():
@@ -113,9 +118,9 @@ def drawHealthLoss(person,dam,x,y,enemy=True):
             break
         person.hp -= 1
         if enemy:
-            draw.rect(screen,(255,0,0),(700,600,500,100))
+            draw.rect(screen,(255,0,0),(0,600,500,100))
         else:
-            draw.rect(screen,(0,0,255),(0,600,500,100))
+            draw.rect(screen,(0,0,255),(700,600,500,100))
         drawHealthBar(person,x,y)
         screen.blit(sans.render(str(person.hp),True,(255,255,255)),(x+160,y+5))
         display.flip()
@@ -168,12 +173,44 @@ def getAttackResults(person,enemy):
 def singleAttack(person,person2,x,y,hpx,hpy,isenemy):
     "animates a single attack"
     hit,dam,crit = getAttackResults(person,person2) #gets attack results
+    if "stand" in person2.anims:
+        #draws person 2's standing animation
+        screen.blit(person2.anims["stand"],(0,200))
+    filler = screen.copy().subsurface(Rect(0,0,1200,600))
+    if "attack" in person.anims and (not crit or not hit):
+        #draws non-crit attack animation
+        frames,hitFrame = person.anims["attack"]
+    if "crit" in person.anims and crit and hit:
+        #draws crit attack animation
+        frames,hitFrame = person.anims["crit"]
+    if ("crit" in person.anims and crit and hit) or ("attack" in person.anims and (not crit or not hit)):
+        #once everyone has an animation we won't need this if statement
+        #all it does is make sure we have the proper animation for the required action
+        for i in range(hitFrame):
+            screen.blit(filler,(0,0))
+            screen.blit(frames[i],(0,200))
+            time.wait(50)
+            display.flip()
     if not hit:
-        screen.blit(papyrus.render("MISS!",True,(255,255,255)),(x,y))
+        screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y))
+        display.flip()
+        time.wait(500)
     elif dam == 0:
-        screen.blit(papyrus.render("NO DAMAGE!",True,(255,255,255)),(x,y))
+        screen.blit(papyrus.render("NO DAMAGE!",True,(0,0,0)),(x,y))
+        display.flip()
+        time.wait(500)
     else:
         drawHealthLoss(person2,dam,hpx,hpy,isenemy)
+    if ("crit" in person.anims and crit and hit) or ("attack" in person.anims and (not crit or not hit)):
+        #can remove if statement once there is an animation for everyone
+        for i in range(hitFrame,len(frames)):
+            screen.blit(filler,(0,0))
+            screen.blit(frames[i],(0,200))
+            time.wait(50)
+            display.flip()
+        screen.blit(filler,(0,0))
+        screen.blit(frames[0],(0,200)) #draws first frame again
+        display.flip()
     display.flip()
     person.equip.dur -= 1
     if person.equip.dur == 0:
@@ -182,7 +219,7 @@ def singleAttack(person,person2,x,y,hpx,hpy,isenemy):
         for w in [item for item in person.items if type(item) == Weapon]:
             if person.equipWeapon(w):
                 break
-    time.wait(500)
+    time.wait(300)
 def checkDead(ally,enemy):
     "checks if an ally or an enemy is dead; also removes ally or enemy from list"
     if ally.hp == 0:
@@ -198,13 +235,6 @@ def checkDead(ally,enemy):
     return False
 def attack(person,person2):
     "attack animation of person to person2"
-    filler = screen.copy()
-    screen.fill((0,0,0)) #blackens screen
-    actionFiller = screen.copy().subsurface(Rect(0,270,1200,300)) #filler for the action
-    display.flip()
-    time.wait(200)
-    draw.rect(screen,(0,0,255),(0,220,300,50)) #ally name rectangle
-    draw.rect(screen,(255,0,0),(900,220,300,50)) #enemy name rectangle
     #sets who is the ally and who is the enemy
     if person in allies:
         ally = person
@@ -212,51 +242,64 @@ def attack(person,person2):
     else:
         ally = person2
         enemy = person
+    filler = screen.copy()
+    screen.fill((0,0,0)) #blackens screen
+    display.flip()
+    time.wait(200)
+    draw.rect(screen,(0,255,0),(0,0,1200,600))
+    draw.rect(screen,(0,0,255),(900,220,300,50)) #ally name rectangle
+    draw.rect(screen,(255,0,0),(0,220,300,50)) #enemy name rectangle
     #draws ally and enemy's names
-    screen.blit(sans.render(stripNums(ally.name),True,(255,255,255)),(50,220))
-    screen.blit(sans.render(stripNums(enemy.name),True,(255,255,255)),(920,220))
-    draw.rect(screen,(0,0,255),(0,600,500,120)) #draws ally health background
-    draw.rect(screen,(255,0,0),(700,600,500,120)) #draws enemy health background
-    drawHealthBar(ally,170,615)
-    drawHealthBar(enemy,870,615)
-    screen.blit(sans.render(str(ally.hp),True,(255,255,255)),(332,620))
-    screen.blit(sans.render(str(enemy.hp),True,(255,255,255)),(1032,620))
+    screen.blit(sans.render(stripNums(ally.name),True,(255,255,255)),(920,220))
+    screen.blit(sans.render(stripNums(enemy.name),True,(255,255,255)),(50,220))
+    actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
+    #blits standing sprites for Person 1 and 2
+    if "stand" in person.anims:
+        screen.blit(person.anims["stand"],(0,200))
+    if "stand" in person2.anims:
+        screen.blit(person2.anims["stand"],(0,200))
+    draw.rect(screen,(0,0,255),(700,600,500,120)) #draws ally health background
+    draw.rect(screen,(255,0,0),(0,600,500,120)) #draws enemy health background
+    drawHealthBar(ally,870,615)
+    drawHealthBar(enemy,170,615)
+    screen.blit(sans.render(str(ally.hp),True,(255,255,255)),(1032,620))
+    screen.blit(sans.render(str(enemy.hp),True,(255,255,255)),(332,620))
     display.flip()
     time.wait(200)
     #sets variables for person drawing
     #differs based on which is enemy and which is ally
     if person2 == enemy:
-        x2,y2 = 725,300
-        hpx2,hpy2 = 870,615
-        isenemy = False
-        x,y = 25,300
-        hpx,hpy = 170,615
-    else:
-        x2,y2 = 25,300
-        hpx2,hpy2 = 170,615
-        isenemy = True
         x,y = 725,300
         hpx,hpy = 870,615
+        isenemy = False
+        x2,y2 = 25,300
+        hpx2,hpy2 = 170,615
+    else:
+        x,y = 25,300
+        hpx,hpy = 170,615
+        isenemy = True
+        x2,y2 = 725,300
+        hpx2,hpy2 = 870,615
     #Draws damage for attack 1
+    screen.blit(actionFiller,(0,0)) #covers both persons
     singleAttack(person,person2,x2,y2,hpx2,hpy2,not isenemy)
-    screen.blit(actionFiller,(0,270))
     if checkDead(ally,enemy):
         return False #ends the function if either ally or enemy is dead
     #Draws damage for attack 2
     if canAttackTarget(person2,person):
         #if person2 can attack
+        screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(person2,person,x,y,hpx,hpy,isenemy)
-        screen.blit(actionFiller,(0,270))
     if checkDead(ally,enemy):
         return False
     #Draws damage for attack 3
+    screen.blit(actionFiller,(0,0)) #covers both persons
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy):
-        singleAttack(ally,enemy,725,300,870,615,True)
+        singleAttack(ally,enemy,25,300,170,615,True)
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally):
-        singleAttack(enemy,ally,25,300,170,615,False)
-    screen.blit(actionFiller,(0,270))
+        singleAttack(enemy,ally,725,300,870,615,False)
     display.flip()
-    time.wait(2000)
+    time.wait(1000)
     screen.blit(filler,(0,0))
     checkDead(ally,enemy)
 #important variables
@@ -264,6 +307,7 @@ chapter = 0
 mode = "freemove"
 goal = ""
 selected = None #selected Person
+selectedItem = None #selected Item
 attackableEnemies = [] #attackable enemies of the selected person
 selectedEnemy = 0 #selected Enemy
 menu = None #options in menu
@@ -288,16 +332,22 @@ while running:
                 moveSelect() #handles movements by player
                 framecounter = 0
             
-            if mode in ["optionmenu","itemattack"]:
+            if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
                 #moves menu option
                 if kp[K_UP]:
                     menuselect -= 1
                 elif kp[K_DOWN]:
                     menuselect += 1
                 if mode == "optionmenu":
-                    menuselect = min(len(menu)-1,max(0,menuselect))
+                    limit = len(menu)
+                elif mode == "item":
+                    limit = len(selected.items)
                 else:
-                    menuselect = min(4,max(0,menuselect))
+                    limit = 5
+                if menuselect < 0:
+                    menuselect = limit - 1
+                elif menuselect >= limit:
+                    menuselect = 0
 
             if mode == "attack":
                 #changes enemy selected
@@ -315,20 +365,37 @@ while running:
                 #if the user pressed z
                 #handles clicks
                 if mode == "freemove":
-                    for a in allies:
-                        #checks if ally is clicked
-                        if selectx == a.x and selecty == a.y and a not in moved:
+                    for p in allies+enemies:
+                        #checks if ally or enemy is clicked
+                        if selectx == p.x and selecty == p.y and p not in moved:
                             mode = "move"
-                            selected = a
-                            oldx,oldy = a.x,a.y #keeps track of ally's position before so that we can backtrace
-                            break
+                            selected = p
+                            oldx,oldy = p.x,p.y #keeps track of ally's position before so that we can backtrace
+                            acoords = [(a.x,a.y) for a in allies]
+                            encoords = [(e.x,e.y) for e in enemies]
+                            if selected in allies:
+                                #we get movements below
+                                moveableSquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),acoords,encoords,{})
+                                attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in moveableSquares]+[(p.x,p.y)],p)
+                                if attackableSquares:
+                                    #we get all attackables squares that we cannot move to
+                                    attackableSquares = [sq for sq in attackableSquares if sq not in [(x,y) for x,y,m in moveableSquares] and sq not in acoords]
+                            elif selected in enemies:
+                                moveableSquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),encoords,acoords,{})
+                                attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in moveableSquares]+[(p.x,p.y)],p)
+                                if attackableSquares:
+                                    #we get all attackable squares that we cannot move to
+                                    attackableSquares = [sq for sq in attackableSquares if sq not in [(x,y) for x,y,m in moveableSquares] and sq not in encoords]
+                            break#if we are in move mode we consistently fill moveable and attackable squares
+                
                 elif mode == "move":
-                    #moves the unit
-                    if (selectx,selecty) in [(x,y) for x,y,m in moveableSquares]+[(selected.x,selected.y)]:
+                    #moves the unit if it is an ally
+                    if (selectx,selecty) in [(x,y) for x,y,m in moveableSquares]+[(selected.x,selected.y)] and selected in allies:
                         selected.x,selected.y = selectx,selecty
                         mode = "optionmenu"
                         menu = []
                         menuselect = 0
+                        #----Menu Creation
                         #ATTACK OPTION
                         if not (selected in attacked or selected.equip == None):
                             for w in [i for i in selected.items if type(i) == Weapon]:
@@ -338,17 +405,26 @@ while running:
                                 if len(getAttackableEnemies(selected,enemies,weapon=w)) > 0:
                                     selected.equipWeapon(w)
                                     menu.append("attack")
+                                    break
+                        #ITEM OPTION
+                        if len(selected.items) > 0:
+                            menu.append("item")
                         #WAIT OPTION
                         menu.append("wait") #person can always wait
+
                 elif mode == "optionmenu":
                     #allows user to select options
                     if menu[menuselect] == "attack":
                         mode = "itemattack"
                         menuselect = 0
+                    if menu[menuselect] == "item":
+                        mode = "item"
+                        menuselect = 0
                     if menu[menuselect] == "wait":
                         mode = "freemove"
                         moved.add(selected)
                         attacked.add(selected)
+
                 elif mode == "itemattack":
                     if menuselect < len(selected.items):
                         if type(selected.items[menuselect]) == Weapon:
@@ -358,13 +434,20 @@ while running:
                                 attackableEnemies = getAttackableEnemies(selected,enemies)
                                 selectx,selecty = attackableEnemies[0].x,attackableEnemies[0].y
                                 selectedEnemy = 0
+
                 elif mode == "attack":
                     #does an attack
                     attack(selected,attackableEnemies[selectedEnemy])
                     attacked.add(selected)
                     moved.add(selected)
                     mode = "freemove"
-##
+
+                elif mode == "item":
+                    #handles item selection
+                    selectedItem = selected.items[menuselect]
+                    if type(selectedItem) == Weapon:
+                        pass
+
 ##                    mode = "freemove"
 ##                    moved.add(selected) #unit gets appended to moved
 ##                    if selected.mounted:
@@ -387,6 +470,9 @@ while running:
                     mode = "move"
                     selected.x,selected.y = oldx,oldy
                 elif mode == "itemattack":
+                    mode = "optionmenu"
+                    menuselect = 0
+                elif mode == "item":
                     mode = "optionmenu"
                     menuselect = 0
                 elif mode == "attack":
@@ -433,22 +519,6 @@ while running:
     #-------------DIFFERENT MODE DISPLAYS------------------#
     #MOVE MODE DISPLAY
     if mode == "move":
-        #if we are in move mode we consistently fill moveable and attackable squares
-        acoords = [(a.x,a.y) for a in allies]
-        encoords = [(e.x,e.y) for e in enemies]
-        if selected in allies:
-            #we get movements below
-            moveableSquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),acoords,encoords,{})
-            attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in moveableSquares]+[(p.x,p.y)],p)
-            if attackableSquares:
-                #we get all attackables squares that we cannot move to
-                attackableSquares = [sq for sq in attackableSquares if sq not in [(x,y) for x,y,m in moveableSquares] and sq not in acoords]
-        elif selected in enemies:
-            moveablesquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),encoords,acoords,{})
-            attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in moveableSquares]+[(p.x,p.y)],p)
-            if attackableSquares:
-                #we get all attackable squares that we cannot move to
-                attackableSquares = [sq for sq in attackableSquares if sq not in [(x,y) for x,y,m in moveableSquares] and sq not in encoords]
         #fills moveable and attackable squares
         fillSquares(screen,set([(x,y) for x,y,m in moveableSquares]),transBlue)
         if attackableSquares:
@@ -456,11 +526,9 @@ while running:
     #OPTION MENU MODE DISPLAY
     if mode == "optionmenu":
         #if it is menu mode we draw the menu
-        menux,menuy = selected.x+1,selected.y
-        if len(menu) + selected.y > 24:
-            menuy -= len(menu)-1
-        if 4 + selected.x > 39:
-            menux -= 5
+        menux,menuy = 36,2
+        if selected.x >= 20:
+            menux = 0
         draw.rect(screen,(0,0,255),(menux*30,menuy*30,120,len(menu)*30))
         for i in range(len(menu)):
             #for every option in menu, we write the text
@@ -473,6 +541,10 @@ while running:
         drawItemMenu(selected,selected.x+1,selected.y)
     if mode == "attack":
         fillSquares(screen,getAttackableSquares(selected.equip.rnge,selected.equip.maxrnge,selected.x,selected.y),transRed) #highlights all attackable squares
+    #ITEM MODE DISPLAY
+    if mode == "item":
+        screen.blit(transBlack,(0,0))
+        drawItemMenu(selected,14,8)
     #---------------INFO DISPLAY BOXES----------------------#
     #TERRAIN DATA
     if mode == "freemove":
