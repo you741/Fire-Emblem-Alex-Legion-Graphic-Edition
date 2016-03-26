@@ -76,6 +76,9 @@ transBlack.fill((0,0,0,122))
 #----PERSONS----#
 moved,attacked = set(),set() #sets of allies that already moved or attacked
 #ALLIES
+name = "" #name of player
+usedNames = ["yoyo"] #names the player cannot use
+player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
                 "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
@@ -83,7 +86,7 @@ yoyo = Lord("Yoyo",0,0,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),iron_bow.getInstance(),vulnerary.getInstance()],{"Sword":200},
                {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite}) #test person
-allies = [yoyo] #allies
+allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":2,"skl":3,"lck":0,
@@ -95,15 +98,14 @@ enemies = []
 chapter0 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
 #Stored in tuples
-#(allyCoordinates,Enemies,Goal)
-chapterData = [([(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies")] #chapter data, chapter is determined by index
-oldAllies = [a.getInstance() for a in allies] #keeps track of allies before the fight
+#(gainedAllies,allyCoordinates,Enemies,Goal)
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies")] #chapter data, chapter is determined by index
+oldAllies = [] #keeps track of allies before the fight
+allAllies = [] #all allies that exist
 #CHAPTER MUSIC
 #each index represents what music is played in the chapter of that index
 chapterMusic = [conquest]
 #----GLOBAL VARIABLES----#
-name = "" #name of player
-player = None
 #important variables for the Game class
 chapter = 0
 mode = "freemove" #mode Game Mode is in
@@ -144,12 +146,22 @@ def start():
     "starts a chapter, also serves a restart"
     global mode,allies,enemies,goal,selectx,selecty
     selectx,selecty = 0,0
-    allyCoords,newenemies,goal = chapterData[chapter]
+    newAllies,allyCoords,newenemies,goal = chapterData[chapter]
+    for a in newAllies:
+        if a not in oldAllies:
+            oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
+            allAllies.append(a.getInstance())
     enemies = [e.getInstance() for e in newenemies]
     allies = [a.getInstance() for a in oldAllies]
     for i in range(len(allyCoords)):
+        global player
         allies[i].x,allies[i].y = allyCoords[i] #sets all ally coords
-        exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
+        if allies[i].name.lower() not in usedNames:
+            #player gets it's own variable, so it is special
+            player = allies[i]
+        else:
+            #sets name representing ally to be the new instance
+            exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
     moved.clear()
     attacked.clear()
     mode = "freemove"
@@ -395,17 +407,25 @@ class NewGame():
         self.selectingclass = False #is the user selecting his class?
         self.typing = False #is the user typing his name?
         self.tbrect = Rect(400,300,500,50)
-        self.name = "" #name user chosen
         self.ipos = 0 #insertion point position
         #name select buttons
         self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",WHITE,font.SysFont("Monospace",30),(30,10)),
                                FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
                                ["currmode.selectingname = False","currmode.selectingclass = True","screen.fill(BLACK)"])]
         #class select buttons
-        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,font.SysFont("Monospace",30),(30,10)),
-                                FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
-                                ["global player",
-                                 "player = Mage(self.name,0,0,{'stren':5,'defen':3,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},{},[],{})"])]
+        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,font.SysFont("Monospace",30),(40,10)),
+                                FilledSurface((200,50),YELLOW,"MAGE",BLACK,font.SysFont("Monospace",30),(40,10)),
+                                ["global player,oldAllies",
+                                 """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
+{'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
+[fire.getInstance()],
+{'Anima':200},
+{'stand':Surface((1,1)),'Anima':([],0),'Animacrit':([],0)})
+allies.append(player)
+oldAllies = [a.getInstance() for a in allies] #keeps track of allies before the fight
+allAllies.append(player) #normally the saving would be done withing the PreFight class... but it doesn't exist yet
+""",
+                                "changemode(Game())"])]
     def draw(self,screen):
         "draws newgame screen"
         screen.fill(BLACK)
@@ -416,30 +436,55 @@ class NewGame():
         pass
     def run(self,screen):
         "runs new game screen within the running loop"
-        global running
+        global running,name
         for e in event.get():
             if e.type == QUIT:
                 running = False
             if e.type == MOUSEBUTTONDOWN:
                 if self.selectingname:
-                    #if the user is selecting his name
+                    #if the user is selecting his name, we check if user presses text box
                     if self.tbrect.collidepoint(e.pos):
-                        #if we are touching the textbox
+                        #clicking the textbox allows user to type
                         self.typing = True
                     else:
+                        #clicking away from the textbox disallows typing
                         self.typing = False
-                if self.selectingname and len(self.name) > 0:
-                    for b in self.buttons1:
+                    if len(name) > 0:
+                        #handles button presses
+                        for b in self.buttons1:
+                            if b.istouch():
+                                b.click()
+                if self.selectingclass:
+                    #if the user is selecting his class, we check for button presses
+                    for b in self.buttons2:
                         if b.istouch():
                             b.click()
             if e.type == KEYDOWN:
+                #handles key presses
                 if self.typing:
-                    if key.get_pressed()[K_BACKSPACE]:
-                        self.name = self.name[:self.ipos-1] + self.name[self.ipos:]#deletes last character behind ipos in name if user backspaced
+                    #if we are typing we handle the textbox editing
+                    #backspace deletes a characer, enter submits, and any valid character is added to name
+                    #arrow keys move insertion point
+                    kp = key.get_pressed()
+                    if kp[K_BACKSPACE] and 0 < self.ipos:
+                        name = name[:self.ipos-1] + name[self.ipos:]#deletes last character behind ipos in name if user backspaced
                         self.ipos -= 1
-                    elif len(self.name) < 16:
-                        self.name += e.unicode #Otherwise it adds what they typed to name
+                    elif kp[K_RETURN] and len(name) > 0:
+                        #if user presses return and there exists a valid name
+                        self.buttons1[0].click() #triggers the submit button click
+                    elif kp[K_LEFT]:
+                        #moves insertion point to the left
+                        self.ipos -= 1
+                        self.ipos = min(len(name),max(0,self.ipos)) #limits insertion point
+                    elif kp[K_RIGHT]:
+                        #moves insertion point to the right
                         self.ipos += 1
+                        self.ipos = min(len(name),max(0,self.ipos)) #limits insertion point
+                    elif len(name) < 16 and e.unicode.lower() in "abcdefghijklmnopqrstuvwxyz0123456789" and e.unicode != "":
+                        #if user enters a valid character (letter or number) we append it to name
+                        name = name[:self.ipos] + e.unicode + name[self.ipos:]
+                        self.ipos += 1
+                    
         if self.selectingname:
             #draws submit button
             for b in self.buttons1:
@@ -449,9 +494,14 @@ class NewGame():
             if self.typing:
                 if time2.time() % 1 < 0.5:
                     #draws insertion point at right times to make it look like it's flashing
-                    draw.line(screen,BLACK,(self.tbrect[0]+comicsans.render(self.name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]),
-                              (self.tbrect[0]+comicsans.render(self.name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]+self.tbrect[3]))
-            screen.blit(comicsans.render(self.name,True,BLACK),self.tbrect) #blits text on
+                    draw.line(screen,BLACK,(self.tbrect[0]+comicsans.render(name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]),
+                              (self.tbrect[0]+comicsans.render(name[:self.ipos],True,BLACK).get_width(),self.tbrect[1]+self.tbrect[3]))
+            screen.blit(comicsans.render(name,True,BLACK),self.tbrect) #blits text on
+        elif self.selectingclass:
+            #draws class select buttons
+            for b in self.buttons2:
+                b.draw(screen)
+            
 class Game():
     def __init__(self):
         "initializes game"
@@ -802,7 +852,7 @@ def changemode(mode):
     mode.playMusic()
 #----FINALIZES SCREEN----#
 running = True
-currmode = Game() #sets current mode
+currmode = StartMenu() #sets current mode
 currmode.draw(screen)
 currmode.playMusic()
 while running:

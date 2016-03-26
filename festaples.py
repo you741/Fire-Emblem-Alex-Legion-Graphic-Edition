@@ -18,6 +18,7 @@ font.init()
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
 
+#----String formatting----#
 def stripNums(string):
     "strips all numbers from end of a string"
     while True:
@@ -28,9 +29,13 @@ def stripNums(string):
         string = string[:-1] #removes last character of string
     return string
 
+#----Map Calculations----#
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
     "gets all moveable squares for a person"
     moveable = [] #moveable squares
+    #NOTE: the dictionary "visited" stores the amount of moves left after travelling to a point
+    #in order to make this value optimal, I reset everytime I find a lower movesleft value
+    #this is only really useful for mounted units
     if movesleft >= 0 and 0 <= y < len(stage) and 0 <= x < len(stage[0]) and ((x,y) not in visited or visited.get((x,y)) < movesleft):           
         if (x,y) not in allies+enemies:
             moveable.append((x,y,movesleft))
@@ -38,12 +43,12 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
             if person.canPass(stage[y][x]):
                 #if the person can pass this terrain
                 #we call the function in four directions
-                visited[(x,y)] = movesleft #sets visited (x,y) to movesleft
+                visited[(x,y)] = movesleft #sets visited at (x,y) to movesleft
                 moveable += getMoves(person,x-1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
                 moveable += getMoves(person,x+1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
                 moveable += getMoves(person,x,y-1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
                 moveable += getMoves(person,x,y+1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-                
+    moveable = [(x,y,m) for x,y,m in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
     return moveable
 def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
     "returns attackable enemies by person (optional parameters for different (x,y))"
@@ -52,6 +57,9 @@ def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
         if canAttackTarget(person,e,x,y,weapon):
             atten.append(e)
     return atten
+def getTargetableAllies(rnge,maxrnge,x,y,allies):
+    "returns all allies that are targetable"
+    return [a for a in allies if rnge <= getDistance(x,y,a.x,a.y) <= maxrnge]
 def getAttackableSquares(rnge,maxrnge,x,y):
     "returns all attackable squares from (x,y)"
     asq = [] #attackable squares
@@ -69,6 +77,8 @@ def getAttackableSquaresByMoving(moveablesquares,person):
         for ax,ay in getAttackableSquares(person.getMinRange(),person.getMaxRange(),x,y):
             attackableSquares.add((ax,ay))
     return attackableSquares
+
+#----Other Calculations----#
 def canAttackTarget(person,enemy,x=None,y=None,weapon=None):
     "returns whether person can attack enemy"
     if person.equip == None:
@@ -82,32 +92,6 @@ def canAttackTarget(person,enemy,x=None,y=None,weapon=None):
 def getDistance(x,y,x2,y2):
     "returns distance between 2 points"
     return abs(x-x2) + abs(y-y2)
-def drawPerson(screen,person):
-    "draws a person on the grid"
-    #no sprite so will use rectangles for now
-    draw.rect(screen,(0,0,0),(person.x*30,person.y*30,30,30))
-def drawGrid(screen,width=1200,height=720):
-    "draws a grid on the screen"
-    for x in range(0,width,30):
-        draw.line(screen,(0,0,0),(x,0),(x,720))
-    for y in range(0,height,30):
-        draw.line(screen,(0,0,0),(0,y),(1200,y))
-def fillSquares(screen,coords,filler):
-    "fills squares at coords with filler"
-    for x,y in coords:
-        screen.blit(filler,(x*30,y*30))
-def createEnemyList(enemies,amounts,coords):
-    "takes in a list of enemies, a corresponding list of amounts and a list of coordinates"
-    enemyList = []
-    enemyat = 0
-    for i in range(len(enemies)):
-        for j in range(amounts[i]):
-            newEnemy = enemies[i].getInstance()
-            newEnemy.x,newEnemy.y = coords[enemyat]
-            newEnemy.name = newEnemy.name + str(enemyat)
-            enemyat += 1
-            enemyList.append(newEnemy)
-    return enemyList
 def getExpGain(ally,enemy,kill=False):
     "returns amount of exp that should be gained"
     LD = enemy.getInternalLevel() - ally.getInternalLevel() #level difference
@@ -124,7 +108,46 @@ def getExpGain(ally,enemy,kill=False):
     hitgain = max(1,hitgain)
     killgain = max(7,killgain) if kill else 0 #we only gain from kills if we actually kill
     return int(min(100,hitgain + killgain))
+def getAttackResults(person,enemy,stage):
+    "performs an attack on enemy by person, returns if it hit or crit and total damage"
+    hit,dam,crit = False,0,False #hit = did it hit?; dam = damage; crit = did it crit?
+    if randint(0,99) < person.getHit(enemy,stage):
+        hit = True
+        dam = person.getDamage(enemy,stage)
+        if randint(0,99) < person.getCritical(enemy):
+            crit = True
+            dam *= 3 #damage is tripled
+    return (hit,dam,crit) #returns (hit,dam,crit)
 
+#----Creation Functions----#
+def createEnemyList(enemies,amounts,coords):
+    "takes in a list of enemies, a corresponding list of amounts and a list of coordinates"
+    enemyList = []
+    enemyat = 0
+    for i in range(len(enemies)):
+        for j in range(amounts[i]):
+            newEnemy = enemies[i].getInstance()
+            newEnemy.x,newEnemy.y = coords[enemyat]
+            newEnemy.name = newEnemy.name + str(enemyat)
+            enemyat += 1
+            enemyList.append(newEnemy)
+    return enemyList
+
+#----Drawing Functions----#
+def drawPerson(screen,person):
+    "draws a person on the grid"
+    #no sprite so will use rectangles for now
+    draw.rect(screen,(0,0,0),(person.x*30,person.y*30,30,30))
+def drawGrid(screen,width=1200,height=720):
+    "draws a grid on the screen"
+    for x in range(0,width,30):
+        draw.line(screen,(0,0,0),(x,0),(x,720))
+    for y in range(0,height,30):
+        draw.line(screen,(0,0,0),(0,y),(1200,y))
+def fillSquares(screen,coords,filler):
+    "fills squares at coords with filler"
+    for x,y in coords:
+        screen.blit(filler,(x*30,y*30))
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
@@ -162,16 +185,6 @@ def drawHealthLoss(screen,person,dam,x,y,enemy=True):
         display.flip()
         time.wait(50)
         
-def getAttackResults(person,enemy,stage):
-    "performs an attack on enemy by person, returns if it hit or crit and total damage"
-    hit,dam,crit = False,0,False #hit = did it hit?; dam = damage; crit = did it crit?
-    if randint(0,99) < person.getHit(enemy,stage):
-        hit = True
-        dam = person.getDamage(enemy,stage)
-        if randint(0,99) < person.getCritical(enemy):
-            crit = True
-            dam *= 3 #damage is tripled
-    return (hit,dam,crit) #returns (hit,dam,crit)
 
 def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
     "animates a single attack"
