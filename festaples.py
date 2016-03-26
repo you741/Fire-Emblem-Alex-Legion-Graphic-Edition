@@ -3,6 +3,7 @@
 #mostly to make main.py easier to read...
 from pygame import *
 from random import *
+from feweapons import *
 
 #----COLORS----#
 BLACK = (0,0,0,255)
@@ -16,6 +17,16 @@ YELLOW = (255,255,0,255)
 font.init()
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
+
+def stripNums(string):
+    "strips all numbers from end of a string"
+    while True:
+        try:
+            int(string[-1]) #tries to int last character
+        except:
+            break #if it failed we break the loop
+        string = string[:-1] #removes last character of string
+    return string
 
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
     "gets all moveable squares for a person"
@@ -97,15 +108,6 @@ def createEnemyList(enemies,amounts,coords):
             enemyat += 1
             enemyList.append(newEnemy)
     return enemyList
-def stripNums(string):
-    "strips all numbers from end of a string"
-    while True:
-        try:
-            int(string[-1]) #tries to int last character
-        except:
-            break #if it failed we break the loop
-        string = string[:-1] #removes last character of string
-    return string
 def getExpGain(ally,enemy,kill=False):
     "returns amount of exp that should be gained"
     LD = enemy.getInternalLevel() - ally.getInternalLevel() #level difference
@@ -120,8 +122,8 @@ def getExpGain(ally,enemy,kill=False):
         hitgain = (33+LD)/3
         killgain = 26 + LD*3 + enemy.gift
     hitgain = max(1,hitgain)
-    killgain = max(7,killgain)
-    return min(100,hitgain + killgain)
+    killgain = max(7,killgain) if kill else 0 #we only gain from kills if we actually kill
+    return int(min(100,hitgain + killgain))
 
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
@@ -152,7 +154,7 @@ def drawHealthLoss(screen,person,dam,x,y,enemy=True):
             break
         person.hp -= 1
         if enemy:
-            draw.rect(screen,(255,0,0),(0,600,500,100))
+            draw.rect(screen,RED,(0,600,500,100))
         else:
             draw.rect(screen,BLUE,(700,600,500,100))
         drawHealthBar(screen,person,x,y)
@@ -178,12 +180,13 @@ def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
     screen.blit(person2.anims["stand"],(0,200))
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
     if not crit or not hit:
-        #draws non-crit attack animation
+        #sets to attack animation with weapon
         frames,hitFrame = person.anims[person.equip.typ]
     if crit and hit:
-        #draws crit attack animation
+        #sets to critical attack animation
         frames,hitFrame = person.anims[person.equip.typ+"crit"]
     for i in range(hitFrame):
+        #draws frames up to the hit frame
         screen.blit(filler,(0,0))
         screen.blit(frames[i],(0,200))
         time.wait(50)
@@ -199,18 +202,46 @@ def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
     else:
         drawHealthLoss(screen,person2,dam,hpx,hpy,isenemy)
     for i in range(hitFrame,len(frames)):
+        #draws remaining frames for animation
         screen.blit(filler,(0,0))
         screen.blit(frames[i],(0,200))
         time.wait(50)
         display.flip()
     screen.blit(filler,(0,0))
-    screen.blit(frames[0],(0,200)) #draws first frame again
+    screen.blit(person.anims["stand"],(0,200)) #draws standing sprite
     display.flip()
-    person.equip.dur -= 1
-    if person.equip.dur == 0:
-        person.items.remove(person.equip)
-        person.equip = None
-        for w in [item for item in person.items if type(item) == Weapon]:
-            if person.equipWeapon(w):
-                break
+    if hit or person.equip.mag:
+        #reduces durability if person hits enemy
+        #or if the weapon is magical (they lose durability whether
+        #they hit or not)
+        person.equip.dur -= 1
+        if person.equip.dur == 0:
+            person.items.remove(person.equip) #removes weapon if destroyed
+            person.equip = None #sets equip to None
+            for w in [item for item in person.items if type(item) == Weapon]:
+                #tries to equip weapons
+                if person.equipWeapon(w):
+                    break
     time.wait(300)
+
+def drawExpGain(ally,expgain,screen):
+    "draws exp gain (a bar filling up with exp)"
+    screenBuff = screen.copy()
+    draw.rect(screen,BLUE,(420,330,360,60)) #backdrop for exp bar
+    draw.rect(screen,BLACK,(450,345,300,30)) #draws exp bar black (non-filled exp)
+    draw.rect(screen,YELLOW,(450,345,int(300*(ally.exp/100)),30)) #draws filled exp
+    screen.blit(sans.render(str(ally.exp),True,WHITE),(422,335)) #writes exp
+    display.flip()
+    time.wait(200)
+    appExp = ally.exp #apparent exp
+    for i in range(expgain):
+        appExp += 1
+        if appExp >= 100:
+            appExp = 0 #makes sure apparent Experience does not exceed 99
+        draw.rect(screen,BLUE,(420,330,360,60)) #backdrop for exp bar
+        draw.rect(screen,BLACK,(450,345,300,30))
+        draw.rect(screen,YELLOW,(450,345,int(300*(appExp/100)),30)) #draws filled exp bar
+        screen.blit(sans.render(str(appExp),True,WHITE),(420,340)) #writes exp
+        time.wait(50)
+        display.flip()
+        

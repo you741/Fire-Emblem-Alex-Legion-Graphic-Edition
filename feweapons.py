@@ -26,7 +26,7 @@ class Weapon(Item):
         self.prf = prf
     def getInstance(self):
         "gets instance of weapon"
-        return Weapon(self.name,self.mt,self.wt,self.dur,self.acc,self.typ,self.mast,self.crit,self.rnge,self.dur,self.mag,self.sup_eff,self.maxrnge,self.wexp,self.desc,self.prf)
+        return Weapon(self.name,self.mt,self.wt,self.maxdur,self.acc,self.typ,self.mast,self.crit,self.rnge,self.dur,self.mag,self.sup_eff,self.maxrnge,self.wexp,self.desc,self.prf)
 class Consumable(Item):
     def __init__(self,name,hpGain,maxdur,desc="",dur=None):
         super(Consumable,self).__init__(name,maxdur,desc,dur)
@@ -38,5 +38,10 @@ class Consumable(Item):
 
     def use(self,person):
         "uses consumable on person"
+        #returns False if item breaks
         person.hp += self.hpGain
         person.hp = min(person.maxhp,person.hp)
+        self.dur -= 1
+        if self.dur <= 0:
+            return False
+        return True
