@@ -91,7 +91,7 @@ allies = [] #allies
 bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":2,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":28,"maxhp":28},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":([],0),"Axecrit":([],0),"stand":brigandStandSprite},10)
+                {"Axe":(brigandAttackSprite,9),"Axecrit":(brigandCritSprite,11),"stand":brigandStandSprite},10)
 enemies = []
 #----CHAPTERS----#
 #MAPS

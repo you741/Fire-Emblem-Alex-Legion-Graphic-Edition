@@ -11,3 +11,7 @@ yoyoCritSprite = [image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
 
 #ENEMIES
 brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png")
+brigandAttackSprite = [image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
+                       for i in range(14)]
+brigandCritSprite = [image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
+                     for i in range(2)] + brigandAttackSprite
