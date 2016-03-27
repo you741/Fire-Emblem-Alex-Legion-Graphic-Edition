@@ -204,6 +204,15 @@ def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
         screen.blit(frames[i],(0,200))
         time.wait(50)
         display.flip()
+    if person.equip.anims != None:
+        #if the person's weapon has an animation, we draw it
+        weapFiller = screen.copy() #weapon filler - only for the weapon
+        for f in person.equip.anims:
+            screen.blit(weapFiller,(0,0))
+            screen.blit(f,(0,200)) #draws all the frames of the equipped weapon's animation
+            display.flip()
+            time.wait(50)
+        screen.blit(weapFiller,(0,0))
     if not hit:
         screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y))
         display.flip()

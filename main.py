@@ -58,7 +58,7 @@ real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,0,2,46,False,[],2)
 iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100)
 silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",100)
-fire = Weapon("Fire",5,4,40,95,"Anima",100,0,1,40,True,"",2)
+fire = Weapon("Fire",5,4,40,95,"Anima",100,0,1,40,True,maxrnge=2,anims=fireSprite)
 slim_sword = Weapon("Slim Sword",3,2,35,100,"Sword",200,5)
 steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200)
 iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100)
@@ -89,8 +89,8 @@ yoyo = Lord("Yoyo",0,0,
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":2,"skl":3,"lck":0,
-                   "spd":3,"con":8,"move":5,"res":0,"hp":28,"maxhp":28},{},[iron_axe.getInstance()],{"Axe":200},
+                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
+                   "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":(brigandAttackSprite,9),"Axecrit":(brigandCritSprite,11),"stand":brigandStandSprite},10)
 enemies = []
 #----CHAPTERS----#
@@ -420,7 +420,7 @@ class NewGame():
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
-{'stand':Surface((1,1)),'Anima':([],0),'Animacrit':([],0)})
+{'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})
 allies.append(player)
 oldAllies = [a.getInstance() for a in allies] #keeps track of allies before the fight
 allAllies.append(player) #normally the saving would be done withing the PreFight class... but it doesn't exist yet
@@ -517,6 +517,7 @@ class Game():
     def run(self,screen):
         "runs the game in the running loop"
         global running,mode,selectx,selecty,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
+        #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
                 running = False
@@ -732,6 +733,7 @@ class Game():
                     #restarts turn
                     #only temporary
                     startTurn()
+        #-----END OF EVENT LOOP----#
         if mode == "gameover":
             return 0
         screen.blit(filler,(0,0)) #blits the filler
@@ -808,9 +810,8 @@ class Game():
                     col = GREEN
                     options = ["Use","Discard"] #consumables can be used or discarded
                 draw.rect(screen,BLUE,(22*30,8*30,120,len(options)*30)) #draws submenu backdrop for item
-                for i in range(len(options)):
-                    #writes all options
-                    screen.blit(sans.render(options[i],True,WHITE),(22*30,(8+i)*30))
+                screen.blit(sans.render(options[0],True,col),(22*30,8*30)) #draws first option
+                screen.blit(sans.render(options[1],True,WHITE),(22*30,9*30)) #draws discard option
                 draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA
