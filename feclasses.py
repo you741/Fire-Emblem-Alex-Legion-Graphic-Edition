@@ -182,9 +182,7 @@ class Person():
         return internalLV
     def getInstance(self):
         "gets instance of person"
-        return Person(self.name,self.x,self.y,self.stats,self.growths,
-                      [i.getInstance() for i in self.items],
-                      self.mast,self.anims,self.gift)
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,self.stats,self.growths,[i.getInstance() for i in self.items],self.mast,self.anims,self.gift)")
 class Mage(Person):
     "mage class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0):

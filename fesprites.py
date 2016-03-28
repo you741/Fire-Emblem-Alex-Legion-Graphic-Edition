@@ -24,3 +24,8 @@ brigandCritSprite = [image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png
 #MAGIC
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png")
               for i in range(17)]
+
+#MAP SPRITES
+allyMapSprites = {"Mage":[image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif") for i in range(4)],
+                  "Lord":[Surface((30,30))]*4}
+enemyMapSprites = {"Brigand":[Surface((30,30))]*4}

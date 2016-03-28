@@ -134,10 +134,6 @@ def createEnemyList(enemies,amounts,coords):
     return enemyList
 
 #----Drawing Functions----#
-def drawPerson(screen,person):
-    "draws a person on the grid"
-    #no sprite so will use rectangles for now
-    draw.rect(screen,(0,0,0),(person.x*30,person.y*30,30,30))
 def drawGrid(screen,width=1200,height=720):
     "draws a grid on the screen"
     for x in range(0,width,30):

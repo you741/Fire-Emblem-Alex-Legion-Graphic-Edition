@@ -41,7 +41,7 @@ GREY = (160,160,160,255)
 timesnr = font.SysFont("Times New Roman",15)
 comicsans = font.SysFont("Comic Sans MS",25)
 arial = font.SysFont("Arial",15)
-monospace = font.SysFont("Monospace",15)
+monospace = font.SysFont("Monospace",30)
 smallsans = font.SysFont("Comic Sans MS",15)
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
@@ -116,7 +116,7 @@ attackableEnemies = [] #attackable enemies of the selected person
 selectedEnemy = 0 #selected Enemy
 menu = None #options in menu
 menuselect = 0 #option selected in the menu
-framecounter = 0
+framecounter = 0 #counts frames
 filler = Surface((1200,720))
 selectx,selecty = 0,0 #select points
 #----GLOBAL FUNCTIONS----#
@@ -318,22 +318,14 @@ def attack(person,person2):
 class FilledSurface(Surface):
     "a surface we can make filled on declaration"
     #aids in my drawing efforts as I am too lazy to make a new surface everytime I want a filled one
-    def __init__(self,dimensions,background=None,text=None,fontColor=None,fontFamily=None,tpos=None):
+    def __init__(self,dimensions,background=None,text="",fontColor=BLACK,fontFamily=timesnr,tpos=(0,0)):
         super(FilledSurface,self).__init__(dimensions) #calls super
         if background != None:
             if type(background) in [Color,tuple]:
                 self.fill(background) #fills the surface if the background is a color
             else:
                 self.blit(background,(0,0))
-        if text != None:
-            #blits text if it isn't None
-            if fontFamily == None:
-                fontFamily = timesnr #sets default font
-            if fontColor == None:
-                fontColor = BLACK #sets default color
-            if tpos == None:
-                tpos = (0,0) #sets default text position
-            self.blit(fontFamily.render(text,True,fontColor),tpos)
+        self.blit(fontFamily.render(text,True,fontColor),tpos) #blits text
             
 #----UI CLASSES----#
 #these classes are the user interface classes - any classes that help user interaction are here
@@ -373,8 +365,8 @@ class StartMenu():
     def __init__(self):
         "sets button list of mode"
         self.stopped = False
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",WHITE,font.SysFont("Monospace",30),(30,10)),
-                               FilledSurface((200,50),YELLOW,"NEW GAME",BLACK,font.SysFont("Monospace",30),(30,10)),
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"NEW GAME",BLACK,monospace,(30,10)),
                                ["changemode(NewGame())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
@@ -409,12 +401,12 @@ class NewGame():
         self.tbrect = Rect(400,300,500,50)
         self.ipos = 0 #insertion point position
         #name select buttons
-        self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",WHITE,font.SysFont("Monospace",30),(30,10)),
-                               FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,font.SysFont("Monospace",30),(30,10)),
+        self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,monospace,(30,10)),
                                ["currmode.selectingname = False","currmode.selectingclass = True","screen.fill(BLACK)"])]
         #class select buttons
-        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,font.SysFont("Monospace",30),(40,10)),
-                                FilledSurface((200,50),YELLOW,"MAGE",BLACK,font.SysFont("Monospace",30),(40,10)),
+        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,monospace,(40,10)),
+                                FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
                                 ["global player,oldAllies",
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
@@ -505,7 +497,7 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
 class Game():
     def __init__(self):
         "initializes game"
-        pass #the game uses global variables, so nothing goes here
+        self.clickedFrame = framecounter #the frame user clicked (pressed z)
     def draw(self,screen):
         "draws game on screen"
         global filler
@@ -530,7 +522,7 @@ class Game():
                 if mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
                     moveSelect() #handles movements by player
-                    framecounter = 0
+                    self.clickedFrame = framecounter #sets the clickedFrame to self
                 if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
                     #moves selected menu item
                     if kp[K_UP]:
@@ -743,16 +735,10 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if kp[K_LEFT] or kp[K_RIGHT] or kp[K_UP] or kp[K_DOWN] and mode in ["freemove","move"]:
-            #increases frame counter if we're holding something
-            framecounter += 1
-        if framecounter > 100 and mode in ["freemove","move"]:
+        if framecounter - self.clickedFrame > 60 and mode in ["freemove","move"] and framecounter%15 == 0:
             #if framecounter is greater than 60 we move more
+            #we only do it once every 15 frames or it'll be too fast
             moveSelect()
-            time.wait(50)
-        #DRAWS PERSONS
-        for p in allies+enemies:
-            drawPerson(screen,p) #draws persons
         #--------------------HIGHLIGHTING A PERSON---------------#
         if mode == "freemove":
             for p in allies+enemies:
@@ -771,9 +757,15 @@ class Game():
         #MOVE MODE DISPLAY
         if mode == "move":
             #fills moveable and attackable squares
-            fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]),transBlue)
+            fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(selected.x,selected.y)]),transBlue)
             if self.attackableSquares:
                 fillSquares(screen,self.attackableSquares,transRed)
+        #DRAWS PERSONS
+        for a in allies:
+            #draws one of four frames in the map sprite - changes sprites every 60 frames
+            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%240//60],(a.x*30,a.y*30))
+        for e in enemies:
+            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%240//60],(e.x*30,e.y*30))
         #OPTION MENU MODE DISPLAY
         if mode == "optionmenu":
             #if it is menu mode we draw the menu
@@ -836,6 +828,7 @@ class Game():
         if mode in ["freemove","move","attack"]:
             draw.rect(screen,WHITE,(selectx*30,selecty*30,30,30),1) #draws select box
         display.flip()
+        framecounter += 1 #increases frame counter
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
     "changes the screen's mode"
