@@ -98,8 +98,9 @@ enemies = []
 chapter0 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
 #Stored in tuples
-#(gainedAllies,allyCoordinates,Enemies,Goal)
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies")] #chapter data, chapter is determined by index
+#(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
+#chapter data, chapter is determined by index
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -146,7 +147,7 @@ def start():
     "starts a chapter, also serves a restart"
     global mode,allies,enemies,goal,selectx,selecty
     selectx,selecty = 0,0
-    newAllies,allyCoords,newenemies,goal = chapterData[chapter]
+    newAllies,allyCoords,newenemies,goal,backgroundImage = chapterData[chapter]
     for a in newAllies:
         if a not in oldAllies:
             oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
@@ -165,7 +166,7 @@ def start():
     moved.clear()
     attacked.clear()
     mode = "freemove"
-    screen.fill(GREEN) #replace this with map sprite later
+    screen.blit(backgroundImage,(0,0))#draws map background on the screen
     drawGrid(screen)
     startTurn()
 #----DRAWING FUNCTIONS----#
@@ -271,7 +272,7 @@ def attack(person,person2):
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
-                ally.levelUp(screen)
+                ally.levelUp()
         display.flip()
         time.wait(1000)
         return False #ends the function if either ally or enemy is dead
@@ -289,7 +290,7 @@ def attack(person,person2):
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
-                ally.levelUp(screen)
+                ally.levelUp()
         display.flip()
         time.wait(1000)
         return False
@@ -311,7 +312,8 @@ def attack(person,person2):
     needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
     if needLevelUp:
         #level up
-        ally.levelUp(screen)
+        ally.levelUp()
+        drawLevelUp(screen,ally)
     time.wait(1000)
 #----HELPFUL CLASSES----#
 #any classes that help me code
@@ -441,7 +443,7 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
                     else:
                         #clicking away from the textbox disallows typing
                         self.typing = False
-                    if len(name) > 0:
+                    if len(name) > 0 and name.lower() not in usedNames:
                         #handles button presses
                         for b in self.buttons1:
                             if b.istouch():
@@ -461,7 +463,7 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
                     if kp[K_BACKSPACE] and 0 < self.ipos:
                         name = name[:self.ipos-1] + name[self.ipos:]#deletes last character behind ipos in name if user backspaced
                         self.ipos -= 1
-                    elif kp[K_RETURN] and len(name) > 0:
+                    elif kp[K_RETURN] and len(name) > 0 and name.lower() not in usedNames:
                         #if user presses return and there exists a valid name
                         self.buttons1[0].click() #triggers the submit button click
                     elif kp[K_LEFT]:
@@ -541,6 +543,7 @@ class Game():
                         menuselect = 0
                 elif mode == "item" and selectedItem != None:
                     #if the user is in the submenu for an item, we deal with that
+                    #an item submenu has 2 options in it
                     if kp[K_UP]:
                         self.optselected -= 1
                     elif kp[K_DOWN]:

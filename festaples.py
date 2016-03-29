@@ -155,6 +155,7 @@ def drawLevelUp(screen,person):
     for i,k in enumerate(person.growths):
         #draws a +1 next to every stat gained
         if person.stats[k] != eval("person."+k):
+            pass
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
