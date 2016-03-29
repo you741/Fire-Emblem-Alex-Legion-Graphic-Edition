@@ -150,7 +150,7 @@ class Person():
             return True #returns True if we should level up
         else:
             return False
-    def levelUp(self,screen):
+    def levelUp(self):
         "levels up"
         if self.exp < 100:
             #if we are less than 100 exp we cannot level up
@@ -160,6 +160,7 @@ class Person():
             if randint(0,99) < self.growths[k]:
                 #increases stats based on luck
                 exec("self."+k+"+=1")
+                
         self.exp = self.exp%100 #exp goes down to exp modulus 100
         self.exp = 0 if self.lv == 20 else self.exp #if we are level 20 exp goes to 0
         return True
