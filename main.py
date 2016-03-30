@@ -369,7 +369,7 @@ class StartMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
-                               ["changemode(SelectGame())"])] #START BUTTON
+                               ["changemode(SelectMenu())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
         screen.blit(logo,(300,50))
@@ -394,7 +394,7 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
-class SelectGame():
+class SelectMenu():
     def __init__(self):
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
@@ -873,7 +873,7 @@ def changemode(mode):
     mode.playMusic()
 #----FINALIZES SCREEN----#
 running = True
-currmode = StartMenu() #sets current mode
+currmode = SelectMenu() #sets current mode
 currmode.draw(screen)
 currmode.playMusic()
 while running:
