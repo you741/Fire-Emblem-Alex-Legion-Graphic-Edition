@@ -48,7 +48,7 @@ papyrus = font.SysFont("Papyrus",20)
 #----MUSIC----#
 bgMusic = mixer.Channel(0) #channel for background music
 sndEffs = mixer.Channel(1) #channel for sound effects
-conquest = mixer.Sound("music/3-01-conquest.ogg")
+#conquest = mixer.Sound("music/3-01-conquest.ogg")
 #----IMAGE LOAD----#
 logo = image.load("images/logo.png")
 #TERRAIN
@@ -105,7 +105,7 @@ oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
 #each index represents what music is played in the chapter of that index
-chapterMusic = [conquest]
+#chapterMusic = [conquest]
 #----GLOBAL VARIABLES----#
 #important variables for the Game class
 chapter = 0
@@ -367,9 +367,9 @@ class StartMenu():
     def __init__(self):
         "sets button list of mode"
         self.stopped = False
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"NEW GAME",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"NEW GAME",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"])] #START BUTTON
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
+                               ["changemode(SelectGame())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
         screen.blit(logo,(300,50))
@@ -394,6 +394,30 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
+class SelectGame():
+    def __init__(self):
+        self.stopped = False
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"])]
+    def draw(self,screen):
+        "draws mode on screen"
+        draw.rect(screen,WHITE,(100,100,100,100))
+    def playMusic(self):
+        "plays menu music"
+        #WIP
+        pass
+    def run(self,screen):
+        "runs the menus as if it were in the running loop"
+        global running
+        for e in event.get():
+            #event loop
+            if e.type == QUIT:
+                running = False
+            if e.type == MOUSEBUTTONDOWN:
+                for b in self.buttons:
+                    if b.istouch():
+                        b.click()
 class NewGame():
     "this class let's user choose his name and class"
     def __init__(self):
@@ -507,7 +531,7 @@ class Game():
         filler = screen.copy() #filler
     def playMusic(self):
         "plays music for the chapter"
-        bgMusic.play(chapterMusic[chapter],-1)
+ #       bgMusic.play(chapterMusic[chapter],-1)
     def run(self,screen):
         "runs the game in the running loop"
         global running,mode,selectx,selecty,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
