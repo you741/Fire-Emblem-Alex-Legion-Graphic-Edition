@@ -418,6 +418,11 @@ class SelectMenu():
                 for b in self.buttons:
                     if b.istouch():
                         b.click()
+        if self.stopped:
+            return 0 #if we have stopped, we return to stop the method
+        #draws buttons
+        for b in self.buttons:
+            b.draw(screen)
 class NewGame():
     "this class let's user choose his name and class"
     def __init__(self):
@@ -873,7 +878,7 @@ def changemode(mode):
     mode.playMusic()
 #----FINALIZES SCREEN----#
 running = True
-currmode = SelectMenu() #sets current mode
+currmode = StartMenu() #sets current mode
 currmode.draw(screen)
 currmode.playMusic()
 while running:
