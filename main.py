@@ -399,6 +399,12 @@ class SelectMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
                                ["changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
