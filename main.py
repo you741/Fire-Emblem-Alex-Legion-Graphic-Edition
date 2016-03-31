@@ -29,6 +29,7 @@ __copyright__ = "Yttrium Z 2015-2016"
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
 display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+#----GLOBAL VARIABLES----#
 #----COLORS----#
 BLACK = (0,0,0,255)
 WHITE = (255,255,255,255)
@@ -106,9 +107,9 @@ allAllies = [] #all allies that exist
 #CHAPTER MUSIC
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
-#----GLOBAL VARIABLES----#
+
 #important variables for the Game class
-chapter = 0
+chapter = 0 #changes when load new/old game, so stays global
 mode = "freemove" #mode Game Mode is in
 goal = ""
 selected = None #selected Person
@@ -371,15 +372,24 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
-class SelectMenu():
+class SaveGame():
     def __init__(self):
         self.stopped = False
+        self.file1 = shelve.open("file1")
+        self.file2 = shelve.open("file2")
+        self.file3 = shelve.open("file3")
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
                                ["changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
-        draw.rect(screen,WHITE,(100,100,100,100))
+        pass
     def playMusic(self):
         "plays menu music"
         #WIP
@@ -400,6 +410,10 @@ class SelectMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
+            
+class LoadGame():
+    def __init__(self):
+        pass
 class NewGame():
     "this class let's user choose his name and class"
     def __init__(self):
@@ -480,7 +494,7 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
                         #moves insertion point to the right
                         self.ipos += 1
                         self.ipos = min(len(name),max(0,self.ipos)) #limits insertion point
-                    elif len(name) < 16 and e.unicode.lower() in "abcdefghijklmnopqrstuvwxyz0123456789" and e.unicode != "":
+                    elif len(name) < 16 and e.unicode.lower() in "abcdefghijklmnopqrstuvwxyz0123456789 " and e.unicode != "":
                         #if user enters a valid character (letter or number) we append it to name
                         name = name[:self.ipos] + e.unicode + name[self.ipos:]
                         self.ipos += 1
