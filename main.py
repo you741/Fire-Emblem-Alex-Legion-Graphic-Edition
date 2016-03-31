@@ -376,9 +376,9 @@ class StartMenu():
 class SaveGame():
     def __init__(self):
         self.stopped = False
-        self.file1 = shelve.open("file1")
-        self.file2 = shelve.open("file2")
-        self.file3 = shelve.open("file3")
+        self.file1 = shelve.open("saves/file1")
+        self.file2 = shelve.open("saves/file2")
+        self.file3 = shelve.open("saves/file3")
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
                                ["changemode(NewGame())"]),
