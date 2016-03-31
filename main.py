@@ -3,12 +3,13 @@
 #The user controls an army that fights off the enemy's army for multiple levels to win
 #There is also a great story line
 
-#----DEFAULT MODULE IMPORTS
+#----BUILT-IN MODULE IMPORTS
 import os
 from pygame import *
 import time as time2
 from math import *
 from random import *
+import shelve
 #----CUSTOM MODULE IMPORTS
 from feclasses import *
 from festaples import *
@@ -347,7 +348,7 @@ class StartMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(50,10)),
                                FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(50,10)),
-                               ["changemode(SelectMenu())"])] #START BUTTON
+                               ["changemode(SaveGame())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
         screen.blit(logo,(300,50))
@@ -678,13 +679,7 @@ class Game():
                             #0 is equip, 1 is discard
                             if self.optselected:
                                 #discard option
-                                selected.items.remove(selectedItem) #removes selectedItem from items
-                                if selectedItem == selected.equip:
-                                    selected.equip = None #no more equipped weapon
-                                    #if the removed item was the equipped, item, we try to equip a new weapon
-                                    for w in [i for i in selected.items if type(i) == Weapon]:
-                                        if selected.equipWeapon(w):
-                                            break #if we can equip, loop breaks
+                                selected.removeItem(selectedItem) #removes selectedItem from items
                             else:
                                 #equip option
                                 selected.equipWeapon(selectedItem) #tries to equip
@@ -700,13 +695,13 @@ class Game():
                             #0 is use, 1 is discard
                             if self.optselected:
                                 #discard option
-                                selected.items.remove(selectedItem)#discards item
+                                selected.removeItem(selectedItem) #removes selectedItem from items
                             else:
                                 #use option
                                 if not selectedItem.use(selected):
                                     #uses consumable
                                     #if it breaks we remove it
-                                    selected.items.remove(selectedItem)
+                                    selected.removeItem(selectedItem) #removes selectedItem from items
                                 moved.add(selected) #unit must wait after using a consumable
                                 attacked.add(selected)
                                 self.oldx,self.oldy = selected.x,selected.y #no moving back after using a consumable
