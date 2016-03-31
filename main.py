@@ -755,9 +755,9 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%8:
-            #if framecounter is greater than 5 we move more
-            #we only do it once every 8 frames or it'll be too fast
+        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%6:
+            #if we held for 20 frames or more we move more
+            #we only do it once every 6 frames or it'll be too fast
             moveSelect()
         #--------------------HIGHLIGHTING A PERSON---------------#
         if mode == "freemove":
