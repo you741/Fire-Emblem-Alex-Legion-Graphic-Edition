@@ -369,7 +369,7 @@ class StartMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
-                               ["changemode(SelectMenu())"])] #START BUTTON
+                               ["changemode(SelectSave())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
         screen.blit(logo,(300,50))
@@ -394,7 +394,7 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
-class SelectMenu():
+class SelectSave():
     def __init__(self):
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
@@ -509,7 +509,7 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
                         #moves insertion point to the right
                         self.ipos += 1
                         self.ipos = min(len(name),max(0,self.ipos)) #limits insertion point
-                    elif len(name) < 16 and e.unicode.lower() in "abcdefghijklmnopqrstuvwxyz0123456789" and e.unicode != "":
+                    elif len(name) < 16 and e.unicode.lower() in "abcdefghijklmnopqrstuvwxyz0123456789 " and e.unicode != "":
                         #if user enters a valid character (letter or number) we append it to name
                         name = name[:self.ipos] + e.unicode + name[self.ipos:]
                         self.ipos += 1
