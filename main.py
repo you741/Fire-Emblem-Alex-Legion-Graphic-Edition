@@ -230,40 +230,17 @@ def attack(person,person2):
     screen.fill(GREEN) #green screen
     display.flip()
     time.wait(200)
-    draw.rect(screen,BLUE,(900,220,300,50)) #ally name rectangle
-    draw.rect(screen,RED,(0,220,300,50)) #enemy name rectangle
-    #draws ally and enemy's names
-    screen.blit(sans.render(stripNums(ally.name),True,WHITE),(920,220))
-    screen.blit(sans.render(stripNums(enemy.name),True,WHITE),(50,220))
+    drawBattleInfo(screen,ally,enemy)
     actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
-    #blits standing sprites for Person 1 and 2
-    screen.blit(person.anims["stand"],(0,200))
-    screen.blit(person2.anims["stand"],(0,200))
-    draw.rect(screen,BLUE,(700,600,500,120)) #draws ally health background
-    draw.rect(screen,RED,(0,600,500,120)) #draws enemy health background
-    drawHealthBar(screen,ally,870,615)
-    drawHealthBar(screen,enemy,170,615)
-    screen.blit(sans.render(str(ally.hp),True,WHITE),(1032,620))
-    screen.blit(sans.render(str(enemy.hp),True,WHITE),(332,620))
+    #blits standing sprites for ally and enemy
+    screen.blit(ally.anims["stand"],(0,200))
+    screen.blit(enemy.anims["stand"],(0,200))
     display.flip()
     time.wait(200)
-    #sets variables for person drawing
-    #differs based on which is enemy and which is ally
-    if person2 == enemy:
-        x,y = 725,300
-        hpx,hpy = 870,615
-        isenemy = False
-        x2,y2 = 25,300
-        hpx2,hpy2 = 170,615
-    else:
-        x,y = 25,300
-        hpx,hpy = 170,615
-        isenemy = True
-        x2,y2 = 725,300
-        hpx2,hpy2 = 870,615
+    isenemy = person in enemies #is person an enemy? (boolean)
     #Draws damage for attack 1
     screen.blit(actionFiller,(0,0)) #covers both persons
-    singleAttack(screen,person,person2,x2,y2,hpx2,hpy2,not isenemy,eval("chapter"+str(chapter)))
+    singleAttack(screen,person,person2,isenemy,eval("chapter"+str(chapter)))
     if checkDead(ally,enemy):
         #gains exp
         if enemy.hp == 0:
@@ -281,7 +258,7 @@ def attack(person,person2):
     if canAttackTarget(person2,person):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,person2,person,x,y,hpx,hpy,isenemy,eval("chapter"+str(chapter)))
+        singleAttack(screen,person2,person,not isenemy,eval("chapter"+str(chapter)))
         person2hit = True
     if checkDead(ally,enemy):#gains exp
         if enemy.hp == 0:
@@ -297,9 +274,9 @@ def attack(person,person2):
     #Draws damage for attack 3
     screen.blit(actionFiller,(0,0)) #covers both persons
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy):
-        singleAttack(screen,ally,enemy,25,300,170,615,True,eval("chapter"+str(chapter)))
+        singleAttack(screen,ally,enemy,False,eval("chapter"+str(chapter)))
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally):
-        singleAttack(screen,enemy,ally,725,300,870,615,False,eval("chapter"+str(chapter)))
+        singleAttack(screen,enemy,ally,True,eval("chapter"+str(chapter)))
     kill = False
     if checkDead(ally,enemy):
         kill = True
@@ -367,8 +344,8 @@ class StartMenu():
     def __init__(self):
         "sets button list of mode"
         self.stopped = False
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(50,10)),
+                               FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(50,10)),
                                ["changemode(SelectMenu())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
@@ -529,6 +506,7 @@ class Game():
     def __init__(self):
         "initializes game"
         self.clickedFrame = framecounter #the frame user clicked (pressed z)
+        self.fpsTracker = time.Clock() #fpsTracker
     def draw(self,screen):
         "draws game on screen"
         global filler
@@ -536,7 +514,8 @@ class Game():
         filler = screen.copy() #filler
     def playMusic(self):
         "plays music for the chapter"
- #       bgMusic.play(chapterMusic[chapter],-1)
+        #bgMusic.play(chapterMusic[chapter],-1)
+        pass
     def run(self,screen):
         "runs the game in the running loop"
         global running,mode,selectx,selecty,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
@@ -761,15 +740,15 @@ class Game():
         if mode == "gameover":
             return 0
         screen.blit(filler,(0,0)) #blits the filler
-        if yoyo.hp == 0 and mode != "gameover":
+        if 0 in [player.hp,yoyo.hp] and mode != "gameover":
             gameOver()
             mode = "gameover"
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if framecounter - self.clickedFrame > 60 and mode in ["freemove","move"] and framecounter%15 == 0:
-            #if framecounter is greater than 60 we move more
-            #we only do it once every 15 frames or it'll be too fast
+        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%8:
+            #if framecounter is greater than 5 we move more
+            #we only do it once every 8 frames or it'll be too fast
             moveSelect()
         #--------------------HIGHLIGHTING A PERSON---------------#
         if mode == "freemove":
@@ -795,9 +774,9 @@ class Game():
         #DRAWS PERSONS
         for a in allies:
             #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%240//60],(a.x*30,a.y*30))
+            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%40//10],(a.x*30,a.y*30))
         for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%240//60],(e.x*30,e.y*30))
+            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%40//10],(e.x*30,e.y*30))
         #OPTION MENU MODE DISPLAY
         if mode == "optionmenu":
             #if it is menu mode we draw the menu
@@ -838,7 +817,7 @@ class Game():
                 screen.blit(sans.render(options[1],True,WHITE),(22*30,9*30)) #draws discard option
                 draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
         #---------------INFO DISPLAY BOXES----------------------#
-        #TERRAIN DATA
+        #TERRAIN DATA BOX
         if mode == "freemove":
             tbx,tby = 1020,630 #terrain box x and y
             stage = eval("chapter"+str(chapter))
@@ -849,7 +828,7 @@ class Game():
             draw.rect(screen,(255,230,200),(tbx,tby+30,180,60))
             screen.blit(sans.render("DEFENSE: "+str(stage[selecty][selectx].adef),True,BLACK),(tbx+15,tby+33))
             screen.blit(sans.render("AVOID: "+str(stage[selecty][selectx].avo),True,BLACK),(tbx+15,tby+63))
-        #GOAL BOX
+        #GOAL DISPLAY BOX
         if mode == "freemove":
             goalx,goaly = 1020,0
             if selecty <= 12 and selectx >= 20:
@@ -859,8 +838,10 @@ class Game():
         #---------------SELECTED SQUARE BOX----------------#
         if mode in ["freemove","move","attack"]:
             draw.rect(screen,WHITE,(selectx*30,selecty*30,30,30),1) #draws select box
+        #----------------ENDING THE LOOP-------------------#
         display.flip()
         framecounter += 1 #increases frame counter
+        self.fpsTracker.tick(60) #limits FPS to 60
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
     "changes the screen's mode"
