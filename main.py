@@ -9,6 +9,7 @@ from pygame import *
 import time as time2
 from math import *
 from random import *
+import shelve
 #----CUSTOM MODULE IMPORTS
 from feclasses import *
 from festaples import *
@@ -370,7 +371,7 @@ class StartMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
-                               ["changemode(SaveGame())"])] #START BUTTON
+                               ["changemode(LoadGame())"])] #START BUTTON
     def draw(self,screen):
         "draws mode on screen"
         screen.blit(logo,(300,50))
@@ -436,7 +437,46 @@ class SaveGame():
             
 class LoadGame():
     def __init__(self):
+        self.stopped = False
+        self.file1 = shelve.open("file1")
+        self.file2 = shelve.open("file2")
+        self.file3 = shelve.open("file3")
+        ##shelves save ['text'] -> NewGame or string,
+        ##and then ['function'] -> NewGame or Game
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                               ["changemode(NewGame())"])]
+    def draw(self,screen):
+        "draws mode on screen"
+        screen.fill(BLACK)
         pass
+    def playMusic(self):
+        "plays menu music"
+        #WIP
+        pass
+    def run(self,screen):
+        "runs the menus as if it were in the running loop"
+        global running
+        for e in event.get():
+            #event loop
+            if e.type == QUIT:
+                running = False
+            if e.type == MOUSEBUTTONDOWN:
+                for b in self.buttons:
+                    if b.istouch():
+                        b.click()
+        if self.stopped:
+            return 0 #if we have stopped, we return to stop the method
+        #draws buttons
+        for b in self.buttons:
+            b.draw(screen)
+   
 class NewGame():
     "this class let's user choose his name and class"
     def __init__(self):
