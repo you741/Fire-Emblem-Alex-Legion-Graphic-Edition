@@ -69,9 +69,8 @@ rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladi
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
 file1 = shelve.open("saves/file1")
-if not file1.get('text'):
-    file1['text'] = "NEW gAME"
-
+if not file1.get('display'):
+    file1['display'] = "NEW gAME"
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
@@ -134,6 +133,16 @@ def addAlly(ally):
     allies.append(ally) #adds ally to allies
     oldAllies.append(ally.getInstance())
     allAllies.append(ally) #adds ally to allAllies
+def load(file):
+    "loads the file into the game"
+    global chapter,allAllies
+    if file.get("chapter") == None:
+        file["chapter"] = 0 #sets the chapter to be 0 (which is the prologue)
+        allAllies = [] #allAllies is blank
+    else:
+        #sets the chapter we are about to start and allAllies
+        chapter = file["chapter"]
+        allAllies = file["allAllies"]
 #----DRAWING FUNCTIONS----#
 def drawItemMenu(person,x,y):
     "draws an item menu for a person"
@@ -323,18 +332,23 @@ class StartMenu():
             b.draw(screen)
 class SaveGame():
     def __init__(self):
-        self.stopped = False
+        #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+        #sets the button text based on which files have data
+        button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
+        button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
+        button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        #creates buttons
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"]),
-                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                        Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"]),
-                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+                        Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
@@ -363,37 +377,24 @@ class SaveGame():
 class LoadGame():
     def __init__(self):
         self.stopped = False
+        #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
-        self.file1['text'] = "New Game"
-        self.file2['text'] = "New Game2"
-        self.file3['text'] = "new gaMe3"
-        self.file1['button'] = Button(500,420,200,50,FilledSurface((200,50),BLUE,self.file1['text'],WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"])
-        self.file2['button'] = Button(500,480,200,50,FilledSurface((200,50),BLUE,self.file2['text'],WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"])
-        self.file3['button'] = Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"])
-        
-        ##shelves save ['text'] -> string of the stuff : Chapter 8 chronicles of narnia,
-        ##and then ['button'] -> Button(pretty much the button to call Game)
-        self.buttons = [self.file1['button'],self.file2['button'],self.file3['button']]
-##        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,self.file1['text'],WHITE,monospace,(30,10)),
-##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-##                               ["changemode(NewGame())"]),
-##                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-##                               ["changemode(NewGame())"]),
-##                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
-##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-##                               ["changemode(NewGame())"])]
-        self.file1.close()
-        self.file2.close()
-        self.file3.close()
+        #sets the button text based on which files have data
+        button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
+        button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
+        button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        #creates buttons
+        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
+                               FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
+                               ["changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
