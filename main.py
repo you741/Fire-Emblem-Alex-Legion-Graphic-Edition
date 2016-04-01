@@ -67,6 +67,12 @@ iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100)
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
+#------------------------------------------------------TESTING STUFF------------------------------------------------------#
+file1 = shelve.open("saves/file1")
+if not file1.get('text'):
+    file1['text'] = "NEW gAME"
+
+#------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
 transBlue = Surface((30,30), SRCALPHA)
@@ -357,20 +363,37 @@ class SaveGame():
 class LoadGame():
     def __init__(self):
         self.stopped = False
-        self.file1 = shelve.open("file1")
-        self.file2 = shelve.open("file2")
-        self.file3 = shelve.open("file3")
-        ##shelves save ['text'] -> NewGame or string,
-        ##and then ['function'] -> NewGame or Game
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+        self.file1 = shelve.open("saves/file1")
+        self.file2 = shelve.open("saves/file2")
+        self.file3 = shelve.open("saves/file3")
+        self.file1['text'] = "New Game"
+        self.file2['text'] = "New Game2"
+        self.file3['text'] = "new gaMe3"
+        self.file1['button'] = Button(500,420,200,50,FilledSurface((200,50),BLUE,self.file1['text'],WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"]),
-                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               ["changemode(NewGame())"])
+        self.file2['button'] = Button(500,480,200,50,FilledSurface((200,50),BLUE,self.file2['text'],WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"]),
-                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+                               ["changemode(NewGame())"])
+        self.file3['button'] = Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
-                               ["changemode(NewGame())"])]
+                               ["changemode(NewGame())"])
+        
+        ##shelves save ['text'] -> string of the stuff : Chapter 8 chronicles of narnia,
+        ##and then ['button'] -> Button(pretty much the button to call Game)
+        self.buttons = [self.file1['button'],self.file2['button'],self.file3['button']]
+##        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,self.file1['text'],WHITE,monospace,(30,10)),
+##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+##                               ["changemode(NewGame())"]),
+##                        Button(500,480,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+##                               ["changemode(NewGame())"]),
+##                        Button(500,540,200,50,FilledSurface((200,50),BLUE,"New Game",WHITE,monospace,(30,10)),
+##                               FilledSurface((200,50),YELLOW,"New Game",BLACK,monospace,(30,10)),
+##                               ["changemode(NewGame())"])]
+        self.file1.close()
+        self.file2.close()
+        self.file3.close()
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
