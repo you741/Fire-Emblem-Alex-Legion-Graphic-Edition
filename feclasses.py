@@ -143,6 +143,19 @@ class Person():
         if self.mast[weapon.typ] >= weapon.mast:
             return True #if we have enough mastery we can equip
         return False #if we do not have enough mastery we cannot equip
+    def removeItem(self,item):
+        "removes an item from the person's item list"
+        if item not in self.items:
+            return False #we cannot remove an item we don't have
+        self.items.remove(item) #remove item
+        if item == self.equip:
+            #if we removed our equipped weapon
+            #we equip a new one
+            self.equip = None
+            for w in [i for i in self.items if type(i) == Weapon]:
+                #tries to equip weapons
+                if person.equipWeapon(w):
+                    break
     def gainExp(self,exp):
         "gains exp, returns whether should level up or not"
         self.exp += exp

@@ -176,82 +176,93 @@ def drawHealthBar(screen,person,x,y):
             hpy += 30
             hpx -= 160
         draw.line(screen,GREEN,(hpx+i*4,hpy),(hpx+i*4,hpy+30),3)
+
+def drawBattleInfo(screen,ally,enemy):
+    "draws all the battle info on the screen"
+    draw.rect(screen,BLUE,(900,220,300,50)) #ally name rectangle
+    draw.rect(screen,RED,(0,220,300,50)) #enemy name rectangle
+    #draws ally and enemy's names
+    screen.blit(sans.render(stripNums(ally.name),True,WHITE),(920,220))
+    screen.blit(sans.render(stripNums(enemy.name),True,WHITE),(50,220))
+    draw.rect(screen,BLUE,(700,600,500,120)) #draws ally health background
+    draw.rect(screen,RED,(0,600,500,120)) #draws enemy health background
+    #draws ally and enemy's health bar
+    drawHealthBar(screen,ally,870,615)
+    drawHealthBar(screen,enemy,170,615)
+    #writes the hp down
+    screen.blit(sans.render(str(ally.hp),True,WHITE),(1032,620))
+    screen.blit(sans.render(str(enemy.hp),True,WHITE),(332,620))
         
-def drawHealthLoss(screen,person,dam,x,y,enemy=True):
+def drawHealthLoss(screen,person,dam,enemy=True):
     "draws a depleting health bar"
     for i in range(dam):
         #for every point of damage we loop and remove it
         if person.hp == 0:
             break
         person.hp -= 1
+        #cover up the health bar so that it doesn't blit on top of itself
         if enemy:
-            draw.rect(screen,RED,(0,600,500,100))
+            draw.rect(screen,RED,(0,600,500,100)) #enemy's covering
+            x,y = 170,615 #sets enemy's health bar coordinates
         else:
-            draw.rect(screen,BLUE,(700,600,500,100))
+            draw.rect(screen,BLUE,(700,600,500,100)) #ally's covering
+            x,y = 870,615
+        #draw health bar and amount of health
         drawHealthBar(screen,person,x,y)
         screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
         display.flip()
         time.wait(50)
         
-
-def singleAttack(screen,person,person2,x,y,hpx,hpy,isenemy,stage):
+def drawFrames(screen,frames):
+    "draws all frames with an FPS of 20"
+    filler = screen.copy().subsurface(Rect(0,0,1200,600))
+    frameLimiter = time.Clock() #limits frames
+    for f in frames:
+        screen.blit(filler,(0,0))
+        screen.blit(f,(0,200)) #blits all frames
+        frameLimiter.tick(20)
+        display.flip()
+        
+def singleAttack(screen,person,person2,isenemy,stage):
     "animates a single attack"
     hit,dam,crit = getAttackResults(person,person2,stage) #gets attack results
     #draws person 2's standing sprite
     screen.blit(person2.anims["stand"],(0,200))
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
+    #sets x and y for the text "MISS" and "NO DAMAGE"
+    x = 725 if isenemy else 25
+    y = 300
     if not crit or not hit:
         #sets to attack animation with weapon
         frames,hitFrame = person.anims[person.equip.typ]
     if crit and hit:
         #sets to critical attack animation
         frames,hitFrame = person.anims[person.equip.typ+"crit"]
-    for i in range(hitFrame):
-        #draws frames up to the hit frame
-        screen.blit(filler,(0,0))
-        screen.blit(frames[i],(0,200))
-        time.wait(50)
-        display.flip()
+    drawFrames(screen,frames[:hitFrame]) #draws frames up tot he hit frame
     if person.equip.anims != None:
         #if the person's weapon has an animation, we draw it
         weapFiller = screen.copy() #weapon filler - only for the weapon
-        for f in person.equip.anims:
-            screen.blit(weapFiller,(0,0))
-            screen.blit(f,(0,200)) #draws all the frames of the equipped weapon's animation
-            display.flip()
-            time.wait(50)
-        screen.blit(weapFiller,(0,0))
+        drawFrames(screen,person.equip.anims) #draws all weapon's animation
+        screen.blit(weapFiller,(0,0)) #covers the weapon's final frame
     if not hit:
-        screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y))
+        screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y)) #writes MISS
         display.flip()
         time.wait(500)
     elif dam == 0:
-        screen.blit(papyrus.render("NO DAMAGE!",True,(0,0,0)),(x,y))
+        screen.blit(papyrus.render("NO DAMAGE!",True,(0,0,0)),(x,y)) #writes NO DAMAGE
         display.flip()
         time.wait(500)
     else:
-        drawHealthLoss(screen,person2,dam,hpx,hpy,isenemy)
-    for i in range(hitFrame,len(frames)):
-        #draws remaining frames for animation
-        screen.blit(filler,(0,0))
-        screen.blit(frames[i],(0,200))
-        time.wait(50)
-        display.flip()
-    screen.blit(filler,(0,0))
-    screen.blit(person.anims["stand"],(0,200)) #draws standing sprite
-    display.flip()
+        drawHealthLoss(screen,person2,dam,not isenemy) #draws the health bar losing health for person2
+    screen.blit(filler,(0,0)) #covers the screen
+    drawFrames(screen,frames[hitFrame:]+[person.anims["stand"]]) #draws all frames with standing frame at the end
     if hit or person.equip.mag:
         #reduces durability if person hits enemy
-        #or if the weapon is magical (they lose durability whether
-        #they hit or not)
+        #or if the weapon is magical (they lose durability whether they hit or not)
         person.equip.dur -= 1
         if person.equip.dur == 0:
-            person.items.remove(person.equip) #removes weapon if destroyed
-            person.equip = None #sets equip to None
-            for w in [item for item in person.items if type(item) == Weapon]:
-                #tries to equip weapons
-                if person.equipWeapon(w):
-                    break
+            #the weapon broke!
+            person.removeItem(person.equip) #removes the weapon
     time.wait(300)
 
 def drawExpGain(ally,expgain,screen):
