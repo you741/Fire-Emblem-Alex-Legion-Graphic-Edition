@@ -109,7 +109,7 @@ allAllies = [] #all allies that exist
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
 
-#important variables for the Game class
+#important variables for the Game class (TO BE CHANGED INTO MEMBERS)
 chapter = 0 #changes when load new/old game, so stays global
 mode = "freemove" #mode Game Mode is in
 goal = ""
@@ -121,56 +121,13 @@ menu = None #options in menu
 menuselect = 0 #option selected in the menu
 framecounter = 0 #counts frames
 filler = Surface((1200,720))
-selectx,selecty = 0,0 #select points
 #----GLOBAL FUNCTIONS----#
-#LIKE TURN STARTING, GAME OVER SCREENS, SAVING
-#PRETTY MUCH GLOBAL AFFECTORS (Sorry I'm really bad at naming things)
-def startTurn():
-    "starts the turn"
-    global allies,enemies,moved,attacked
-    screenBuff = screen.copy() #sets the screenBuffer to cover up the text
-    screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
-    screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-    moved.clear() #empties moved and attacked
-    attacked.clear()
-    display.flip() #updates screen
-    time.wait(1000)
-    screen.blit(screenBuff,(0,0)) #covers up text
-    display.flip()
-def gameOver():
-    "game over screen - might be a class later"
-    for i in range(50):
-        screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
-        display.flip()
-        time.wait(50)
-    screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
-    display.flip()
-def start():
-    "starts a chapter, also serves a restart"
-    global mode,allies,enemies,goal,selectx,selecty
-    selectx,selecty = 0,0
-    newAllies,allyCoords,newenemies,goal,backgroundImage = chapterData[chapter]
-    for a in newAllies:
-        if a not in oldAllies:
-            oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
-            allAllies.append(a.getInstance())
-    enemies = [e.getInstance() for e in newenemies]
-    allies = [a.getInstance() for a in oldAllies]
-    for i in range(len(allyCoords)):
-        global player
-        allies[i].x,allies[i].y = allyCoords[i] #sets all ally coords
-        if allies[i].name.lower() not in usedNames:
-            #player gets it's own variable, so it is special
-            player = allies[i]
-        else:
-            #sets name representing ally to be the new instance
-            exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
-    moved.clear()
-    attacked.clear()
-    mode = "freemove"
-    screen.blit(backgroundImage,(0,0))#draws map background on the screen
-    drawGrid(screen)
-    startTurn()
+def addAlly(ally):
+    "adds an ally to the allies list - updates allAllies and oldAllies too"
+    global oldAllies
+    allies.append(ally) #adds ally to allies
+    oldAllies.append(ally.getInstance())
+    allAllies.append(ally) #adds ally to allAllies
 #----DRAWING FUNCTIONS----#
 def drawItemMenu(person,x,y):
     "draws an item menu for a person"
@@ -189,22 +146,6 @@ def drawItemMenu(person,x,y):
             screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
             screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
-#----USER INTERFACE FUNCTION----#
-def moveSelect():
-    "moves selector"
-    global selectx,selecty
-    kp = key.get_pressed()
-    if kp[K_UP]:
-        selecty -= 1
-    if kp[K_DOWN]:
-        selecty += 1
-    if kp[K_LEFT]:
-        selectx -= 1
-    if kp[K_RIGHT]:
-        selectx += 1
-    if mode in ["freemove","move"]:
-        selectx = min(39,max(0,selectx))
-        selecty = min(23,max(0,selecty))
 #----PERSON ACTIONS----#
 #ATTACK FUNCTIONS
 def checkDead(ally,enemy):
@@ -470,15 +411,13 @@ class NewGame():
         #class select buttons
         self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,monospace,(40,10)),
                                 FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
-                                ["global player,oldAllies",
+                                ["global player",
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
 {'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})
-allies.append(player)
-oldAllies = [a.getInstance() for a in allies] #keeps track of allies before the fight
-allAllies.append(player) #normally the saving would be done withing the PreFight class... but it doesn't exist yet
+addAlly(player)
 """,
                                 "changemode(Game())"])]
     def draw(self,screen):
@@ -560,33 +499,94 @@ allAllies.append(player) #normally the saving would be done withing the PreFight
 class Game():
     def __init__(self):
         "initializes game"
+        self.selectx,self.selecty = 0,0 #select cursor starting point
         self.clickedFrame = framecounter #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
     def draw(self,screen):
         "draws game on screen"
         global filler
-        start()
+        self.start()
         filler = screen.copy() #filler
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
         pass
+    def startTurn(self):
+        "starts the turn"
+        global allies,enemies,moved,attacked
+        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
+        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
+        moved.clear() #empties moved and attacked
+        attacked.clear()
+        display.flip() #updates screen
+        time.wait(1000)
+        screen.blit(screenBuff,(0,0)) #covers up text
+        display.flip()
+    def gameOver(self):
+        "game over screen - might be a class later"
+        for i in range(50):
+            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
+            display.flip()
+            time.wait(50)
+        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
+        display.flip()
+    def start(self):
+        "starts a chapter, also serves a restart"
+        global mode,allies,enemies,goal
+        self.selectx,self.selecty = 0,0
+        newAllies,allyCoords,newenemies,goal,backgroundImage = chapterData[chapter]
+        for a in newAllies:
+            if a not in oldAllies:
+                oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
+                allAllies.append(a.getInstance())
+        enemies = [e.getInstance() for e in newenemies]
+        allies = [a.getInstance() for a in oldAllies]
+        for i in range(len(allyCoords)):
+            global player
+            allies[i].x,allies[i].y = allyCoords[i] #sets all ally coords
+            if allies[i].name.lower() not in usedNames:
+                #player gets it's own variable, so it is special
+                player = allies[i]
+            else:
+                #sets name representing ally to be the new instance
+                exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
+        moved.clear()
+        attacked.clear()
+        mode = "freemove"
+        screen.blit(backgroundImage,(0,0))#draws map background on the screen
+        drawGrid(screen)
+        self.startTurn()
+    def moveSelect(self):
+        "moves selector"
+        kp = key.get_pressed()
+        if kp[K_UP]:
+            self.selecty -= 1
+        if kp[K_DOWN]:
+            self.selecty += 1
+        if kp[K_LEFT]:
+            self.selectx -= 1
+        if kp[K_RIGHT]:
+            self.selectx += 1
+        if mode in ["freemove","move"]:
+            self.selectx = min(39,max(0,self.selectx))
+            self.selecty = min(23,max(0,self.selecty))
     def run(self,screen):
         "runs the game in the running loop"
-        global running,mode,selectx,selecty,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
+        global running,mode,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
                 running = False
             if e.type == KEYDOWN:
                 if mode == "gameover":
-                    start()
+                    self.start()
                     continue
                 kp = key.get_pressed()
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
                 if mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
-                    moveSelect() #handles movements by player
+                    self.moveSelect() #handles movements by player
                     self.clickedFrame = framecounter #sets the clickedFrame to self
                 if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
                     #moves selected menu item
@@ -625,7 +625,7 @@ class Game():
                         selectedEnemy = 0
                     elif selectedEnemy == -1:
                         selectedEnemy = len(attackableEnemies)-1
-                    selectx,selecty = attackableEnemies[selectedEnemy].x,attackableEnemies[selectedEnemy].y
+                    self.selectx,self.selecty = attackableEnemies[selectedEnemy].x,attackableEnemies[selectedEnemy].y
                 #---------Z--------#
                 if e.unicode.lower() == "z":
                     #if the user pressed z
@@ -634,7 +634,7 @@ class Game():
                     if mode == "freemove":
                         for p in allies+enemies:
                             #checks if ally or enemy is clicked
-                            if selectx == p.x and selecty == p.y and p not in moved:
+                            if self.selectx == p.x and self.selecty == p.y and p not in moved:
                                 mode = "move"
                                 selected = p
                                 self.oldx,self.oldy = p.x,p.y #keeps track of ally's position before so that we can backtrace
@@ -657,8 +657,8 @@ class Game():
                     #MOVE MODE
                     elif mode == "move":
                         #moves the unit if it is an ally
-                        if (selectx,selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(selected.x,selected.y)] and selected in allies:
-                            selected.x,selected.y = selectx,selecty
+                        if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(selected.x,selected.y)] and selected in allies:
+                            selected.x,selected.y = self.selectx,self.selecty
                             mode = "optionmenu"
                             menu = []
                             menuselect = 0
@@ -699,7 +699,7 @@ class Game():
                                     mode = "attack"
                                     selected.equipWeapon(selected.items[menuselect])
                                     attackableEnemies = getAttackableEnemies(selected,enemies)
-                                    selectx,selecty = attackableEnemies[0].x,attackableEnemies[0].y
+                                    self.selectx,self.selecty = attackableEnemies[0].x,attackableEnemies[0].y
                                     selectedEnemy = 0
                     elif mode == "attack":
                         #does an attack
@@ -784,13 +784,13 @@ class Game():
                 if e.unicode == " ":
                     #restarts turn
                     #only temporary
-                    startTurn()
+                    self.startTurn()
         #-----END OF EVENT LOOP----#
         if mode == "gameover":
             return 0
         screen.blit(filler,(0,0)) #blits the filler
         if 0 in [player.hp,yoyo.hp] and mode != "gameover":
-            gameOver()
+            self.gameOver()
             mode = "gameover"
             return 0
         kp = key.get_pressed()
@@ -798,14 +798,14 @@ class Game():
         if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%6:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
-            moveSelect()
+            self.moveSelect()
         #--------------------HIGHLIGHTING A PERSON---------------#
         if mode == "freemove":
             for p in allies+enemies:
-                if selectx == p.x and selecty == p.y:
+                if self.selectx == p.x and self.selecty == p.y:
                     #DRAWS PERSON MINI DATA BOX
                     pdbx,pdby = 0,0 #person data box x and y
-                    if selectx < 20 and selecty <= 12:
+                    if self.selectx < 20 and self.selecty <= 12:
                         pdby = 630
                     draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
                     screen.blit(sans.render(stripNums(p.name),True,WHITE),(pdbx+15,pdby+3)) #person's name
@@ -870,23 +870,23 @@ class Game():
         if mode == "freemove":
             tbx,tby = 1020,630 #terrain box x and y
             stage = eval("chapter"+str(chapter))
-            if selectx >= 20:
+            if self.selectx >= 20:
                 tbx = 0
             draw.rect(screen,BLUE,(tbx,tby,180,90))
-            screen.blit(sans.render(stage[selecty][selectx].name,True,WHITE),(tbx+15,tby+3))
+            screen.blit(sans.render(stage[self.selecty][self.selectx].name,True,WHITE),(tbx+15,tby+3))
             draw.rect(screen,(255,230,200),(tbx,tby+30,180,60))
-            screen.blit(sans.render("DEFENSE: "+str(stage[selecty][selectx].adef),True,BLACK),(tbx+15,tby+33))
-            screen.blit(sans.render("AVOID: "+str(stage[selecty][selectx].avo),True,BLACK),(tbx+15,tby+63))
+            screen.blit(sans.render("DEFENSE: "+str(stage[self.selecty][self.selectx].adef),True,BLACK),(tbx+15,tby+33))
+            screen.blit(sans.render("AVOID: "+str(stage[self.selecty][self.selectx].avo),True,BLACK),(tbx+15,tby+63))
         #GOAL DISPLAY BOX
         if mode == "freemove":
             goalx,goaly = 1020,0
-            if selecty <= 12 and selectx >= 20:
+            if self.selecty <= 12 and self.selectx >= 20:
                 goaly = 630
             draw.rect(screen,(50,50,180),(goalx,goaly,180,90))
             screen.blit(smallsans.render(goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
         if mode in ["freemove","move","attack"]:
-            draw.rect(screen,WHITE,(selectx*30,selecty*30,30,30),1) #draws select box
+            draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
         framecounter += 1 #increases frame counter

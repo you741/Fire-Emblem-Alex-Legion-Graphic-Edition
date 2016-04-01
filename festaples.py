@@ -194,7 +194,8 @@ def drawBattleInfo(screen,ally,enemy):
     screen.blit(sans.render(str(enemy.hp),True,WHITE),(332,620))
         
 def drawHealthLoss(screen,person,dam,enemy=True):
-    "draws a depleting health bar"
+    "draws a depleting health bar lowering at 20 FPS"
+    framelimiter = time.Clock() #clock to delay the blitting
     for i in range(dam):
         #for every point of damage we loop and remove it
         if person.hp == 0:
@@ -211,7 +212,7 @@ def drawHealthLoss(screen,person,dam,enemy=True):
         drawHealthBar(screen,person,x,y)
         screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
         display.flip()
-        time.wait(50)
+        framelimiter.tick(20) #lowers health at 20 FPS
         
 def drawFrames(screen,frames):
     "draws all frames with an FPS of 20"
@@ -266,8 +267,9 @@ def singleAttack(screen,person,person2,isenemy,stage):
     time.wait(300)
 
 def drawExpGain(ally,expgain,screen):
-    "draws exp gain (a bar filling up with exp)"
+    "draws exp gain (a bar filling up with exp at 20 FPS)"
     screenBuff = screen.copy()
+    framelimiter = time.Clock() #clock to limit blitting to 20 FPS
     draw.rect(screen,BLUE,(420,330,360,60)) #backdrop for exp bar
     draw.rect(screen,BLACK,(450,345,300,30)) #draws exp bar black (non-filled exp)
     draw.rect(screen,YELLOW,(450,345,int(300*(ally.exp/100)),30)) #draws filled exp
@@ -283,6 +285,6 @@ def drawExpGain(ally,expgain,screen):
         draw.rect(screen,BLACK,(450,345,300,30))
         draw.rect(screen,YELLOW,(450,345,int(300*(appExp/100)),30)) #draws filled exp bar
         screen.blit(sans.render(str(appExp),True,WHITE),(420,340)) #writes exp
-        time.wait(50)
+        framelimiter.tick(20) #ticks the clock to make it 20 FPS
         display.flip()
         
