@@ -71,6 +71,17 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 file1 = shelve.open("saves/file1")
 if not file1.get('display'):
     file1['display'] = "NEW gAME"
+file1 = shelve.open("saves/file1")
+file2 = shelve.open("saves/file2")
+file3 = shelve.open("saves/file3")
+
+file1['Command'] = ["changemode(NewGame())"]
+file2['Command'] = ["changemode(NewGame())"]
+file3['Command'] = ["changemode(NewGame())"]
+
+file1.close()
+file2.close()
+file3.close()
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
@@ -343,13 +354,13 @@ class SaveGame():
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               ["changemode(Game())"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               ["changemode(Game())"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"])]
+                               ["changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
         pass
@@ -385,16 +396,24 @@ class LoadGame():
         button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        
+        button1Commands = self.file1['Command']
+        button2Commands = self.file1['Command']
+        button3Commands = self.file1['Command']
+
+        self.file1.close()
+        self.file2.close()
+        self.file3.close()
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               button1Commands),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               button1Commands),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"])]
+                               button1Commands)]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
@@ -443,7 +462,18 @@ class NewGame():
 {'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})
 addAlly(player)
 """,
-                                "changemode(Game())"])]
+                                "changemode(Game())"]),
+                         Button(300,500,200,50,FilledSurface((200,50),BLUE,"LORD",WHITE,monospace,(40,10)),
+                                FilledSurface((200,50),YELLOW,"LORD",BLACK,monospace,(40,10)),
+                                ["global player",
+                                 """player = Lord(name,0,0,{"lv":1,"hp":18,"maxhp":18,"stren":5,"defen":3,"spd":5,"res":4,"skl":7,"lck":7,"con":5,"move":5},
+{"stren":40,"defen":20,"skl":70,"lck":70,"spd":40,"res":40,"maxhp":60},
+[rapier.getInstance(),iron_bow.getInstance(),vulnerary.getInstance()],
+{"Sword":200},
+{"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})
+addAlly(player)
+""",
+                                 "changemode(Game())"])]
     def draw(self,screen):
         "draws newgame screen"
         screen.fill(BLACK)
@@ -454,6 +484,7 @@ addAlly(player)
         pass
     def run(self,screen):
         "runs new game screen within the running loop"
+    #----this is all for text box----#
         global running,name
         for e in event.get():
             if e.type == QUIT:
