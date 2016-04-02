@@ -129,18 +129,7 @@ allAllies = [] #all allies that exist
 chapter = 0 #changes when load new/old game, so stays global
 mode = "freemove" #mode Game Mode is in
 goal = ""
-<<<<<<< HEAD
-selected = None #selected Person
-selectedItem = None #selected Item
-attackableEnemies = [] #attackable enemies of the selected person
-selectedEnemy = 0 #selected Enemy
-menu = None #options in menu
-menuselect = 0 #option selected in the menu
-framecounter = 0 #counts frames
-filler = Surface((1200,720))
-=======
 
->>>>>>> origin/master
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
