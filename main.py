@@ -68,20 +68,11 @@ iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
-##file1 = shelve.open("saves/file1")
-##if not file1.get('display'):
-##    file1['display'] = "NEW gAME"
-##file1 = shelve.open("saves/file1")
-##file2 = shelve.open("saves/file2")
-##file3 = shelve.open("saves/file3")
-##
-##file1['Command'] = ["changemode(NewGame())"]
-##file2['Command'] = ["changemode(NewGame())"]
-##file3['Command'] = ["changemode(NewGame())"]
-##
-##file1.close()
-##file2.close()
-##file3.close()
+
+file1 = shelve.open("saves/file1")
+file2 = shelve.open("saves/file2")
+file3 = shelve.open("saves/file3")
+
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
@@ -102,7 +93,15 @@ yoyo = Lord("Yoyo",0,0,
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
-               {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite}) #test person
+               {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})#test person
+albert = Mage("Albert",0,0,
+              {"lv":1,"stren":10,"defen":0,"res":4,"hp":20,"maxhp":25},
+              {"stren":40,"defen":20,"skl":70,"lck":70,
+                "spd":40,"res":40,"maxhp":60},
+              [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
+              {'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})#test person for chapter 1
+              
+    
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
@@ -113,11 +112,13 @@ enemies = []
 #----CHAPTERS----#
 #MAPS
 chapter0 = [[plain for i in range(40)] for j in range(24)]
+chapter1 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -125,6 +126,7 @@ allAllies = [] #all allies that exist
 #chapterMusic = [conquest]
 
 #important variables for the Game class
+#chapter is the one that the game will be currently running, not the ones completed
 chapter = 0 #changes when load new/old game, so stays global
 goal = ""
 
@@ -135,16 +137,27 @@ def addAlly(ally):
     allies.append(ally) #adds ally to allies
     oldAllies.append(ally.getInstance())
     allAllies.append(ally) #adds ally to allAllies
+ 
 def load(file):
-    "loads the file into the game"
+    "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies
     if file.get("chapter") == None:
         file["chapter"] = 0 #sets the chapter to be 0 (which is the prologue)
         allAllies = [] #allAllies is blank
+        return 0
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
+        return 1
+def save(file):
+    "saves game into file"
+    global chapter, allAllies
+    print("i entered")
+    file["chapter"] = chapter + 1
+    chapter += 1
+    ##this will need more work here when we need to modify ally list based on chapter
+    file["allAllies"] = allAllies + chapterData[chapter][0]
 #----DRAWING FUNCTIONS----#
 def drawItemMenu(person,x,y,menuselect):
     "draws an item menu for a person"
@@ -330,6 +343,7 @@ class StartMenu():
             b.draw(screen)
 class SaveGame():
     def __init__(self):
+        self.stopped = False
         #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
@@ -338,16 +352,17 @@ class SaveGame():
         button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"]),
+                               ["save(file1)","changemode(Game())"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"]),
+                               ["save(file2)","changemode(Game())"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"])]
+                               ["save(file3)","changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
         pass
@@ -383,20 +398,26 @@ class LoadGame():
         button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
-
-        self.file1.close()
-        self.file2.close()
-        self.file3.close()
+##
+##        #checks to load new or saved game
+##        button1state = "changemode(Game)" if load(self.file1) else "changemode(NewGame)"
+##        button2state = "changemode(Game)" if load(self.file2) else "changemode(NewGame)"
+##        button3state = "changemode(Game)" if load(self.file3) else "changemode(NewGame)"
+##
+##        button1Commands = ["load(file1)",button1state]
+##        button2Commands = ["load(file2)",button2state]
+##        button3Commands = ["load(file3)",button3state]
+##
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               ["load(file1)","changemode(Game)"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
+                               ["load(file2)","changemode(Game)"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"])]
+                               ["load(file3)","changemode(NewGame)"])]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
@@ -568,6 +589,11 @@ class Game():
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
+    def gameVictory(self):
+        "Victory, to continue the storyline"
+        ##whatever animation/dialogue that needs to happen
+        draw.circle(screen,WHITE,(100,100),100)
+        changemode(SaveGame())
     def gameOver(self):
         "game over screen"
         for i in range(50):
@@ -828,7 +854,12 @@ class Game():
                     #restarts turn
                     #only temporary
                     self.startTurn()
+                if e.unicode == "v":
+                    #skips battle for now
+                    self.gameVictory()
         #-----END OF EVENT LOOP----#
+        if self.mode == "gameVictory":
+            return 0
         if self.mode == "gameover":
             return 0
         screen.blit(self.filler,(0,0)) #blits the filler
