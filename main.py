@@ -152,7 +152,7 @@ def save(file):
     file["chapter"] = chapter + 1
     chapter += 1
     ##this will need more work here when we need to modify ally list based on chapter
-    file["allAllies"] = allAllies + chapterData[chapter][0]
+    file["allAllies"] = allAllies
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
