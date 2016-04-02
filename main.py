@@ -144,13 +144,14 @@ def addAlly(ally):
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
-    global chapter
+    global chapter,allAllies
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
+        print(chapter,allAllies)
         changemode(Game())
     file.close()
 def save(file):
@@ -592,9 +593,12 @@ class Game():
         changemode(SaveGame())
     def start(self):
         "starts a chapter, also serves a restart"
-        global allies,enemies
+        global allies,enemies,oldAllies
         self.selectx,self.selecty = 0,0
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
+        if chapter < 99:
+            #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
+            oldAllies += allAllies
         for a in newAllies:
             if a not in oldAllies:
                 oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
