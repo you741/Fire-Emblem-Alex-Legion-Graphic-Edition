@@ -125,9 +125,7 @@ allAllies = [] #all allies that exist
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
 
-#important variables for the Game class (TO BE CHANGED INTO MEMBERS)
 chapter = 0 #changes when load new/old game, so stays global
-mode = "freemove" #mode Game Mode is in
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
@@ -562,6 +560,26 @@ class Game():
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
         pass
+    def startTurn(self):
+        "starts the turn"
+        global allies,enemies,moved,attacked
+        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
+        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
+        moved.clear() #empties moved and attacked
+        attacked.clear()
+        display.flip() #updates screen
+        time.wait(1000)
+        screen.blit(screenBuff,(0,0)) #covers up text
+        display.flip()
+    def gameOver(self):
+        "game over screen - might be a class later"
+        for i in range(50):
+            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
+            display.flip()
+            time.wait(50)
+        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
+        display.flip()
     def start(self):
         "starts a chapter, also serves a restart"
         global mode,allies,enemies,goal
@@ -630,7 +648,6 @@ class Game():
     def run(self,screen):
         "runs the game in the running loop"
         global running,attackableEnemies,chapter
-
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
@@ -640,11 +657,14 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
-
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location for selected player to move to
                     self.moveSelect() #handles movements of the select cursor by player
+                #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
+                if mode in ["freemove","move"]:
+                    #freemove moves freely; move picks a location
+                    self.moveSelect() #handles movements by player
                     self.clickedFrame = framecounter #sets the clickedFrame to self
                 if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
                     #moves selected menu item
@@ -858,7 +878,6 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-
         if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
