@@ -125,10 +125,10 @@ def getBattleStats(person,person2,stage):
         hit,dam,crit = person.getHit(person2,stage),person.getDamage(person2,stage),person.getCritical(person2)
         if person.getAtkSpd() >= person2.getAtkSpd()+4:
             dam = str(dam)
-            dam += "x2" #if we are fast enough to attack twice, we let the player know
+            dam += " x 2" #if we are fast enough to attack twice, we let the player know
     else:
         hit=dam=crit = "--"
-    return [person.name,"HP: "+str(person.hp)+"/"+str(person.maxhp),
+    return [stripNums(person.name),"HP: "+str(person.hp)+"/"+str(person.maxhp),
                    "Hit: "+str(hit),"Dam: "+str(dam),"Crit: "+str(crit),"" if not person.equip else person.equip.name,
                    "" if person.getAdv(person2) == -1 else ("Advantage" if person.getAdv(person2) else "Disadvantage")]
 #----Creation Functions----#
