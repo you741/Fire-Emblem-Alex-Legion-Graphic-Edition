@@ -71,9 +71,9 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 ##file1 = shelve.open("saves/file1")
 ##if not file1.get('display'):
 ##    file1['display'] = "NEW gAME"
-##file1 = shelve.open("saves/file1")
-##file2 = shelve.open("saves/file2")
-##file3 = shelve.open("saves/file3")
+file1 = shelve.open("saves/file1")
+file2 = shelve.open("saves/file2")
+file3 = shelve.open("saves/file3")
 ##
 ##file1['Command'] = ["changemode(NewGame())"]
 ##file2['Command'] = ["changemode(NewGame())"]
@@ -360,15 +360,12 @@ class SaveGame():
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"]),
                                        ["save(file1)","changemode(Game())"]),
                                 Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"]),
                                        ["save(file2)","changemode(Game())"]),
                                 Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"])]
                                        ["save(file3)","changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
@@ -412,15 +409,12 @@ class LoadGame():
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
                                ["load(file1)","changemode(Game)"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
                                ["load(file2)","changemode(Game)"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"])]
                                ["load(file3)","changemode(NewGame)"])]
     def draw(self,screen):
         "draws mode on screen"
