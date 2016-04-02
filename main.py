@@ -159,6 +159,13 @@ def save(file):
     ##this will need more work here when we need to modify ally list based on chapter
     file["allAllies"] = allAllies + chapterData[chapter][0]
 #----DRAWING FUNCTIONS----#
+def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
+    "draws a list of strings as a vertical menu at positions x and y"
+    draw.rect(screen,col,(x*30,y*30,width,height))
+    for i in range(len(menu)):
+        opt = menu[i].title() #option to draw
+        screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
+    draw.rect(screen,WHITE,(x*30,y*30,width,30+menuselect*30),1) #draws a border around the selected option
 def drawItemMenu(person,x,y,menuselect):
     "draws an item menu for a person"
     if x + 8 > 39:
@@ -569,6 +576,7 @@ class Game():
         self.selected = None #selected ally
         self.filler = screen.copy()
         self.moved,self.attacked = set(),set() #sets moved and attacked to be sets
+        self.turn = 1 #turn that it is
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
@@ -602,6 +610,7 @@ class Game():
             time.wait(50)
         screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
         display.flip()
+
     def start(self):
         "starts a chapter, also serves a restart"
         global allies,enemies,goal
@@ -624,10 +633,35 @@ class Game():
                 exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
         self.moved.clear()
         self.attacked.clear()
-        self.mode = "freemove"
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
         drawGrid(screen)
         self.startTurn()
+    def startTurn(self):
+        "starts the turn"
+        global allies,enemies
+        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
+        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
+        self.moved.clear() #empties moved and attacked
+        self.attacked.clear()
+        display.flip() #updates screen
+        time.wait(1000)
+        screen.blit(screenBuff,(0,0)) #covers up text
+        display.flip()
+        self.mode = "freemove" #sets the mode back to freemove
+    def endTurn(self):
+        "ends the turn"
+        #ENEMY'S PHASE GOES HERE - REQUIRES AI
+        self.turn += 1 #increases turn by 1
+        self.startTurn() #starts the turn
+    def gameOver(self):
+        "draws game over screen"
+        for i in range(50):
+            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
+            display.flip()
+            time.wait(50)
+        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
+        display.flip()
     def moveSelect(self):
         "moves selector"
         kp = key.get_pressed()
@@ -673,15 +707,15 @@ class Game():
                     #freemove moves freely; move picks a location
                     self.moveSelect() #handles movements by player
                     self.clickedFrame = self.framecounter #sets the clickedFrame to self
-                if self.mode in ["optionmenu","itemattack","item"]:                    
+                if self.mode in ["optionmenu","itemattack","item","mainmenu"]:                    
                     #moves selected menu item
-                    if self.mode == "optionmenu":
+                    if self.mode in ["optionmenu","mainmenu"]:
                         self.menuselect = self.moveMenuSelect(self.menuselect,len(self.menu))
                     elif self.mode == "item":
                         if self.selectedItem == None:
                             self.menuselect = self.moveMenuSelect(self.menuselect,len(self.selected.items))
                         else:
-                            self.optselected = self.moveMenuSelect(self.optselected,2)
+                            self.optselected = self.moveMenuSelect(self.optselected,2) #item submenu has a limit 2
                     else:
                         self.menuselect = self.moveMenuSelect(self.menuselect,5)
                 if self.mode == "attack":
@@ -723,6 +757,11 @@ class Game():
                                         #we get all attackable squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in encoords]
                                 break#if we are in move mode we constantly fill moveable and attackable squares
+                        else:
+                            #if the user presses a blank spot, we set the mode to main menu
+                            self.mode = "mainmenu"
+                            self.menu = ["end"] #menu has End turn
+                            self.menuselect = 0
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares
@@ -747,6 +786,11 @@ class Game():
                                 self.menu.append("item")
                             #WAIT OPTION
                             self.menu.append("wait") #a person can always wait
+                    #MAIN MENU CLICK
+                    elif self.mode == "mainmenu":
+                        #allows user to select options
+                        if self.menu[self.menuselect] == "end":
+                            self.endTurn() #ends turn
                     #OPTION MENU CLICK
                     elif self.mode == "optionmenu":
                         #allows user to select options
@@ -829,6 +873,8 @@ class Game():
                     #handles backtracing
                     if self.mode == "move":
                         self.mode = "freemove"
+                    elif self.mode == "mainmenu":
+                        self.mode = "freemove"
                     elif self.mode == "optionmenu":
                         self.mode = "move"
                         self.selected.x,self.selected.y = self.oldx,self.oldy
@@ -857,6 +903,7 @@ class Game():
                 if e.unicode == "v":
                     #skips battle for now
                     self.gameVictory()
+=
         #-----END OF EVENT LOOP----#
         if self.mode == "gameVictory":
             return 0
@@ -900,24 +947,41 @@ class Game():
             screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
         for e in enemies:
             screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+        #MAIN MENU MODE DISPLAY
+        if self.mode == "mainmenu":
+            #if it is menu mode we draw the menu
+            menux,menuy = 18,4
+            drawMenu(self.menu,menux,menuy,120,480,self.menuselect) #draws the main menu
         #OPTION MENU MODE DISPLAY
         if self.mode == "optionmenu":
-            #if it is menu mode we draw the menu
             menux,menuy = 36,2
             if self.selected.x >= 20:
                 menux = 0
-            draw.rect(screen,BLUE,(menux*30,menuy*30,120,len(self.menu)*30))
-            for i in range(len(self.menu)):
-                #for every option in menu, we write the text
-                opt = self.menu[i].title()
-                screen.blit(sans.render(opt,True,WHITE),(menux*30,(menuy+i)*30))
-            draw.rect(screen,WHITE,(menux*30,(menuy+self.menuselect)*30,120,30),1) #draws selected option
+            drawMenu(self.menu,menux,menuy,120,len(self.menu)*30,self.menuselect)
         #ATTACK MODE DISPLAY
         if self.mode == "itemattack":
             #displays item selection menu for attack
             drawItemMenu(self.selected,self.selected.x+1,self.selected.y,self.menuselect)
         if self.mode == "attack":
-            fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed) #highlights all attackable squares
+            #highlights all attackable squares
+            fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed)
+            #displays battle stats (such as hit chance, damage, crit)
+            x,y = 25,3
+            if self.selected.x > 20:
+                x = 0 #x goes to left if selected person is on the right
+            draw.rect(screen,BLUE,(x*30,y*30,210,210)) #draws background for ally stats
+            draw.rect(screen,RED,((x+7)*30,y*30,210,210)) #draws background for enemy stats
+            #battle stats from ally's POV
+            #battleStatsMenu has name, HP, hit chance, damage, crit chance, weapon of use and whether the weapon has an advantage or not
+            enemy = self.attackableEnemies[self.selectedEnemy] #the selected enemy
+            #gets battle stats for the selected ally
+            battleStatsMenu = getBattleStats(self.selected,enemy,eval("chapter"+str(chapter)))
+            for i in range(7):
+                screen.blit(sans.render(battleStatsMenu[i],True,WHITE),(x*30,(y+i)*30)) #draws all the options in menu
+            #battle stats from enemy's POV
+            battleStatsMenu = getBattleStats(enemy,self.selected,eval("chapter"+str(chapter)))
+            for i in range(7):
+                screen.blit(sans.render(battleStatsMenu[i],True,WHITE),((x+7)*30,(y+i)*30)) #draws all the options in menu
         #ITEM MODE DISPLAY
         if self.mode == "item":
             screen.blit(transBlack,(0,0))

@@ -118,7 +118,19 @@ def getAttackResults(person,enemy,stage):
             crit = True
             dam *= 3 #damage is tripled
     return (hit,dam,crit) #returns (hit,dam,crit)
-
+def getBattleStats(person,person2,stage):
+    "returns a list of battle stats based on person and person2"
+    if canAttackTarget(person,person2):
+        #only sets stats if ally can hit enemy, otherwise it sets them to "--"
+        hit,dam,crit = person.getHit(person2,stage),person.getDamage(person2,stage),person.getCritical(person2)
+        if person.getAtkSpd() >= person2.getAtkSpd()+4:
+            dam = str(dam)
+            dam += " x 2" #if we are fast enough to attack twice, we let the player know
+    else:
+        hit=dam=crit = "--"
+    return [stripNums(person.name),"HP: "+str(person.hp)+"/"+str(person.maxhp),
+                   "Hit: "+str(hit),"Dam: "+str(dam),"Crit: "+str(crit),"" if not person.equip else person.equip.name,
+                   "" if person.getAdv(person2) == -1 else ("Advantage" if person.getAdv(person2) else "Disadvantage")]
 #----Creation Functions----#
 def createEnemyList(enemies,amounts,coords):
     "takes in a list of enemies, a corresponding list of amounts and a list of coordinates"
