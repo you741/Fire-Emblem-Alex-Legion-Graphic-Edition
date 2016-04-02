@@ -128,19 +128,6 @@ allAllies = [] #all allies that exist
 #important variables for the Game class (TO BE CHANGED INTO MEMBERS)
 chapter = 0 #changes when load new/old game, so stays global
 mode = "freemove" #mode Game Mode is in
-goal = ""
-<<<<<<< HEAD
-selected = None #selected Person
-selectedItem = None #selected Item
-attackableEnemies = [] #attackable enemies of the selected person
-selectedEnemy = 0 #selected Enemy
-menu = None #options in menu
-menuselect = 0 #option selected in the menu
-framecounter = 0 #counts frames
-filler = Surface((1200,720))
-=======
-
->>>>>>> origin/master
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
@@ -565,6 +552,7 @@ class Game():
         self.framecounter = 0 #frame counter
         self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
+        self.goal = "" #goal of the chapter
     def draw(self,screen):
         "draws game on screen"
         global filler
@@ -574,31 +562,6 @@ class Game():
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
         pass
-    def startTurn(self):
-        "starts the turn"
-        global allies,enemies,moved,attacked
-        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
-        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
-        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-        moved.clear() #empties moved and attacked
-        attacked.clear()
-        display.flip() #updates screen
-        time.wait(1000)
-        screen.blit(screenBuff,(0,0)) #covers up text
-        display.flip()
-    def gameVictory(self):
-        "victory screen to continue onwards"
-        print("V")
-        changemode(SaveGame())
-        return 0
-    def gameOver(self):
-        "game over screen - might be a class later"
-        for i in range(50):
-            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
-            display.flip()
-            time.wait(50)
-        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
-        display.flip()
     def start(self):
         "starts a chapter, also serves a restart"
         global mode,allies,enemies,goal
@@ -625,6 +588,31 @@ class Game():
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
         drawGrid(screen)
         self.startTurn()
+    def startTurn(self):
+        "starts the turn"
+        global allies,enemies,moved,attacked
+        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
+        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
+        moved.clear() #empties moved and attacked
+        attacked.clear()
+        display.flip() #updates screen
+        time.wait(1000)
+        screen.blit(screenBuff,(0,0)) #covers up text
+        display.flip()
+    def gameVictory(self):
+        "victory screen to continue onwards"
+        print("V")
+        changemode(SaveGame())
+        return 0
+    def gameOver(self):
+        "game over screen - might be a class later"
+        for i in range(50):
+            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
+            display.flip()
+            time.wait(50)
+        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
+        display.flip()
     def moveSelect(self):
         "moves selector"
         kp = key.get_pressed()
