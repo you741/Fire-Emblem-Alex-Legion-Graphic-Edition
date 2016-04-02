@@ -418,7 +418,7 @@ class LoadGame():
                                ["load(file3)","changemode(NewGame)"])]
     def draw(self,screen):
         "draws mode on screen"
-        screen.fill(BLACK)
+        screen.fill(WHITE)
         pass
     def playMusic(self):
         "plays menu music"
