@@ -102,7 +102,7 @@ yoyo = Lord("Yoyo",0,0,
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
-               {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite}) #test person
+               {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
@@ -235,10 +235,11 @@ def attack(person,person2):
         time.wait(1000)
         return False
     #Draws damage for attack 3
-    screen.blit(actionFiller,(0,0)) #covers both persons
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy):
+        screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,ally,enemy,False,eval("chapter"+str(chapter)))
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally):
+        screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,enemy,ally,True,eval("chapter"+str(chapter)))
     kill = False
     if checkDead(ally,enemy):
@@ -604,6 +605,21 @@ class Game():
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
         "ends the turn"
+        screen.blit(self.filler,(0,0)) #fills the screen
+        #DRAWS PERSONS
+        for a in allies:
+            #draws one of four frames in the map sprite - changes sprites every 60 frames
+            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+        for e in enemies:
+            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+        display.flip()
+        time.wait(500)
+        screenBuff = screen.copy()
+        screen.blit(transform.scale(transRed,(1200,60)),(0,330)) #blits the text "ENEMY PHASE" on a translucent red strip
+        screen.blit(papyrus.render("ENEMY PHASE",True,WHITE),(450,340))
+        display.flip()
+        time.wait(1000)
+        screen.blit(screenBuff,(0,0))
         #ENEMY'S PHASE GOES HERE - REQUIRES AI
         self.turn += 1 #increases turn by 1
         self.startTurn() #starts the turn
@@ -743,6 +759,7 @@ class Game():
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
+                            self.mode = "freemove"
                             self.endTurn() #ends turn
                     #OPTION MENU CLICK
                     elif self.mode == "optionmenu":
