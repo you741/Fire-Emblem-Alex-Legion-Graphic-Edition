@@ -117,7 +117,9 @@ chapter0 = [[plain for i in range(40)] for j in range(24)]
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -126,7 +128,6 @@ allAllies = [] #all allies that exist
 
 #important variables for the Game class
 chapter = 0 #changes when load new/old game, so stays global
-goal = ""
 
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
@@ -360,16 +361,13 @@ class SaveGame():
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"]),
-                                       ["save(file1)","changemode(Game())"]),
+                                       ["save(currmode.file1)","changemode(Game())"]),
                                 Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"]),
-                                       ["save(file2)","changemode(Game())"]),
+                                       ["save(currmode.file2)","changemode(Game())"]),
                                 Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       ["changemode(Game())"])]
-                                       ["save(file3)","changemode(Game())"])]
+                                       ["save(currmode.file3)","changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
         pass
@@ -406,22 +404,16 @@ class LoadGame():
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
 
-        self.file1.close()
-        self.file2.close()
-        self.file3.close()
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
-                               ["load(file1)","changemode(Game)"]),
+                               ["load(currmode.file1)","changemode(Game())"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"]),
-                               ["load(file2)","changemode(Game)"]),
+                               ["load(currmode.file2)","changemode(Game())"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(NewGame())"])]
-                               ["load(file3)","changemode(NewGame)"])]
+                               ["load(currmode.file3)","changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
@@ -577,6 +569,7 @@ class Game():
         self.filler = screen.copy()
         self.moved,self.attacked = set(),set() #sets moved and attacked to be sets
         self.turn = 1 #turn that it is
+        self.goal = ""
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
@@ -592,9 +585,9 @@ class Game():
         changemode(SaveGame())
     def start(self):
         "starts a chapter, also serves a restart"
-        global allies,enemies,goal
+        global allies,enemies
         self.selectx,self.selecty = 0,0
-        newAllies,allyCoords,newenemies,goal,backgroundImage = chapterData[chapter]
+        newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
         for a in newAllies:
             if a not in oldAllies:
                 oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
@@ -1090,7 +1083,7 @@ class Game():
             if self.selecty <= 12 and self.selectx >= 20:
                 goaly = 630
             draw.rect(screen,(50,50,180),(goalx,goaly,180,90))
-            screen.blit(smallsans.render(goal,True,WHITE),(goalx+15,goaly+35))
+            screen.blit(smallsans.render(self.goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
         if self.mode in ["freemove","move","attack"]:
             draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1) #draws select box
