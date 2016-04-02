@@ -129,6 +129,7 @@ allAllies = [] #all allies that exist
 chapter = 0 #changes when load new/old game, so stays global
 mode = "freemove" #mode Game Mode is in
 goal = ""
+<<<<<<< HEAD
 selected = None #selected Person
 selectedItem = None #selected Item
 attackableEnemies = [] #attackable enemies of the selected person
@@ -137,6 +138,9 @@ menu = None #options in menu
 menuselect = 0 #option selected in the menu
 framecounter = 0 #counts frames
 filler = Surface((1200,720))
+=======
+
+>>>>>>> origin/master
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
@@ -558,7 +562,8 @@ class Game():
     def __init__(self):
         "initializes game"
         self.selectx,self.selecty = 0,0 #select cursor starting point
-        self.clickedFrame = framecounter #the frame user clicked (pressed z)
+        self.framecounter = 0 #frame counter
+        self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
     def draw(self,screen):
         "draws game on screen"
@@ -636,7 +641,8 @@ class Game():
             self.selecty = min(23,max(0,self.selecty))
     def run(self,screen):
         "runs the game in the running loop"
-        global running,mode,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
+        global running,attackableEnemies,chapter
+
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
@@ -646,10 +652,11 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
-                #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
-                if mode in ["freemove","move"]:
-                    #freemove moves freely; move picks a location
-                    self.moveSelect() #handles movements by player
+
+                #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
+                if self.mode in ["freemove","move"]:
+                    #freemove moves freely; move picks a location for selected player to move to
+                    self.moveSelect() #handles movements of the select cursor by player
                     self.clickedFrame = framecounter #sets the clickedFrame to self
                 if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
                     #moves selected menu item
@@ -863,7 +870,8 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%6:
+
+        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
@@ -891,9 +899,9 @@ class Game():
         #DRAWS PERSONS
         for a in allies:
             #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%40//10],(a.x*30,a.y*30))
+            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
         for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%40//10],(e.x*30,e.y*30))
+            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
         #OPTION MENU MODE DISPLAY
         if mode == "optionmenu":
             #if it is menu mode we draw the menu
@@ -957,7 +965,7 @@ class Game():
             draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
-        framecounter += 1 #increases frame counter
+        self.framecounter += 1 #increases frame counter
         self.fpsTracker.tick(60) #limits FPS to 60
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
