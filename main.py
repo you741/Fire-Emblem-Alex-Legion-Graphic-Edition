@@ -112,7 +112,7 @@ albert = Mage("Albert",0,0,
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
+                  {"lv":1,"stren":10,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":(brigandAttackSprite,9),"Axecrit":(brigandCritSprite,11),"stand":brigandStandSprite},10)
 enemies = []
@@ -122,10 +122,10 @@ chapter0 = [[plain for i in range(40)] for j in range(24)]
 chapter1 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
 #Stored in tuples
-#(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
+#(gainedAllies,allyCoordinates (all),Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
+chapterData = [([yoyo,albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([yoyo,albert],[(0,1),(0,0),(1,1),(0,2)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -378,6 +378,7 @@ class SaveGame():
                                        ["save(currmode.file3)"])]
     def draw(self,screen):
         "draws mode on screen"
+        screen.fill(BLACK)
         pass
     def playMusic(self):
         "plays menu music"
