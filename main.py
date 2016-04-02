@@ -136,15 +136,25 @@ def addAlly(ally):
     oldAllies.append(ally.getInstance())
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
-    "loads the file into the game"
+    "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies
     if file.get("chapter") == None:
         file["chapter"] = 0 #sets the chapter to be 0 (which is the prologue)
         allAllies = [] #allAllies is blank
+        return 0
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
+        return 1
+def save(file):
+    "saves game into file"
+    global chapter, allAllies
+    print("i entered")
+    file["chapter"] = chapter + 1
+    chapter += 1
+    ##this will need more work here when we need to modify ally list based on chapter
+    file["allAllies"] = allAllies + chapterData[chapter][0]
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
@@ -338,6 +348,7 @@ class StartMenu():
             b.draw(screen)
 class SaveGame():
     def __init__(self):
+        self.stopped = False
         #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
@@ -348,14 +359,17 @@ class SaveGame():
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"]),
-                        Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"]),
-                        Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               ["changemode(Game())"])]
+                                       FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
+                                       ["changemode(Game())"]),
+                                       ["save(file1)","changemode(Game())"]),
+                                Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
+                                       FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
+                                       ["changemode(Game())"]),
+                                       ["save(file2)","changemode(Game())"]),
+                                Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
+                                       FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
+                                       ["changemode(Game())"])]
+                                       ["save(file3)","changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
         pass
@@ -399,12 +413,15 @@ class LoadGame():
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"]),
+                               ["load(file1)","changemode(Game)"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"]),
+                               ["load(file2)","changemode(Game)"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
                                ["changemode(NewGame())"])]
+                               ["load(file3)","changemode(NewGame)"])]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
@@ -568,6 +585,11 @@ class Game():
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
         pass
+    def gameVictory(self):
+        "Victory, to continue the storyline"
+        ##whatever animation/dialogue that needs to happen
+        draw.circle(screen,WHITE,(100,100),100)
+        changemode(SaveGame())
     def start(self):
         "starts a chapter, also serves a restart"
         global allies,enemies,goal
@@ -932,7 +954,12 @@ class Game():
                     elif self.mode == "attack":
                         self.menuselect = 0
                         self.mode = "itemattack"
+                if e.unicode == "v":
+                    #skips battle for now
+                    self.gameVictory()
         #-----END OF EVENT LOOP----#
+        if self.mode == "gameVictory":
+            return 0
         if self.mode == "gameover":
             return 0
         screen.blit(self.filler,(0,0)) #blits the filler

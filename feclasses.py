@@ -154,7 +154,6 @@ class Person():
             self.equip = None
             for w in [i for i in self.items if type(i) == Weapon]:
                 #tries to equip weapons
-                print(w)
                 if self.equipWeapon(w):
                     break
     def gainExp(self,exp):
