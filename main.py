@@ -71,9 +71,6 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 ##file1 = shelve.open("saves/file1")
 ##if not file1.get('display'):
 ##    file1['display'] = "NEW gAME"
-file1 = shelve.open("saves/file1")
-file2 = shelve.open("saves/file2")
-file3 = shelve.open("saves/file3")
 
 ##file1['allAllies'] = []
 ##file2['allAllies'] = []
@@ -144,13 +141,16 @@ def addAlly(ally):
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
-    global chapter,allAllies
+    global chapter,allAllies,oldAllies
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
+        if chapter < 99:
+            #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
+            oldAllies += allAllies
         print(chapter,allAllies)
         changemode(Game())
     file.close()
@@ -589,6 +589,7 @@ class Game():
         pass
     def gameVictory(self):
         "Victory, to continue the storyline"
+        global oldAllies,allies
         ##whatever animation/dialogue that needs to happen
         draw.circle(screen,WHITE,(100,100),100)
         changemode(SaveGame())
@@ -597,9 +598,6 @@ class Game():
         global allies,enemies,oldAllies
         self.selectx,self.selecty = 0,0
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
-        if chapter < 99:
-            #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
-            oldAllies += allAllies
         for a in newAllies:
             if a not in oldAllies:
                 oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
