@@ -68,20 +68,20 @@ iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
-file1 = shelve.open("saves/file1")
-if not file1.get('display'):
-    file1['display'] = "NEW gAME"
-file1 = shelve.open("saves/file1")
-file2 = shelve.open("saves/file2")
-file3 = shelve.open("saves/file3")
-
-file1['Command'] = ["changemode(NewGame())"]
-file2['Command'] = ["changemode(NewGame())"]
-file3['Command'] = ["changemode(NewGame())"]
-
-file1.close()
-file2.close()
-file3.close()
+##file1 = shelve.open("saves/file1")
+##if not file1.get('display'):
+##    file1['display'] = "NEW gAME"
+##file1 = shelve.open("saves/file1")
+##file2 = shelve.open("saves/file2")
+##file3 = shelve.open("saves/file3")
+##
+##file1['Command'] = ["changemode(NewGame())"]
+##file2['Command'] = ["changemode(NewGame())"]
+##file3['Command'] = ["changemode(NewGame())"]
+##
+##file1.close()
+##file2.close()
+##file3.close()
 #------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
@@ -92,7 +92,6 @@ transRed.fill((255,0,0,122))
 transBlack = Surface((1200,720), SRCALPHA)
 transBlack.fill((0,0,0,122))
 #----PERSONS----#
-moved,attacked = set(),set() #sets of allies that already moved or attacked
 #ALLIES
 name = "" #name of player
 usedNames = ["yoyo"] #names the player cannot use
@@ -102,7 +101,7 @@ yoyo = Lord("Yoyo",0,0,
                 "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
-               [rapier.getInstance(),iron_bow.getInstance(),vulnerary.getInstance()],{"Sword":200},
+               [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
                {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite}) #test person
 allies = [] #allies
 #ENEMIES
@@ -125,22 +124,11 @@ allAllies = [] #all allies that exist
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
 
-<<<<<<< HEAD
+#important variables for the Game class
 chapter = 0 #changes when load new/old game, so stays global
-=======
-#important variables for the Game class (TO BE CHANGED INTO MEMBERS)
-chapter = 0 #changes when load new/old game, so stays global
-mode = "freemove" #mode Game Mode is in
 goal = ""
-selected = None #selected Person
-selectedItem = None #selected Item
-attackableEnemies = [] #attackable enemies of the selected person
-selectedEnemy = 0 #selected Enemy
-menu = None #options in menu
-menuselect = 0 #option selected in the menu
 framecounter = 0 #counts frames
-filler = Surface((1200,720))
->>>>>>> parent of f72baed... Made everything more local less global for the Game class
+
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
@@ -159,7 +147,7 @@ def load(file):
         chapter = file["chapter"]
         allAllies = file["allAllies"]
 #----DRAWING FUNCTIONS----#
-def drawItemMenu(person,x,y):
+def drawItemMenu(person,x,y,menuselect):
     "draws an item menu for a person"
     if x + 8 > 39:
         x -= 9
@@ -182,13 +170,9 @@ def checkDead(ally,enemy):
     "checks if an ally or an enemy is dead; also removes ally or enemy from list"
     if ally.hp == 0:
         allies.remove(ally)
-        if ally in moved:
-            moved.remove(ally)
         return True
     if enemy.hp == 0:
         enemies.remove(enemy)
-        if enemy in moved:
-            moved.remove(enemy)
         return True
     return False
 def attack(person,person2):
@@ -345,10 +329,8 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
-##this is the screen where they have the options to save. 
 class SaveGame():
     def __init__(self):
-        self.stopped = False
         #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
@@ -369,7 +351,6 @@ class SaveGame():
                                ["changemode(Game())"])]
     def draw(self,screen):
         "draws mode on screen"
-        screen.fill(BLACK)
         pass
     def playMusic(self):
         "plays menu music"
@@ -403,10 +384,6 @@ class LoadGame():
         button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
-        
-        button1Commands = self.file1['Command']
-        button2Commands = self.file1['Command']
-        button3Commands = self.file1['Command']
 
         self.file1.close()
         self.file2.close()
@@ -414,13 +391,13 @@ class LoadGame():
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               button1Commands),
+                               ["changemode(NewGame())"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               button1Commands),
+                               ["changemode(NewGame())"]),
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               button1Commands)]
+                               ["changemode(NewGame())"])]
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
@@ -475,7 +452,7 @@ addAlly(player)
                                 ["global player",
                                  """player = Lord(name,0,0,{"lv":1,"hp":18,"maxhp":18,"stren":5,"defen":3,"spd":5,"res":4,"skl":7,"lck":7,"con":5,"move":5},
 {"stren":40,"defen":20,"skl":70,"lck":70,"spd":40,"res":40,"maxhp":60},
-[rapier.getInstance(),iron_bow.getInstance(),vulnerary.getInstance()],
+[iron_sword.getInstance(),vulnerary.getInstance()],
 {"Sword":200},
 {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})
 addAlly(player)
@@ -562,36 +539,37 @@ class Game():
     def __init__(self):
         "initializes game"
         self.selectx,self.selecty = 0,0 #select cursor starting point
-        self.framecounter = 0 #frame counter
-        self.clickedFrame = 0 #the frame user clicked (pressed z)
+        self.clickedFrame = framecounter #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
-<<<<<<< HEAD
-        self.goal = "" #goal of the chapter
-=======
->>>>>>> parent of f72baed... Made everything more local less global for the Game class
+        self.mode = "freemove" #mode Game is in
+        self.menuselect = 0 #option in menu selected
+        self.menu = [] #menu for optionmenu mode
+        self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
+        self.selected = None #selected ally
+        self.filler = screen.copy()
+        self.moved,self.attacked = set(),set() #sets moved and attacked to be sets
     def draw(self,screen):
-        "draws game on screen"
-        global filler
+        "draws game on screen - also starts game"
         self.start()
-        filler = screen.copy() #filler
+        self.filler = screen.copy() #filler
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
         pass
     def startTurn(self):
         "starts the turn"
-        global allies,enemies,moved,attacked
+        global allies,enemies
         screenBuff = screen.copy() #sets the screenBuffer to cover up the text
         screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
         screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-        moved.clear() #empties moved and attacked
-        attacked.clear()
+        self.moved.clear() #empties moved and attacked
+        self.attacked.clear()
         display.flip() #updates screen
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
     def gameOver(self):
-        "game over screen - might be a class later"
+        "game over screen"
         for i in range(50):
             screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
             display.flip()
@@ -600,7 +578,7 @@ class Game():
         display.flip()
     def start(self):
         "starts a chapter, also serves a restart"
-        global mode,allies,enemies,goal
+        global allies,enemies,goal
         self.selectx,self.selecty = 0,0
         newAllies,allyCoords,newenemies,goal,backgroundImage = chapterData[chapter]
         for a in newAllies:
@@ -618,37 +596,12 @@ class Game():
             else:
                 #sets name representing ally to be the new instance
                 exec("global "+allies[i].name.lower()+"\n"+allies[i].name.lower()+"=allies[i]")
-        moved.clear()
-        attacked.clear()
-        mode = "freemove"
+        self.moved.clear()
+        self.attacked.clear()
+        self.mode = "freemove"
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
         drawGrid(screen)
         self.startTurn()
-    def startTurn(self):
-        "starts the turn"
-        global allies,enemies,moved,attacked
-        screenBuff = screen.copy() #sets the screenBuffer to cover up the text
-        screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
-        screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-        moved.clear() #empties moved and attacked
-        attacked.clear()
-        display.flip() #updates screen
-        time.wait(1000)
-        screen.blit(screenBuff,(0,0)) #covers up text
-        display.flip()
-    def gameVictory(self):
-        "victory screen to continue onwards"
-        print("V")
-        changemode(SaveGame())
-        return 0
-    def gameOver(self):
-        "game over screen - might be a class later"
-        for i in range(50):
-            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
-            display.flip()
-            time.wait(50)
-        screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
-        display.flip()
     def moveSelect(self):
         "moves selector"
         kp = key.get_pressed()
@@ -660,259 +613,237 @@ class Game():
             self.selectx -= 1
         if kp[K_RIGHT]:
             self.selectx += 1
-        if mode in ["freemove","move"]:
+        if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
+    def moveMenuSelect(self,menuselect,limit):
+        "moves a menu selector and returns new value"
+        #moves self.menuselect up or down
+        kp = key.get_pressed()
+        if kp[K_UP]:
+            menuselect -= 1
+        elif kp[K_DOWN]:
+            menuselect += 1
+        #wraps around if too large or too small
+        if menuselect < 0:
+            menuselect = limit - 1
+        elif menuselect >= limit:
+            menuselect = 0
+        return menuselect
     def run(self,screen):
         "runs the game in the running loop"
-<<<<<<< HEAD
-        global running,attackableEnemies,chapter
-=======
-        global running,mode,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
->>>>>>> parent of f72baed... Made everything more local less global for the Game class
+        global running,framecounter,attackableEnemies,chapter
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
                 running = False
             if e.type == KEYDOWN:
-                if mode == "gameover":
+                if self.mode == "gameover":
                     self.start()
                     continue
                 kp = key.get_pressed()
-<<<<<<< HEAD
-                #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
-                if self.mode in ["freemove","move"]:
-                    #freemove moves freely; move picks a location for selected player to move to
-                    self.moveSelect() #handles movements of the select cursor by player
-=======
->>>>>>> parent of f72baed... Made everything more local less global for the Game class
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
-                if mode in ["freemove","move"]:
+                if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
                     self.moveSelect() #handles movements by player
                     self.clickedFrame = framecounter #sets the clickedFrame to self
-                if mode in ["optionmenu","itemattack"] or (mode == "item" and selectedItem == None):                    
+                if self.mode in ["optionmenu","itemattack","item"]:                    
                     #moves selected menu item
-                    if kp[K_UP]:
-                        menuselect -= 1
-                    elif kp[K_DOWN]:
-                        menuselect += 1
-                    if mode == "optionmenu":
-                        limit = len(menu)
-                    elif mode == "item":
-                        limit = len(selected.items)
+                    if self.mode == "optionmenu":
+                        self.menuselect = self.moveMenuSelect(self.menuselect,len(self.menu))
+                    elif self.mode == "item":
+                        if self.selectedItem == None:
+                            self.menuselect = self.moveMenuSelect(self.menuselect,len(self.selected.items))
+                        else:
+                            self.optselected = self.moveMenuSelect(self.optselected,2)
                     else:
-                        limit = 5
-                    if menuselect < 0:
-                        menuselect = limit - 1
-                    elif menuselect >= limit:
-                        menuselect = 0
-                elif mode == "item" and selectedItem != None:
-                    #if the user is in the submenu for an item, we deal with that
-                    #an item submenu has 2 options in it
-                    if kp[K_UP]:
-                        self.optselected -= 1
-                    elif kp[K_DOWN]:
-                        self.optselected += 1
-                    if self.optselected >= 2:
-                        self.optselected = 0
-                    elif self.optselected < 0:
-                        self.optselected = 1
-                if mode == "attack":
+                        self.menuselect = self.moveMenuSelect(self.menuselect,5)
+                if self.mode == "attack":
                     #changes enemy selected
                     if kp[K_RIGHT] or kp[K_DOWN]:
-                        selectedEnemy += 1
+                        self.selectedEnemy += 1
                     if kp[K_LEFT] or kp[K_UP]:
-                        selectedEnemy -= 1
-                    if selectedEnemy == len(attackableEnemies):
-                        selectedEnemy = 0
-                    elif selectedEnemy == -1:
-                        selectedEnemy = len(attackableEnemies)-1
-                    self.selectx,self.selecty = attackableEnemies[selectedEnemy].x,attackableEnemies[selectedEnemy].y
+                        self.selectedEnemy -= 1
+                    if self.selectedEnemy == len(attackableEnemies):
+                        self.selectedEnemy = 0
+                    elif self.selectedEnemy == -1:
+                        self.selectedEnemy = len(attackableEnemies)-1
+                    self.selectx,self.selecty = attackableEnemies[self.selectedEnemy].x,attackableEnemies[self.selectedEnemy].y
                 #---------Z--------#
                 if e.unicode.lower() == "z":
                     #if the user pressed z
                     #handles clicks
                     #FREE MOVE MODE
-                    if mode == "freemove":
+                    if self.mode == "freemove":
                         for p in allies+enemies:
                             #checks if ally or enemy is clicked
-                            if self.selectx == p.x and self.selecty == p.y and p not in moved:
-                                mode = "move"
-                                selected = p
+                            if self.selectx == p.x and self.selecty == p.y and p not in self.moved:
+                                self.mode = "move"
+                                self.selected = p
                                 self.oldx,self.oldy = p.x,p.y #keeps track of ally's position before so that we can backtrace
                                 acoords = [(a.x,a.y) for a in allies]
                                 encoords = [(e.x,e.y) for e in enemies]
-                                if selected in allies:
+                                if p in allies:
                                     #we get movements below
-                                    self.moveableSquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),acoords,encoords,{})
+                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,eval("chapter"+str(chapter)),acoords,encoords,{})
                                     self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackables squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in acoords]
-                                elif selected in enemies:
-                                    self.moveableSquares = getMoves(selected,selected.x,selected.y,selected.move,eval("chapter"+str(chapter)),encoords,acoords,{})
+                                elif p in enemies:
+                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,eval("chapter"+str(chapter)),encoords,acoords,{})
                                     self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackable squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in encoords]
-                                break#if we are in move mode we consistently fill moveable and attackable squares
+                                break#if we are in move mode we constantly fill moveable and attackable squares
                     #MOVE MODE
-                    elif mode == "move":
-                        #moves the unit if it is an ally
-                        if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(selected.x,selected.y)] and selected in allies:
-                            selected.x,selected.y = self.selectx,self.selecty
-                            mode = "optionmenu"
-                            menu = []
-                            menuselect = 0
+                    elif self.mode == "move":
+                        #moves the unit if it is an ally and within the moveable squares
+                        if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
+                            self.selected.x,self.selected.y = self.selectx,self.selecty
+                            self.mode = "optionmenu"
+                            self.menu = []
+                            self.menuselect = 0
                             #----Menu Creation
                             #ATTACK OPTION
-                            if not (selected in attacked or selected.equip == None):
-                                for w in [i for i in selected.items if type(i) == Weapon]:
+                            if not (self.selected in self.attacked or self.selected.equip == None):
+                                for w in [i for i in self.selected.items if type(i) == Weapon]:
                                     #checks every weapon if one yields in an attack we equip it and add attack
-                                    if not selected.canEquip(w):
+                                    if not self.selected.canEquip(w):
                                         continue
-                                    if len(getAttackableEnemies(selected,enemies,weapon=w)) > 0:
-                                        selected.equipWeapon(w)
-                                        menu.append("attack")
+                                    if len(getAttackableEnemies(self.selected,enemies,weapon=w)) > 0:
+                                        self.selected.equipWeapon(w)
+                                        self.menu.append("attack")
                                         break
                             #ITEM OPTION
-                            if len(selected.items) > 0:
-                                menu.append("item")
+                            if len(self.selected.items) > 0:
+                                self.menu.append("item")
                             #WAIT OPTION
-                            menu.append("wait") #person can always wait
+                            self.menu.append("wait") #a person can always wait
                     #OPTION MENU CLICK
-                    elif mode == "optionmenu":
+                    elif self.mode == "optionmenu":
                         #allows user to select options
-                        if menu[menuselect] == "attack":
-                            mode = "itemattack"
-                            menuselect = 0
-                        if menu[menuselect] == "item":
-                            mode = "item"
-                            menuselect = 0
-                        if menu[menuselect] == "wait":
-                            mode = "freemove"
-                            moved.add(selected)
-                            attacked.add(selected)
+                        if self.menu[self.menuselect] == "attack":
+                            self.mode = "itemattack"
+                            self.menuselect = 0
+                        if self.menu[self.menuselect] == "item":
+                            self.mode = "item"
+                            self.menuselect = 0
+                        if self.menu[self.menuselect] == "wait":
+                            self.mode = "freemove"
+                            self.moved.add(self.selected)
+                            self.attacked.add(self.selected)
                     #ATTACK CLICKS
-                    elif mode == "itemattack":
-                        if menuselect < len(selected.items):
-                            if type(selected.items[menuselect]) == Weapon:
-                                if selected.canEquip(selected.items[menuselect]) and getAttackableEnemies(selected,enemies,weapon=selected.items[menuselect]):
-                                    mode = "attack"
-                                    selected.equipWeapon(selected.items[menuselect])
-                                    attackableEnemies = getAttackableEnemies(selected,enemies)
+                    elif self.mode == "itemattack":
+                        if self.menuselect < len(self.selected.items):
+                            if type(self.selected.items[self.menuselect]) == Weapon:
+                                if self.selected.canEquip(self.selected.items[self.menuselect]) and getAttackableEnemies(self.selected,enemies,weapon=self.selected.items[self.menuselect]):
+                                    self.mode = "attack"
+                                    self.selected.equipWeapon(self.selected.items[self.menuselect])
+                                    attackableEnemies = getAttackableEnemies(self.selected,enemies)
                                     self.selectx,self.selecty = attackableEnemies[0].x,attackableEnemies[0].y
-                                    selectedEnemy = 0
-                    elif mode == "attack":
+                                    self.selectedEnemy = 0
+                    elif self.mode == "attack":
                         #does an attack
-                        attack(selected,attackableEnemies[selectedEnemy])
-                        attacked.add(selected)
-                        moved.add(selected)
-                        mode = "freemove"
+                        attack(self.selected,attackableEnemies[self.selectedEnemy])
+                        self.attacked.add(self.selected)
+                        self.moved.add(self.selected)
+                        self.mode = "freemove"
                     #ITEM MODE CLICK
-                    elif mode == "item":
+                    elif self.mode == "item":
                         #handles item selection
-                        if selectedItem == None:
+                        if self.selectedItem == None:
                             #selects an item and creates a submenu
                             self.optselected = 0 #option selected for the submenu
-                            selectedItem = selected.items[menuselect]
-                        elif type(selectedItem) == Weapon:
+                            self.selectedItem = self.selected.items[self.menuselect]
+                        elif type(self.selectedItem) == Weapon:
                             #if a weapon is selected, we check whether user equips or discards
                             #0 is equip, 1 is discard
                             if self.optselected:
                                 #discard option
-                                selected.removeItem(selectedItem) #removes selectedItem from items
+                                self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             else:
                                 #equip option
-                                selected.equipWeapon(selectedItem) #tries to equip
-                            selectedItem = None #resets selectedItem
-                            if selected.equip == None:
+                                self.selected.equipWeapon(self.selectedItem) #tries to equip
+                            self.selectedItem = None #resets self.selectedItem
+                            if self.selected.equip == None:
                                 #if we have no equipped item we remove the attack option from menu
-                                if "attack" in menu:
-                                    menu.remove("attack")
+                                if "attack" in self.menu:
+                                    self.menu.remove("attack")
                                 #we also empty attackableSquares
                                 self.attackableSquares = []
-                        elif type(selectedItem) == Consumable:
+                        elif type(self.selectedItem) == Consumable:
                             #if a consumable is a selected, we check whehther uses or discards
                             #0 is use, 1 is discard
                             if self.optselected:
                                 #discard option
-                                selected.removeItem(selectedItem) #removes selectedItem from items
+                                self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             else:
                                 #use option
-                                if not selectedItem.use(selected):
+                                if not self.selectedItem.use(self.selected):
                                     #uses consumable
                                     #if it breaks we remove it
-                                    selected.removeItem(selectedItem) #removes selectedItem from items
-                                moved.add(selected) #unit must wait after using a consumable
-                                attacked.add(selected)
-                                self.oldx,self.oldy = selected.x,selected.y #no moving back after using a consumable
+                                    self.selected.removeItem(self.selectedItem) #removes selectedItem from items
+                                self.moved.add(self.selected) #unit must wait after using a consumable
+                                self.attacked.add(self.selected)
+                                self.oldx,self.oldy = self.selected.x,self.selected.y #no moving back after using a consumable
                                 self.moveableSquares,self.attackableSquares = [],[] #empties moveablesquares
-                                mode = "optionmenu"
-                                menuselect = 0
-                            selectedItem = None #resets selectedItem
-                        if len(selected.items) == 0:
+                                self.mode = "optionmenu"
+                                self.menuselect = 0
+                            self.selectedItem = None #resets selectedItem
+                        if len(self.selected.items) == 0:
                             #if we have no items left, we go back to option menu and remove items from the list
-                            menu.remove("item")
-                            mode = "optionmenu"
-                            menuselect = 0
+                            self.menu.remove("item")
+                            self.mode = "optionmenu"
+                            self.menuselect = 0
                 #------X------#
                 if e.unicode.lower() == "x":
                     #if the user pressed x
                     #handles backtracing
-                    if mode == "move":
-                        mode = "freemove"
-                    elif mode == "optionmenu":
-                        mode = "move"
-                        selected.x,selected.y = self.oldx,self.oldy
+                    if self.mode == "move":
+                        self.mode = "freemove"
+                    elif self.mode == "optionmenu":
+                        self.mode = "move"
+                        self.selected.x,self.selected.y = self.oldx,self.oldy
                         if self.moveableSquares == []:
-                            mode = "freemove" #we go back to freemove mode if we have no moveablesquares
-                    elif mode == "itemattack":
-                        mode = "optionmenu"
-                        menuselect = 0
-                    elif mode == "item":
-                        if selectedItem != None:
+                            self.mode = "freemove" #we go back to freemove mode if we have no moveablesquares
+                    elif self.mode == "itemattack":
+                        self.mode = "optionmenu"
+                        self.menuselect = 0
+                    elif self.mode == "item":
+                        if self.selectedItem != None:
                             #if we have a selected Item
                             #we have a submenu, so we close that instead
-                            mode = "item"
-                            selectedItem = None
+                            self.mode = "item"
+                            self.selectedItem = None
                         else:
-                            mode = "optionmenu"
-                            menuselect = 0
-                    elif mode == "attack":
-                        menuselect = 0
-                        mode = "itemattack"
+                            self.mode = "optionmenu"
+                            self.menuselect = 0
+                    elif self.mode == "attack":
+                        self.menuselect = 0
+                        self.mode = "itemattack"
 
                 if e.unicode == " ":
                     #restarts turn
                     #only temporary
                     self.startTurn()
-                if e.unicode == "v":
-                    #continues to load game
-                    #temporary
-                    print("v")
-                    self.gameVictory()
         #-----END OF EVENT LOOP----#
-        if mode == "gameover":
+        if self.mode == "gameover":
             return 0
-        screen.blit(filler,(0,0)) #blits the filler
-        if 0 in [player.hp,yoyo.hp] and mode != "gameover":
+        screen.blit(self.filler,(0,0)) #blits the filler
+        if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
             self.gameOver()
-            mode = "gameover"
+            self.mode = "gameover"
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-<<<<<<< HEAD
-        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
-=======
-        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%6:
->>>>>>> parent of f72baed... Made everything more local less global for the Game class
+        if framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not framecounter%6:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
         #--------------------HIGHLIGHTING A PERSON---------------#
-        if mode == "freemove":
+        if self.mode == "freemove":
             for p in allies+enemies:
                 if self.selectx == p.x and self.selecty == p.y:
                     #DRAWS PERSON MINI DATA BOX
@@ -927,50 +858,50 @@ class Game():
                     break
         #---------------DIFFERENT MODE DISPLAYS------------------#
         #MOVE MODE DISPLAY
-        if mode == "move":
+        if self.mode == "move":
             #fills moveable and attackable squares
-            fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(selected.x,selected.y)]),transBlue)
+            fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
             if self.attackableSquares:
                 fillSquares(screen,self.attackableSquares,transRed)
         #DRAWS PERSONS
         for a in allies:
             #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%40//10],(a.x*30,a.y*30))
         for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%40//10],(e.x*30,e.y*30))
         #OPTION MENU MODE DISPLAY
-        if mode == "optionmenu":
+        if self.mode == "optionmenu":
             #if it is menu mode we draw the menu
             menux,menuy = 36,2
-            if selected.x >= 20:
+            if self.selected.x >= 20:
                 menux = 0
-            draw.rect(screen,BLUE,(menux*30,menuy*30,120,len(menu)*30))
-            for i in range(len(menu)):
+            draw.rect(screen,BLUE,(menux*30,menuy*30,120,len(self.menu)*30))
+            for i in range(len(self.menu)):
                 #for every option in menu, we write the text
-                opt = menu[i].title()
+                opt = self.menu[i].title()
                 screen.blit(sans.render(opt,True,WHITE),(menux*30,(menuy+i)*30))
-            draw.rect(screen,WHITE,(menux*30,(menuy+menuselect)*30,120,30),1) #draws selected option
+            draw.rect(screen,WHITE,(menux*30,(menuy+self.menuselect)*30,120,30),1) #draws selected option
         #ATTACK MODE DISPLAY
-        if mode == "itemattack":
+        if self.mode == "itemattack":
             #displays item selection menu for attack
-            drawItemMenu(selected,selected.x+1,selected.y)
-        if mode == "attack":
-            fillSquares(screen,getAttackableSquares(selected.equip.rnge,selected.equip.maxrnge,selected.x,selected.y),transRed) #highlights all attackable squares
+            drawItemMenu(self.selected,self.selected.x+1,self.selected.y,self.menuselect)
+        if self.mode == "attack":
+            fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed) #highlights all attackable squares
         #ITEM MODE DISPLAY
-        if mode == "item":
+        if self.mode == "item":
             screen.blit(transBlack,(0,0))
-            drawItemMenu(selected,14,8)
-            if selectedItem != None:
+            drawItemMenu(self.selected,14,8,self.menuselect)
+            if self.selectedItem != None:
                 #if we have a selected Item we draw the submenu
-                if type(selectedItem) == Weapon:
-                    if selected.canEquip(selectedItem):
+                if type(self.selectedItem) == Weapon:
+                    if self.selected.canEquip(self.selectedItem):
                         col = GREEN #color to write "Equip" with
                         #green means can, grey means can't
                     else:
                         col = GREY
                     #options user can choose for the selected item
                     options = ["Equip","Discard"] #weapons can be equipped or discarded
-                if type(selectedItem) == Consumable:
+                if type(self.selectedItem) == Consumable:
                     col = GREEN
                     options = ["Use","Discard"] #consumables can be used or discarded
                 draw.rect(screen,BLUE,(22*30,8*30,120,len(options)*30)) #draws submenu backdrop for item
@@ -979,7 +910,7 @@ class Game():
                 draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
-        if mode == "freemove":
+        if self.mode == "freemove":
             tbx,tby = 1020,630 #terrain box x and y
             stage = eval("chapter"+str(chapter))
             if self.selectx >= 20:
@@ -990,18 +921,17 @@ class Game():
             screen.blit(sans.render("DEFENSE: "+str(stage[self.selecty][self.selectx].adef),True,BLACK),(tbx+15,tby+33))
             screen.blit(sans.render("AVOID: "+str(stage[self.selecty][self.selectx].avo),True,BLACK),(tbx+15,tby+63))
         #GOAL DISPLAY BOX
-        if mode == "freemove":
             goalx,goaly = 1020,0
             if self.selecty <= 12 and self.selectx >= 20:
                 goaly = 630
             draw.rect(screen,(50,50,180),(goalx,goaly,180,90))
             screen.blit(smallsans.render(goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
-        if mode in ["freemove","move","attack"]:
+        if self.mode in ["freemove","move","attack"]:
             draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
-        self.framecounter += 1 #increases frame counter
+        framecounter += 1 #increases frame counter
         self.fpsTracker.tick(60) #limits FPS to 60
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
