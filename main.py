@@ -74,11 +74,10 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 file1 = shelve.open("saves/file1")
 file2 = shelve.open("saves/file2")
 file3 = shelve.open("saves/file3")
-##
-##file1['Command'] = ["changemode(NewGame())"]
-##file2['Command'] = ["changemode(NewGame())"]
-##file3['Command'] = ["changemode(NewGame())"]
-##
+
+##file1['allAllies'] = []
+##file2['allAllies'] = []
+##file3['allAllies'] = None
 ##file1.close()
 ##file2.close()
 ##file3.close()
@@ -141,12 +140,10 @@ def load(file):
     if file.get("chapter") == None:
         file["chapter"] = 0 #sets the chapter to be 0 (which is the prologue)
         allAllies = [] #allAllies is blank
-        return 0
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
-        return 1
 def save(file):
     "saves game into file"
     global chapter, allAllies
@@ -395,17 +392,11 @@ class LoadGame():
     def __init__(self):
         self.stopped = False
         #Loads files
-        self.file1 = shelve.open("saves/file1")
-        self.file2 = shelve.open("saves/file2")
-        self.file3 = shelve.open("saves/file3")
         #sets the button text based on which files have data
-        button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
-        button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
-        button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        button1Text = "--NO DATA--" if file1.get("chapter") == None else "Chapter: "+str(file1.get("chapter"))
+        button2Text = "--NO DATA--" if file2.get("chapter") == None else "Chapter: "+str(file2.get("chapter"))
+        button3Text = "--NO DATA--" if file3.get("chapter") == None else "Chapter: "+str(file3.get("chapter"))
 
-        self.file1.close()
-        self.file2.close()
-        self.file3.close()
         #creates buttons
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
