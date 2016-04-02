@@ -886,7 +886,25 @@ class Game():
             #displays item selection menu for attack
             drawItemMenu(self.selected,self.selected.x+1,self.selected.y,self.menuselect)
         if self.mode == "attack":
-            fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed) #highlights all attackable squares
+            #highlights all attackable squares
+            fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed)
+            #displays battle stats (such as hit chance, damage, crit)
+            x,y = 25,3
+            if self.selected.x > 20:
+                x = 0 #x goes to left if selected person is on the right
+            draw.rect(screen,BLUE,(x*30,y*30,210,210)) #draws background for ally stats
+            draw.rect(screen,RED,((x+7)*30,y*30,210,210)) #draws background for enemy stats
+            #battle stats from ally's POV
+            #battleStatsMenu has name, HP, hit chance, damage, crit chance, weapon of use and whether the weapon has an advantage or not
+            enemy = self.attackableEnemies[self.selectedEnemy] #the selected enemy
+            #gets battle stats for the selected ally
+            battleStatsMenu = getBattleStats(self.selected,enemy,eval("chapter"+str(chapter)))
+            for i in range(7):
+                screen.blit(sans.render(battleStatsMenu[i],True,WHITE),(x*30,(y+i)*30)) #draws all the options in menu
+            #battle stats from enemy's POV
+            battleStatsMenu = getBattleStats(enemy,self.selected,eval("chapter"+str(chapter)))
+            for i in range(7):
+                screen.blit(sans.render(battleStatsMenu[i],True,WHITE),((x+7)*30,(y+i)*30)) #draws all the options in menu
         #ITEM MODE DISPLAY
         if self.mode == "item":
             screen.blit(transBlack,(0,0))
