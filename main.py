@@ -554,6 +554,9 @@ class Game():
         self.menu = [] #menu for optionmenu mode
         self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
         self.selected = None #selected ally
+        self.selected2 = None #2nd selected ally - only for trading option
+        self.selectedAlly = 0 #2nd selected ally that user is hovering over - only for trading option and healing option
+        self.targetableAllies = [] #targetable allies
         self.filler = screen.copy()
         self.moved,self.attacked = set(),set() #sets moved and attacked to be sets
         self.turn = 1 #turn that it is
@@ -671,7 +674,7 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
-                #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
+                #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
                     self.moveSelect() #handles movements by player
@@ -698,6 +701,25 @@ class Game():
                     elif self.selectedEnemy == -1:
                         self.selectedEnemy = len(self.attackableEnemies)-1
                     self.selectx,self.selecty = self.attackableEnemies[self.selectedEnemy].x,self.attackableEnemies[self.selectedEnemy].y
+                if self.mode in ["trade","heal"] and self.selected2 == None:
+                    if kp[K_RIGHT] or kp[K_DOWN]:
+                        self.selectedAlly += 1
+                    if kp[K_LEFT] or kp[K_UP]:
+                        self.selectedAlly -= 1
+                    if self.selectedAlly == len(self.targetableAllies):
+                        self.selectedAlly = 0
+                    elif self.selectedAlly == -1:
+                        self.selectedAlly = len(self.targetableAllies)-1
+                elif self.mode == "trade":
+                    #if we have a selected2 we move the item selector instead
+                    #horizontal movement of item selector across two allies
+                    if kp[K_RIGHT]:
+                        self.menuselect[0] = 1
+                    elif kp[K_LEFT]:
+                        self.menuselect[0] = 0
+                    #vertical movement within the item menu
+                    selectedAllies = [self.selected,self.selected2] #the selected allies
+                    self.menuselect[1] = self.moveMenuSelect(self.menuselect[1],5)
                 #---------Z--------#
                 if e.unicode.lower() == "z":
                     #if the user pressed z
@@ -753,6 +775,9 @@ class Game():
                             #ITEM OPTION
                             if len(self.selected.items) > 0:
                                 self.menu.append("item")
+                            #TRADE OPTION
+                            if len(getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)) > 0:
+                                self.menu.append("trade") #we can only trade if we have targetable allies within range 1
                             #WAIT OPTION
                             self.menu.append("wait") #a person can always wait
                     #MAIN MENU CLICK
@@ -767,10 +792,14 @@ class Game():
                         if self.menu[self.menuselect] == "attack":
                             self.mode = "itemattack"
                             self.menuselect = 0
-                        if self.menu[self.menuselect] == "item":
+                        elif self.menu[self.menuselect] == "item":
                             self.mode = "item"
                             self.menuselect = 0
-                        if self.menu[self.menuselect] == "wait":
+                        elif self.menu[self.menuselect] == "trade":
+                            self.mode = "trade"
+                            self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
+                            self.menuselect = [0,0] #menuselect becomes a list, first element is the selected person, second is the selected item
+                        elif self.menu[self.menuselect] == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
                             self.attacked.add(self.selected)
@@ -837,6 +866,34 @@ class Game():
                             self.menu.remove("item")
                             self.mode = "optionmenu"
                             self.menuselect = 0
+                    #TRADE MODE CLICK
+                    elif self.mode == "trade":
+                        if self.selected2 == None:
+                            #if there is self.selected2, we set one
+                            self.selected2 = self.targetableAllies[self.selectedAlly]
+                        else:
+                            #otherwise we select an item
+                            if self.selectedItem == None:
+                                #if we have no selectedItem we set one
+                                self.selectedItem = self.menuselect[:]
+                            else:
+                                #if we have a selected item, we commence the trade
+                                selectedAllies = [self.selected,self.selected2] #selected allies
+                                selectedItem1 = selectedItem2 = None #the default selected Item is None
+                                if self.selectedItem[1] < len(selectedAllies[self.selectedItem[0]].items):
+                                    #1st item is in range and is not None, then we give it to the other selected ally
+                                    selectedItem1 = selectedAllies[self.selectedItem[0]].items[self.selectedItem[1]] #first selected item
+                                if self.menuselect[1] < len(selectedAllies[self.menuselect[0]].items):
+                                    #2nd item is in range and is not None, then we give it to the other selected ally
+                                    selectedItem2 = selectedAllies[self.menuselect[0]].items[self.menuselect[1]] #second selected item
+                                if selectedItem1 != None:
+                                    selectedAllies[self.selectedItem[0]].removeItem(selectedItem1) #removes first item
+                                    selectedAllies[self.menuselect[0]].addItem(selectedItem1) #appends 1st item to second ally
+                                if selectedItem2 != None:
+                                    selectedAllies[self.menuselect[0]].removeItem(selectedItem2) #removes second item
+                                    selectedAllies[self.selectedItem[0]].addItem(selectedItem2) #appends 2nd item to first ally
+                                self.selectedItem = None #resets selectedItem
+
                 #------X------#
                 if e.unicode.lower() == "x":
                     #if the user pressed x
@@ -862,6 +919,16 @@ class Game():
                         else:
                             self.mode = "optionmenu"
                             self.menuselect = 0
+                    elif self.mode == "trade":
+                        if self.selected2 == None:
+                            self.mode = "optionmenu"
+                            self.menuselect = 0
+                        else:
+                            if self.selectedItem == None:
+                                self.selected2 = None #if there exists selected2, that means the trade interface is open, so we close that
+                            else:
+                                #however if there is a selected item, we instead deselect it
+                                self.selectedItem = None
                     elif self.mode == "attack":
                         self.menuselect = 0
                         self.mode = "itemattack"
@@ -898,7 +965,7 @@ class Game():
         if self.mode == "move":
             #fills moveable and attackable squares
             fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
-            if self.attackableSquares:
+            if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
         #DRAWS PERSONS
         for a in allies:
@@ -959,6 +1026,26 @@ class Game():
                 screen.blit(sans.render(options[0],True,col),(22*30,8*30)) #draws first option
                 screen.blit(sans.render(options[1],True,WHITE),(22*30,9*30)) #draws discard option
                 draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
+        #TRADE MODE DISPLAY
+        if self.mode == "trade":
+            if self.selected2 == None:
+                #if we have no 2nd selected ally, we draw the selector around the 2nd selected ally
+                highlightedAlly = self.targetableAllies[self.selectedAlly] #highlighted ally
+                draw.rect(screen,WHITE,(highlightedAlly.x,highlightedAlly.y,30,30),1) #draws selector around highlighted ally
+            else:
+                screen.fill(GREEN) #fills the screen with green
+                #draws item menu for both allies
+                #first we set which item selected out of the two menus
+                #this is based on which ally the selector is on
+                #which is determined by the first element of menuselect
+                menuselect1 = -20 if self.menuselect[0] else self.menuselect[1]
+                menuselect2 = -20 if not self.menuselect[0] else self.menuselect[1]
+                                                                                
+                drawItemMenu(self.selected,8,9,menuselect1)
+                drawItemMenu(self.selected2,24,9,menuselect2)
+                if self.selectedItem != None:
+                    #if the selected Item isn't none, we draw the cursor
+                    draw.rect(screen,WHITE,((8+self.selectedItem[0]*16)*30,(9+self.selectedItem[1])*30,240,30),1)
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
         if self.mode == "freemove":
