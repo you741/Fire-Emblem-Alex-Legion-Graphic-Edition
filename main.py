@@ -125,7 +125,22 @@ allAllies = [] #all allies that exist
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
 
+<<<<<<< HEAD
 chapter = 0 #changes when load new/old game, so stays global
+=======
+#important variables for the Game class (TO BE CHANGED INTO MEMBERS)
+chapter = 0 #changes when load new/old game, so stays global
+mode = "freemove" #mode Game Mode is in
+goal = ""
+selected = None #selected Person
+selectedItem = None #selected Item
+attackableEnemies = [] #attackable enemies of the selected person
+selectedEnemy = 0 #selected Enemy
+menu = None #options in menu
+menuselect = 0 #option selected in the menu
+framecounter = 0 #counts frames
+filler = Surface((1200,720))
+>>>>>>> parent of f72baed... Made everything more local less global for the Game class
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
@@ -550,7 +565,10 @@ class Game():
         self.framecounter = 0 #frame counter
         self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
+<<<<<<< HEAD
         self.goal = "" #goal of the chapter
+=======
+>>>>>>> parent of f72baed... Made everything more local less global for the Game class
     def draw(self,screen):
         "draws game on screen"
         global filler
@@ -647,7 +665,11 @@ class Game():
             self.selecty = min(23,max(0,self.selecty))
     def run(self,screen):
         "runs the game in the running loop"
+<<<<<<< HEAD
         global running,attackableEnemies,chapter
+=======
+        global running,mode,filler,framecounter,selected,selectedItem,selectedEnemy,attackableEnemies,menu,menuselect,chapter
+>>>>>>> parent of f72baed... Made everything more local less global for the Game class
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
@@ -657,10 +679,13 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
+<<<<<<< HEAD
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location for selected player to move to
                     self.moveSelect() #handles movements of the select cursor by player
+=======
+>>>>>>> parent of f72baed... Made everything more local less global for the Game class
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
                 if mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
@@ -878,7 +903,11 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
+<<<<<<< HEAD
         if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
+=======
+        if framecounter - self.clickedFrame > 20 and mode in ["freemove","move"] and not framecounter%6:
+>>>>>>> parent of f72baed... Made everything more local less global for the Game class
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
