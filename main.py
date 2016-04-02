@@ -127,7 +127,6 @@ allAllies = [] #all allies that exist
 #important variables for the Game class
 chapter = 0 #changes when load new/old game, so stays global
 goal = ""
-framecounter = 0 #counts frames
 
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
@@ -543,7 +542,8 @@ class Game():
     def __init__(self):
         "initializes game"
         self.selectx,self.selecty = 0,0 #select cursor starting point
-        self.clickedFrame = framecounter #the frame user clicked (pressed z)
+        self.framecounter = 0 #frame counter
+        self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.fpsTracker = time.Clock() #fpsTracker
         self.mode = "freemove" #mode Game is in
         self.menuselect = 0 #option in menu selected
@@ -636,7 +636,7 @@ class Game():
         return menuselect
     def run(self,screen):
         "runs the game in the running loop"
-        global running,framecounter,attackableEnemies,chapter
+        global running,attackableEnemies,chapter
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
@@ -646,10 +646,10 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
-                #MOVEMENT OF SELECTION CURSOR OR MENU OPTOIN
+                #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
-                    #freemove moves freely; move picks a location
-                    self.moveSelect() #handles movements by player
+                    #freemove moves freely; move picks a location for selected player to move to
+                    self.moveSelect() #handles movements of the select cursor by player
                     self.clickedFrame = framecounter #sets the clickedFrame to self
                 if self.mode in ["optionmenu","itemattack","item"]:                    
                     #moves selected menu item
@@ -842,7 +842,7 @@ class Game():
             return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not framecounter%6:
+        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
@@ -870,9 +870,9 @@ class Game():
         #DRAWS PERSONS
         for a in allies:
             #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][framecounter%40//10],(a.x*30,a.y*30))
+            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
         for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][framecounter%40//10],(e.x*30,e.y*30))
+            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
         #OPTION MENU MODE DISPLAY
         if self.mode == "optionmenu":
             #if it is menu mode we draw the menu
@@ -935,7 +935,7 @@ class Game():
             draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
-        framecounter += 1 #increases frame counter
+        self.framecounter += 1 #increases frame counter
         self.fpsTracker.tick(60) #limits FPS to 60
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
