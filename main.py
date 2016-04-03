@@ -71,6 +71,9 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 ##file1 = shelve.open("saves/file1")
 ##if not file1.get('display'):
 ##    file1['display'] = "NEW gAME"
+file1 = shelve.open("saves/file1")
+file2 = shelve.open("saves/file2")
+file3 = shelve.open("saves/file3")
 
 ##file1['allAllies'] = []
 ##file2['allAllies'] = []
@@ -141,6 +144,7 @@ def addAlly(ally):
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies
+
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
@@ -149,6 +153,7 @@ def load(file):
         allAllies = file["allAllies"]
         for a in allAllies:
             imagifyStrings(a) #imagify all images of allies
+
         changemode(Game())
     file.close()
 def save(file):
@@ -614,6 +619,7 @@ class Game():
     def gameVictory(self):
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
+
         ##whatever animation/dialogue that needs to happen
         allAllies = allies #sets allAllies to allies
         for a in allAllies:
