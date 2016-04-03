@@ -90,7 +90,7 @@ transBlack.fill((0,0,0,122))
 #----PERSONS----#
 #ALLIES
 name = "" #name of player
-usedNames = ["yoyo"] #names the player cannot use
+usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex"] #names the player cannot use
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
@@ -98,20 +98,20 @@ yoyo = Lord("Yoyo",0,0,
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
-               {"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})
+               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite})
 albert = Mage("Albert",0,0,
               {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
                 "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
               [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
-              {'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})#test person for chapter 1
+              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})#test person for chapter 1
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":10,"defen":4,"skl":3,"lck":0,
+                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":(brigandAttackSprite,9),"Axecrit":(brigandCritSprite,11),"stand":brigandStandSprite},10)
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},10)
 enemies = []
 #----CHAPTERS----#
 #MAPS
@@ -119,10 +119,10 @@ chapter0 = [[plain for i in range(40)] for j in range(24)]
 chapter1 = [[plain for i in range(40)] for j in range(24)]
 #CHAPTER DATA
 #Stored in tuples
-#(gainedAllies,allyCoordinates (all),Enemies,Goal,BackgroundImage)
+#(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo,albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([yoyo,albert],[(0,1),(0,0),(1,1),(0,2)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -137,31 +137,31 @@ def addAlly(ally):
     "adds an ally to the allies list - updates allAllies and oldAllies too"
     global oldAllies
     allies.append(ally) #adds ally to allies
-    oldAllies.append(ally.getInstance())
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
-    global chapter,allAllies,oldAllies
+    global chapter,allAllies
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
-        if chapter < 99:
-            #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
-            oldAllies += allAllies
-        print(chapter,allAllies)
+        for a in allAllies:
+            imagifyStrings(a) #imagify all images of allies
         changemode(Game())
     file.close()
 def save(file):
     "saves game into file"
     global chapter, allAllies
-    print("i entered")
     file["chapter"] = chapter + 1
     chapter += 1
     ##this will need more work here when we need to modify ally list based on chapter
-    file["allAllies"] = allAllies
+    for a in allAllies:
+        stringifyImages(a) #stringify all images of allies
+    file["allAllies"] = allAllies #save allAllies
+    for a in allAllies:
+        imagifyStrings(a) #imagify all images of allies
     file.close()
     changemode(Game())
 #----DRAWING FUNCTIONS----#
@@ -232,6 +232,7 @@ def attack(person,person2):
             if needLevelUp:
                 #level up
                 ally.levelUp()
+                drawLevelUp(screen,ally)
         display.flip()
         time.wait(1000)
         return False #ends the function if either ally or enemy is dead
@@ -275,6 +276,30 @@ def attack(person,person2):
         ally.levelUp()
         drawLevelUp(screen,ally)
     time.wait(1000)
+#-------MANAGEMENT FUNCTIONS--------#
+#this is to help me manage image saving
+def stringifyImages(ally):
+    "stringifies all images in ally - I need to do this in order to save them into a file, as Python can't save surfaces"
+    #NOTE: to stringify means to change an image into a string representing the variable name that points to the image
+    name = ally.name.lower()
+    if ally.name.lower() not in usedNames:
+        #if ally's name isn't in used names, then it is the player
+        name = "player"+ally.__class__.__name__ #we add the class for the player
+    for i,k in enumerate(ally.anims):
+        ally.anims[k] = name+k.title()+"Sprite"
+    for w in [i for i in ally.items if type(i) == Weapon]:
+        #goes through all weapons and imagifies them
+        if w.anims != None:
+            #changes all weapons with an animation to be stringified
+            w.anims = w.name.lower()+"Sprite"
+def imagifyStrings(ally):
+    "imagifies all strings in ally - opposite of stringifyImages"
+    for i,k in enumerate(ally.anims):
+        ally.anims[k] = eval(ally.anims[k]) #creates an image from the string using eval
+    for w in [i for i in ally.items if type(i) == Weapon]:
+        #goes through all weapons and imagifies them
+        if w.anims != None:
+            w.anims = eval(w.anims)
 #----HELPFUL CLASSES----#
 #any classes that help me code
 class FilledSurface(Surface):
@@ -378,7 +403,6 @@ class SaveGame():
                                        ["save(currmode.file3)"])]
     def draw(self,screen):
         "draws mode on screen"
-        screen.fill(BLACK)
         pass
     def playMusic(self):
         "plays menu music"
@@ -468,7 +492,7 @@ class NewGame():
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
-{'stand':playerMageStandSprite,'Anima':(playerMageAttackSprite,10),'Animacrit':(playerMageCritSprite,21)})
+{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})
 addAlly(player)
 """,
                                 "changemode(Game())"]),
@@ -479,7 +503,7 @@ addAlly(player)
 {"stren":40,"defen":20,"skl":70,"lck":70,"spd":40,"res":40,"maxhp":60},
 [iron_sword.getInstance(),vulnerary.getInstance()],
 {"Sword":200},
-{"Sword":(yoyoAttackSprite,5),"Swordcrit":(yoyoCritSprite,29),"stand":yoyoStandSprite})
+{"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite})
 addAlly(player)
 """,
                                  "changemode(Game())"])]
@@ -589,19 +613,26 @@ class Game():
         pass
     def gameVictory(self):
         "Victory, to continue the storyline"
-        global oldAllies,allies
+        global oldAllies,allies,allAllies
         ##whatever animation/dialogue that needs to happen
-        draw.circle(screen,WHITE,(100,100),100)
+        allAllies = allies #sets allAllies to allies
+        for a in allAllies:
+            #brings all allies back to full health
+            a.hp = a.maxhp
+            a.stats["hp"] = a.maxhp
+        draw.circle(screen,WHITE,(100,100),100) #NOTE TO ALBURITO!!!!!! !IJIOJOIASJFIOWJOIFWJFOIWJ!!!IJAOF! : th is this? got a circle fetish!? haha its a joke lol
         changemode(SaveGame())
     def start(self):
         "starts a chapter, also serves a restart"
         global allies,enemies,oldAllies
         self.selectx,self.selecty = 0,0
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
+        if chapter < 99:
+            #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
+            oldAllies = [a.getInstance() for a in allAllies]
         for a in newAllies:
             if a not in oldAllies:
                 oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
-                allAllies.append(a.getInstance())
         enemies = [e.getInstance() for e in newenemies]
         allies = [a.getInstance() for a in oldAllies]
         for i in range(len(allyCoords)):
@@ -809,7 +840,6 @@ class Game():
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
-                            self.mode = "freemove"
                             self.endTurn() #ends turn
                     #OPTION MENU CLICK
                     elif self.mode == "optionmenu":

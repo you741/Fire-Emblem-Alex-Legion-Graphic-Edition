@@ -162,12 +162,21 @@ def drawLevelUp(screen,person):
     #that's how we calculate which stats changed
     screenBuff = screen.copy() #screen buffer    
     draw.rect(screen,(0,0,255),(300,240,600,240))
+    person.stats["lv"] += 1
     screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
-    statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420)} #dictionary of the coordinates of every stat
+    statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
+                  "res":(300,450)} #dictionary of the coordinates of every stat
+    for i,k in enumerate(statCoords):
+        screen.blit(sans.render(k.title(),True,WHITE),statCoords[k])
+    display.flip()
+    time.wait(300)
     for i,k in enumerate(person.growths):
         #draws a +1 next to every stat gained
         if person.stats[k] != eval("person."+k):
-            pass
+            screen.blit(sans.render("+1",True,WHITE),(statCoords[k][0]+100,statCoords[k][1]))
+            person.stats[k] = eval("person."+k)
+            display.flip()
+            time.wait(500)
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line

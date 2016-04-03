@@ -3,23 +3,25 @@
 from pygame import *
 #ALLIES
 playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png')
-playerMageAttackSprite = [image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
-                          for i in range(16)]
-playerMageCritSprite = [image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
-                        for i in range(12)] + playerMageAttackSprite[1:]
+playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
+                          for i in range(16)],10)
+playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
+                        for i in range(12)] + playerMageAnimaSprite[0][1:],21)
 yoyoStandSprite = image.load("images/Yoyo/YoyoAttackFrame1.png")
-yoyoAttackSprite = [image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
-                    for i in range(13)]
-yoyoCritSprite = [image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
-                  for i in range(43)]
+yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
+                    for i in range(13)],5)
+yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
+                  for i in range(43)],29)
 
-
+albertStandSprite = playerMageStandSprite
+albertAnimacritSprite = playerMageAnimacritSprite
+albertAnimaSprite = playerMageAnimaSprite
 #ENEMIES
 brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png")
-brigandAttackSprite = [image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
-                       for i in range(14)]
-brigandCritSprite = [image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
-                     for i in range(2)] + brigandAttackSprite
+brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
+                       for i in range(14)],9)
+brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
+                     for i in range(2)] + brigandAxeSprite[0],11)
 
 #MAGIC
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png")

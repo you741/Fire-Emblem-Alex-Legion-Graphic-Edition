@@ -13,7 +13,7 @@ weaponTriangle = {"Sword":"Axe",
 #in the format advantageous:disadvantageous
 class Person():
     "person class - root of all classes"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0):
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
         "initializes person"
         #takes in stats and growth - dictionaries
         self.name = name
@@ -39,7 +39,7 @@ class Person():
         self.mountainous = False
         self.waterproof = False
         self.gift = gift #gift for killing unit; only applies to enemies
-        self.exp = 0
+        self.exp = exp
     def getAdv(self,enemy):
         "returns whether weapon is advantageous or disadvantageous"
         #0 is disadvantageous, 1 is advantageous, -1 is neutral
@@ -196,11 +196,11 @@ class Person():
         return internalLV
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,self.stats,self.growths,[i.getInstance() for i in self.items],self.mast,self.anims,self.gift)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,self.stats,self.growths,[i.getInstance() for i in self.items],self.mast,self.anims,self.gift,self.exp)")
 class Mage(Person):
     "mage class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0):
-        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,gift)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
+        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,gift,exp)
         self.magical = True
 class Knight(Person):
     "knight class"
@@ -213,7 +213,7 @@ class Lord(Person):
     pass
 class Brigand(Person):
     "brigand class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0):
-        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,gift)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
+        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,gift,exp)
         self.mountainous = True
     
