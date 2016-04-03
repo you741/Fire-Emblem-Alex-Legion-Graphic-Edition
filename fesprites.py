@@ -29,5 +29,5 @@ fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png")
 
 #MAP SPRITES
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif"),(30,30)) for i in range(4)],
-                  "Lord":[Surface((30,30))]*4}
+                  "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png"),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[Surface((30,30))]*4}
