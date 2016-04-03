@@ -90,7 +90,7 @@ transBlack.fill((0,0,0,122))
 #----PERSONS----#
 #ALLIES
 name = "" #name of player
-usedNames = ["yoyo"] #names the player cannot use
+usedNames = ["yoyo","albert"] #names the player cannot use
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
@@ -141,17 +141,24 @@ def addAlly(ally):
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
+<<<<<<< Updated upstream
     global chapter,allAllies,oldAllies
+=======
+    global chapter
+>>>>>>> Stashed changes
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
+<<<<<<< Updated upstream
         if chapter < 99:
             #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
             oldAllies += allAllies
         print(chapter,allAllies)
+=======
+>>>>>>> Stashed changes
         changemode(Game())
     file.close()
 def save(file):
@@ -595,7 +602,7 @@ class Game():
         changemode(SaveGame())
     def start(self):
         "starts a chapter, also serves a restart"
-        global allies,enemies,oldAllies
+        global allies,enemies
         self.selectx,self.selecty = 0,0
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
         for a in newAllies:
