@@ -404,7 +404,6 @@ class SaveGame():
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(BLACK)
-        pass
     def playMusic(self):
         "plays menu music"
         #WIP
