@@ -71,9 +71,6 @@ vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
 ##file1 = shelve.open("saves/file1")
 ##if not file1.get('display'):
 ##    file1['display'] = "NEW gAME"
-file1 = shelve.open("saves/file1")
-file2 = shelve.open("saves/file2")
-file3 = shelve.open("saves/file3")
 
 ##file1['allAllies'] = []
 ##file2['allAllies'] = []
@@ -144,7 +141,6 @@ def addAlly(ally):
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies
-
     if file.get("chapter") == None:
         changemode(NewGame())#goes to new game
     else:
@@ -153,7 +149,6 @@ def load(file):
         allAllies = file["allAllies"]
         for a in allAllies:
             imagifyStrings(a) #imagify all images of allies
-
         changemode(Game())
     file.close()
 def save(file):
@@ -620,7 +615,6 @@ class Game():
     def gameVictory(self):
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
-
         ##whatever animation/dialogue that needs to happen
         allAllies = allies #sets allAllies to allies
         for a in allAllies:
@@ -668,6 +662,7 @@ class Game():
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
+        event.get()#clears events so that it doesnt allow events to occur as soon as this ends
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
         "ends the turn"
@@ -847,6 +842,7 @@ class Game():
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
+                            self.mode = "enemyphase"
                             self.endTurn() #ends turn
                     #OPTION MENU CLICK
                     elif self.mode == "optionmenu":
