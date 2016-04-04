@@ -603,6 +603,7 @@ class Game():
         self.moved,self.attacked = set(),set() #sets moved and attacked to be sets
         self.turn = 1 #turn that it is
         self.goal = ""
+        self.stopped = False #we are not stopped
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
@@ -992,6 +993,8 @@ class Game():
                 if e.unicode == "v":
                     #skips battle for now
                     self.gameVictory()
+        if self.stopped:
+            return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
         if self.mode == "gameVictory":
             return 0
