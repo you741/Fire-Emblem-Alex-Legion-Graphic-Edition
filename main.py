@@ -413,7 +413,7 @@ class SaveGame():
                                 ["save(currmode.file)"]),
                          Button(600,600,80,50,FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
-                                ["changemode(Game())"])]
+                                ["quit()"])]
                          
     def draw(self,screen):
         "draws mode on screen"
