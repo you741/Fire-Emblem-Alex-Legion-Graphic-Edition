@@ -155,6 +155,10 @@ def setfile(file):
     "sets file to the one that is being selected"
     global currmode
     currmode.file = file
+def setfilenum(number):
+    "number between 1-3 on which file is being worked on"
+    global currmode
+    currmode.filenum = number
 def save(file):
     "saves game into file"
     global chapter, allAllies
@@ -389,7 +393,7 @@ class SaveGame():
         self.stopped = False
 
         self.savingfile = False #is he choosing what file to save into?
-        
+        self.filenum = 1
         #Loads files
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
@@ -401,19 +405,19 @@ class SaveGame():
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfile(currmode.file1)"]),
+                                       ["currmode.savingfile = True","setfilenum(1)"]),
                                 Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfile(currmode.file2)"]),
+                                       ["currmode.savingfile = True","setfilenum(2)"]),
                                 Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfile(currmode.file3)"])]
+                                       ["currmode.savingfile = True","setfilenum(3)"])]
         self.buttons2 = [Button(500,600,80,50,FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"SAVE",BLACK,monospace,(0,10)),
-                                ["save(currmode.file)"]),
+                                ["save(currmode.file"+str(self.filenum)+")"]),
                          Button(600,600,80,50,FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
-                                ["changemode(StartMenu)"])]
+                                ["quit()"])]
                          
     def draw(self,screen):
         "draws mode on screen"
@@ -445,6 +449,8 @@ class SaveGame():
         if self.savingfile:
             for b in self.buttons2:
                 b.draw(screen)
+            ##this is temporary to show which one is selected, probably these'll all change to images
+            draw.rect(screen,YELLOW,(500,420-60+self.filenum*60,200,50),5)
             
 class LoadGame():
     def __init__(self):
