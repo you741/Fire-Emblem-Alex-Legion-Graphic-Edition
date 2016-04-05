@@ -388,7 +388,7 @@ class SaveGame():
     def __init__(self):
         self.stopped = False
 
-        self.selectfile = True #is he choosing what file to save into?
+        self.savingfile = False #is he choosing what file to save into?
         
         #Loads files
         self.file1 = shelve.open("saves/file1")
@@ -401,19 +401,19 @@ class SaveGame():
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       ["currmode.selectfile = False","setfile(currmode.file1)"]),
+                                       ["currmode.savingfile = True","setfile(currmode.file1)"]),
                                 Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       ["currmode.selectfile = False","setfile(currmode.file2)"]),
+                                       ["currmode.savingfile = True","setfile(currmode.file2)"]),
                                 Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       ["currmode.selectfile = False","setfile(currmode.file3)"])]
+                                       ["currmode.savingfile = True","setfile(currmode.file3)"])]
         self.buttons2 = [Button(500,600,80,50,FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"SAVE",BLACK,monospace,(0,10)),
                                 ["save(currmode.file)"]),
                          Button(600,600,80,50,FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
-                                ["quit()"])]
+                                ["changemode(StartMenu)"])]
                          
     def draw(self,screen):
         "draws mode on screen"
@@ -430,21 +430,19 @@ class SaveGame():
             if e.type == QUIT:
                 running = False
             if e.type == MOUSEBUTTONDOWN:
-                if self.selectfile:
-                    for b in self.buttons1:
-                        if b.istouch():
-                            b.click()
-                else:
+                for b in self.buttons1:
+                    if b.istouch():
+                        b.click()
+                if self.savingfile:
                     for b in self.buttons2:
                         if b.istouch():
                             b.click()
         if self.stopped:
             return 0 #if we have stopped, we return to stop the method
         #draws buttons
-        if self.selectfile:
-            for b in self.buttons1:
-                b.draw(screen)
-        else:
+        for b in self.buttons1:
+            b.draw(screen)
+        if self.savingfile:
             for b in self.buttons2:
                 b.draw(screen)
             
