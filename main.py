@@ -382,8 +382,12 @@ class StartMenu():
             b.draw(screen)
 class SaveGame():
     def __init__(self):
-        self.stopped = False
 
+        self.background = Surface((1200,720))
+        self.background.fill(BLACK)
+        
+        self.stopped = False
+        
         self.savingfile = False #is he choosing what file to save into?
         self.filenum = 1
         #Loads files
@@ -433,6 +437,10 @@ class SaveGame():
                     for b in self.buttons2:
                         if b.istouch():
                             b.click()
+            screen.blit(self.background,(0,0))
+            kp = key.get_pressed()
+            if kp[K_x]:
+                self.savingfile = False
         if self.stopped:
             return 0 #if we have stopped, we return to stop the method
         #draws buttons
@@ -456,8 +464,9 @@ class LoadGame():
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
 
+
         #creates buttons
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
+        self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
                                ["load(currmode.file1)"]),
                         Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
@@ -466,6 +475,7 @@ class LoadGame():
                         Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
                                ["load(currmode.file3)"])]
+
     def draw(self,screen):
         "draws mode on screen"
         screen.fill(WHITE)
@@ -482,13 +492,16 @@ class LoadGame():
             if e.type == QUIT:
                 running = False
             if e.type == MOUSEBUTTONDOWN:
-                for b in self.buttons:
+                for b in self.buttons1:
                     if b.istouch():
                         b.click()
+            kp = key.get_pressed()
+            if kp[K_x]:
+                changemode(StartMenu())
         if self.stopped:
             return 0 #if we have stopped, we return to stop the method
         #draws buttons
-        for b in self.buttons:
+        for b in self.buttons1:
             b.draw(screen)
    
 class NewGame():
@@ -555,6 +568,10 @@ addAlly(player)
                         for b in self.buttons1:
                             if b.istouch():
                                 b.click()
+                    elif len(name) > 0 and name.lower() in usedNames:
+                        ##put a sound here
+                        ##blit an image here
+                        draw.rect(screen,WHITE,(100,100,100,100))
                 if self.selectingclass:
                     #if the user is selecting his class, we check for button presses
                     for b in self.buttons2:
