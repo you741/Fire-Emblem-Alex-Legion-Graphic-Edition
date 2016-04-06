@@ -151,14 +151,6 @@ def load(file):
             imagifyStrings(a) #imagify all images of allies
         changemode(Game())
     file.close()
-def setfile(file):
-    "sets file to the one that is being selected"
-    global currmode
-    currmode.file = file
-def setfilenum(number):
-    "number between 1-3 on which file is being worked on"
-    global currmode
-    currmode.filenum = number
 def save(file):
     "saves game into file"
     global chapter, allAllies
@@ -405,16 +397,16 @@ class SaveGame():
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfilenum(1)"]),
+                                       ["currmode.savingfile = True","currmode.filenum=1"]),
                                 Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfilenum(2)"]),
+                                       ["currmode.savingfile = True","currmode.filenum=2"]),
                                 Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       ["currmode.savingfile = True","setfilenum(3)"])]
+                                       ["currmode.savingfile = True","currmode.filenum=3"])]
         self.buttons2 = [Button(500,600,80,50,FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"SAVE",BLACK,monospace,(0,10)),
-                                ["save(currmode.file"+str(self.filenum)+")"]),
+                                ["save([currmode.file1,currmode.file2,currmode.file3][currmode.filenum-1])"]),
                          Button(600,600,80,50,FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
                                 ["quit()"])]
@@ -437,7 +429,7 @@ class SaveGame():
                 for b in self.buttons1:
                     if b.istouch():
                         b.click()
-                if self.savingfile:
+                if self.savingfile: 
                     for b in self.buttons2:
                         if b.istouch():
                             b.click()
