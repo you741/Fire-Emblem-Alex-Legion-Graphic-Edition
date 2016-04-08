@@ -3,6 +3,7 @@
 from pygame import *
 from feweapons import *
 from random import *
+from copy import deepcopy
 
 weaponTriangle = {"Sword":"Axe",
                   "Axe":"Lance",
@@ -196,7 +197,7 @@ class Person():
         return internalLV
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,self.stats,self.growths,[i.getInstance() for i in self.items],self.mast,self.anims,self.gift,self.exp)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.gift,self.exp)")
 class Mage(Person):
     "mage class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):

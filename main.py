@@ -109,7 +109,7 @@ albert = Mage("Albert",0,0,
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
+                  {"lv":1,"stren":5,"defen":4,"skl":15,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},10)
 enemies = []
@@ -134,8 +134,7 @@ chapter = 0 #changes when load new/old game, so stays global
 
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
-    "adds an ally to the allies list - updates allAllies and oldAllies too"
-    global oldAllies
+    "adds an ally to the allies list - updates allAllies too"
     allies.append(ally) #adds ally to allies
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
@@ -238,7 +237,7 @@ def attack(person,person2):
         return False #ends the function if either ally or enemy is dead
     #Draws damage for attack 2
     person2hit = False #did person2 hit? (person 1 hits no matter what, so I don't need that)
-    if canAttackTarget(person2,person):
+    if canAttackTarget(person2,person.x,person.y):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,person2,person,not isenemy,eval("chapter"+str(chapter)))
@@ -255,10 +254,10 @@ def attack(person,person2):
         time.wait(1000)
         return False
     #Draws damage for attack 3
-    if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy):
+    if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,ally,enemy,False,eval("chapter"+str(chapter)))
-    if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally):
+    if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,enemy,ally,True,eval("chapter"+str(chapter)))
     kill = False
@@ -652,7 +651,8 @@ class Game():
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
         ##whatever animation/dialogue that needs to happen
-        allAllies = allies #sets allAllies to allies
+        allAllies = [a for a in allAllies if a.name not in [al.name for al in allies]] #removes all of allies from allAllies
+        allAllies += allies #adds allies to allAllies
         for a in allAllies:
             #brings all allies back to full health
             a.hp = a.maxhp
@@ -667,11 +667,9 @@ class Game():
         if chapter < 99:
             #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
             oldAllies = [a.getInstance() for a in allAllies]
-        for a in newAllies:
-            if a not in oldAllies:
-                oldAllies.append(a.getInstance()) #adds all new allies to the oldAllies - this should be moved to preFight class... but it doesn't exist yet
         enemies = [e.getInstance() for e in newenemies]
         allies = [a.getInstance() for a in oldAllies]
+        allies += [a.getInstance() for a in newAllies] #adds all new allies to allies
         for i in range(len(allyCoords)):
             global player
             allies[i].x,allies[i].y = allyCoords[i] #sets all ally coords
@@ -1036,6 +1034,8 @@ class Game():
             return 0
         if self.mode == "gameover":
             return 0
+        if allAllies[0].stats["lv"] != 1:
+            print("YO!")
         screen.blit(self.filler,(0,0)) #blits the filler
         if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
             self.gameOver()

@@ -54,7 +54,7 @@ def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
     "returns attackable enemies by person (optional parameters for different (x,y))"
     atten = [] #attackble enemies
     for e in enemies:
-        if canAttackTarget(person,e,x,y,weapon):
+        if canAttackTarget(person,e.x,e.y,x,y,weapon):
             atten.append(e)
     return atten
 def getTargetableAllies(rnge,maxrnge,x,y,allies):
@@ -79,8 +79,8 @@ def getAttackableSquaresByMoving(moveablesquares,person):
     return attackableSquares
 
 #----Other Calculations----#
-def canAttackTarget(person,enemy,x=None,y=None,weapon=None):
-    "returns whether person can attack enemy"
+def canAttackTarget(person,ex,ey,x=None,y=None,weapon=None):
+    "returns whether person can attack square (ex,ey)"
     if person.equip == None:
         return False
     if x == None:
@@ -88,7 +88,7 @@ def canAttackTarget(person,enemy,x=None,y=None,weapon=None):
     if y == None:
         y = person.y
     weapon = person.equip if weapon == None else weapon
-    return weapon.rnge <= getDistance(x,y,enemy.x,enemy.y) <= weapon.maxrnge
+    return weapon.rnge <= getDistance(x,y,ex,ey) <= weapon.maxrnge
 def getDistance(x,y,x2,y2):
     "returns distance between 2 points"
     return abs(x-x2) + abs(y-y2)
@@ -120,7 +120,7 @@ def getAttackResults(person,enemy,stage):
     return (hit,dam,crit) #returns (hit,dam,crit)
 def getBattleStats(person,person2,stage):
     "returns a list of battle stats based on person and person2"
-    if canAttackTarget(person,person2):
+    if canAttackTarget(person,person2.x,person2.y):
         #only sets stats if ally can hit enemy, otherwise it sets them to "--"
         hit,dam,crit = person.getHit(person2,stage),person.getDamage(person2,stage),person.getCritical(person2)
         if person.getAtkSpd() >= person2.getAtkSpd()+4:
@@ -167,16 +167,17 @@ def drawLevelUp(screen,person):
     statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
                   "res":(300,450)} #dictionary of the coordinates of every stat
     for i,k in enumerate(statCoords):
-        screen.blit(sans.render(k.title(),True,WHITE),statCoords[k])
+        screen.blit(sans.render(k.title()+": "+str(person.stats[k]),True,WHITE),statCoords[k])
     display.flip()
     time.wait(300)
     for i,k in enumerate(person.growths):
         #draws a +1 next to every stat gained
         if person.stats[k] != eval("person."+k):
-            screen.blit(sans.render("+1",True,WHITE),(statCoords[k][0]+100,statCoords[k][1]))
+            screen.blit(sans.render("+1",True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #150 more to the right
             person.stats[k] = eval("person."+k)
             display.flip()
             time.wait(500)
+    time.wait(2000)
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
@@ -238,7 +239,7 @@ def drawHealthLoss(screen,person,dam,enemy=True):
 def drawFrames(screen,frames):
     "draws all frames with an FPS of 20"
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
-    frameLimiter = time.Clock() #limits frames
+    frameLimiter = time.Clock() #limits frames per second
     for f in frames:
         screen.blit(filler,(0,0))
         screen.blit(f,(0,200)) #blits all frames
@@ -309,3 +310,67 @@ def drawExpGain(ally,expgain,screen):
         framelimiter.tick(20) #ticks the clock to make it 20 FPS
         display.flip()
         
+#------ENEMY AI-------#
+def getOptimalSquare(moveableSquares,stage,allies):
+    "returns optimal square to move to, assuming enemy can't attack"
+    pass
+def getEnemyAction(enemy,stage,allies,moveableSquares):
+    "returns whether enemy should attack or move"
+    attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
+    attackableAllies = [(a.x,a.y) for a in allies if (a.x,a.y) in attackableSquares]
+    if len(attackableAllies) > 0:
+        return "attack" #enemy attacks if enemy can
+    return "move" #if enemy can't attack they just move
+def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
+    "returns optimal ally out of attackableAllies, as well as which weapon to use and where to move"
+    #returns a tuple (ally,x,y)
+    best = (0,0,100,100) #best is a tuple with priorities set from highest to lowest
+    bestAlly = None
+    bestWeapon = None
+    bestx,besty = 0,0
+    #(percentage of health damage against ally,hit chance against ally,damage against enemy,hit chance of ally against enemy)
+    for a in attackableAllies:
+        for w in [i for i in enemy.items if type(i) == Weapon]:
+            #goes through all weapons, equips them, and checks damage
+            if enemy.equipWeapon(w):
+                #equip sucess
+                allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,a.x,a.y)
+                             if (x,y) in moveableSquares] #all coordinates where enemy can attack ally
+                tmpBestX,tmpBestY = allCoords[0] #temporary best coords - only becomes best if ally is optimal
+                for x,y in allCoords:
+                    if not canAttackTarget(ally,x,y):
+                        #checks if ally can attack the enemy from position (x,y)
+                        #if they cannot, we set the tmpBestX and tmpBestY to this value and break
+                        tmpBestX,tmpBestY = x,y
+                        break
+                perdam = enemy.getDamage(ally,stage)/ally.hp #percentage of health damage
+                hit = enemy.getHit(ally,stage) #hit chance of enemy to ally
+                aperdam = ally.getDamage(enemy,stage).enemy.hp #percentage of health damage to enemy from ally
+                ahit = ally.getHit(enemy,stage) #hit chance of ally to enemy
+                bestdam,besthit,bestadam,bestahit = best #the best stats that these stats must beat
+                if perdam > bestdam:
+                    best = (perdam,hit,aperdam,ahit)
+                    bestAlly = a
+                    bestWeapon = w #sets the best stuff
+                    bestx,besty = tmpBestX,tmpBestY
+                elif perdam == bestdam:
+                    #if it's a tie, we check other stuff
+                    if hit > besthit:
+                        best = (perdam,hit,aperdam,ahit)
+                        bestAlly = a
+                        bestWeapon = w
+                        bestx,besty = tmpBestX,tmpBestY
+                    elif hit == besthit:
+                        if aperdam < bestadam:
+                            best = (perdam,hit,aperdam,ahit)
+                            bestAlly = a
+                            bestWeapon = w
+                            bestx,besty = tmpBestX,tmpBestY
+                        elif aperdam == bestadam:
+                            if ahit < bestahit:                                        
+                                best = (perdam,hit,aperdam,ahit)
+                                bestAlly = a
+                                bestWeapon = w
+                                bestx,besty = tmpBestX,tmpBestY
+    enemy.equipWeapon(bestWeapon) #equips best weapon
+    return (bestAlly,bestx,besty)
