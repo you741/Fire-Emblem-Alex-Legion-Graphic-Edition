@@ -316,7 +316,7 @@ class FilledSurface(Surface):
 #----UI CLASSES----#
 #these classes are the user interface classes - any classes that help user interaction are here
 class Button():
-    def __init__(self,x=0,y=0,width=0,height=0,background=Surface((1,1)),hlbackground=Surface((1,1)),func=[]):
+    def __init__(self,x=0,y=0,width=0,height=0,background=Surface((1,1)),hlbackground=Surface((1,1)),cbackground=Surface((1,1)),func=[]):
         "sets all the class's members"
         self.x = x #co-ordinates
         self.y = y
@@ -324,6 +324,7 @@ class Button():
         self.height = height
         self.background = background #background of button
         self.hlbackground = hlbackground #background of button when highlighted
+        self.cbackground = cbackground #background when clicked
         self.func = func #func is a list of strings that contains commands to be executed
     def istouch(self,x=None,y=None):
         "checks if co-ordinates are touching Button"
@@ -334,6 +335,9 @@ class Button():
         if y == None:
             y = my
         return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
+##        if self.background.get_at((self.x,self.y)) != (255,255,255):
+##            return True
+##        return False
     def draw(self,screen):
         "draws button on screen"
         if self.istouch():
@@ -341,6 +345,7 @@ class Button():
         else:
             screen.blit(self.background,(self.x,self.y))
     def click(self):
+        screen.blit(self.cbackground,(self.x,self.y))
         "runs button's func"
         exec("\n".join(self.func))
         
@@ -353,6 +358,7 @@ class StartMenu():
         self.stopped = False
         self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"START",BLACK,monospace,(30,10)),
                                ["changemode(LoadGame())"])] #START BUTTON
 
     def draw(self,screen):
@@ -398,20 +404,30 @@ class SaveGame():
         button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
         button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
         #creates buttons
-        self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
+        self.buttons1 = [Button(500,420,200,50,
+                                       FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),GREEN,button1Text,BLACK,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=1"]),
-                                Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
+                                Button(500,480,200,50,
+                                       FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=2"]),
-                                Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
+                                Button(500,540,200,50,
+                                       FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                        FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=3"])]
-        self.buttons2 = [Button(500,600,80,50,FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
+        self.buttons2 = [Button(500,600,80,50,
+                                FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"SAVE",BLACK,monospace,(0,10)),
+                                FilledSurface((80,50),GREEN,"SAVE",BLACK,monospace,(0,10)),
                                 ["save([currmode.file1,currmode.file2,currmode.file3][currmode.filenum-1])"]),
-                         Button(600,600,80,50,FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
+                         Button(600,600,80,50,
+                                FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
                                 FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
+                                FilledSurface((80,50),GREEN,"QUIT",BLACK,monospace,(0,10)),
                                 ["quit()"])]
                          
     def draw(self,screen):
@@ -465,14 +481,20 @@ class LoadGame():
 
 
         #creates buttons
-        self.buttons1 = [Button(500,420,200,50,FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
+        self.buttons1 = [Button(500,420,200,50,
+                               FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),GREEN,button1Text,BLACK,monospace,(0,10)),
                                ["load(currmode.file1)"]),
-                        Button(500,480,200,50,FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
+                        Button(500,480,200,50,
+                               FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
                                ["load(currmode.file2)"]),
-                        Button(500,540,200,50,FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
+                        Button(500,540,200,50,
+                               FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
                                FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),GREEN,button3Text,BLACK,monospace,(0,10)),
                                ["load(currmode.file3)"])]
 
     def draw(self,screen):
@@ -512,12 +534,16 @@ class NewGame():
         self.tbrect = Rect(400,300,500,50)
         self.ipos = 0 #insertion point position
         #name select buttons
-        self.buttons1 = [Button(900,300,200,50,FilledSurface((200,50),BLUE,"SUBMIT",WHITE,monospace,(30,10)),
+        self.buttons1 = [Button(900,300,200,50,
+                               FilledSurface((200,50),BLUE,"SUBMIT",WHITE,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"SUBMIT",BLACK,monospace,(30,10)),
                                ["currmode.selectingname = False","currmode.selectingclass = True","screen.fill(BLACK)"])]
         #class select buttons
-        self.buttons2 = [Button(300,300,200,50,FilledSurface((200,50),BLUE,"MAGE",WHITE,monospace,(40,10)),
+        self.buttons2 = [Button(300,300,200,50,
+                                FilledSurface((200,50),BLUE,"MAGE",WHITE,monospace,(40,10)),
                                 FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
+                                FilledSurface((200,50),GREEN,"MAGE",BLACK,monospace,(40,10)),
                                 ["global player",
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
@@ -527,8 +553,11 @@ class NewGame():
 addAlly(player)
 """,
                                 "changemode(Game())"]),
-                         Button(300,500,200,50,FilledSurface((200,50),BLUE,"LORD",WHITE,monospace,(40,10)),
+                         
+                         Button(300,500,200,50,
+                                FilledSurface((200,50),BLUE,"LORD",WHITE,monospace,(40,10)),
                                 FilledSurface((200,50),YELLOW,"LORD",BLACK,monospace,(40,10)),
+                                FilledSurface((200,50),GREEN,"LORD",BLACK,monospace,(40,10)),
                                 ["global player",
                                  """player = Lord(name,0,0,{"lv":1,"hp":18,"maxhp":18,"stren":5,"defen":3,"spd":5,"res":4,"skl":7,"lck":7,"con":5,"move":5},
 {"stren":40,"defen":20,"skl":70,"lck":70,"spd":40,"res":40,"maxhp":60},
@@ -538,6 +567,7 @@ addAlly(player)
 addAlly(player)
 """,
                                  "changemode(Game())"])]
+        
     def draw(self,screen):
         "draws newgame screen"
         screen.fill(BLACK)
