@@ -336,10 +336,12 @@ class Button():
             x = mx
         if y == None:
             y = my
-        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
-##        if self.background.get_at((self.x,self.y)) != (255,255,255):
-##            return True
-##        return False
+        #return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
+        if Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
+            if self.background.get_at((x-self.x,y-self.y)) != WHITE:
+               return True
+        return False
+    
     def draw(self,screen):
         "draws button on screen"
         if self.istouch():
