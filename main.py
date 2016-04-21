@@ -122,7 +122,7 @@ chapter1 = [[plain for i in range(40)] for j in range(24)]
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"IS THIS LOADED PROPERLY",image.load("images/Maps/prologue.png"))]
+               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 #CHAPTER MUSIC
@@ -140,16 +140,17 @@ def addAlly(ally):
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies
-    if file.get("chapter") == None:
+    if "chapter" not in file:
+        file.close()
         changemode(NewGame())#goes to new game
     else:
         #sets the chapter we are about to start and allAllies
         chapter = file["chapter"]
         allAllies = file["allAllies"]
         for a in allAllies:
-            imagifyStrings(a) #imagify all images of allies
+            imagifyStrings(a) #imagify all images as they were strings while data of allies
+        file.close()
         changemode(Game())
-    file.close()
 def save(file):
     "saves game into file"
     global chapter, allAllies
@@ -399,10 +400,11 @@ class SaveGame():
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
+        print(self.file1.get("chapter")) #this fixes the code for some odd reason - I should probably discuss with Mr. Mckenzie later
         #sets the button text based on which files have data
-        button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
-        button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
-        button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+        button1Text = "--NO DATA--" if "chapter" not in self.file1 else "Chapter: "+str(self.file1["chapter"])
+        button2Text = "--NO DATA--" if "chapter" not in self.file2 else "Chapter: "+str(self.file2["chapter"])
+        button3Text = "--NO DATA--" if "chapter" not in self.file3 else "Chapter: "+str(self.file3["chapter"])
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,
                                        FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
@@ -470,14 +472,16 @@ class SaveGame():
 class LoadGame():
     def __init__(self):
         self.stopped = False
+
         #Loads files
         #sets the button text based on which files have data
         self.file1 = shelve.open("saves/file1")
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
-        button1Text = "--NO DATA--" if self.file1.get("chapter") == None else "Chapter: "+str(self.file1.get("chapter"))
-        button2Text = "--NO DATA--" if self.file2.get("chapter") == None else "Chapter: "+str(self.file2.get("chapter"))
-        button3Text = "--NO DATA--" if self.file3.get("chapter") == None else "Chapter: "+str(self.file3.get("chapter"))
+
+        button1Text = "--NO DATA--" if "chapter" not in self.file1 else "Chapter: "+str(self.file1["chapter"])
+        button2Text = "--NO DATA--" if "chapter" not in self.file2 else "Chapter: "+str(self.file2["chapter"])
+        button3Text = "--NO DATA--" if "chapter" not in self.file3 else "Chapter: "+str(self.file3["chapter"])
 
 
         #creates buttons
@@ -1064,8 +1068,6 @@ class Game():
             return 0
         if self.mode == "gameover":
             return 0
-        if allAllies[0].stats["lv"] != 1:
-            print("YO!")
         screen.blit(self.filler,(0,0)) #blits the filler
         if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
             self.gameOver()
