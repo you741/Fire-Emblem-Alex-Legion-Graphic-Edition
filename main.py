@@ -735,24 +735,60 @@ class Game():
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
         "ends the turn"
+        global running
         screen.blit(self.filler,(0,0)) #fills the screen
-        #DRAWS PERSONS
-        for a in allies:
-            #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
-        for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
-        display.flip()
-        time.wait(500)
         screenBuff = screen.copy()
         screen.blit(transform.scale(transRed,(1200,60)),(0,330)) #blits the text "ENEMY PHASE" on a translucent red strip
         screen.blit(papyrus.render("ENEMY PHASE",True,WHITE),(450,340))
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        #ENEMY'S PHASE GOES HERE - REQUIRES AI
-        self.turn += 1 #increases turn by 1
-        self.startTurn() #starts the turn
+        framelimiter = time.Clock()
+        #ENEMY'S PHASE GOES HERE
+        for i in range(len(enemies)-1,-1,-1):
+            en = enemies[i]
+            screen.blit(self.filler,(0,0)) #fills the screen
+            for evnt in event.get():
+                if evnt.type == QUIT:
+                    running = False
+                    return 0
+            #DRAWS PERSONS
+            for a in allies:
+                #draws one of four frames in the map sprite - changes sprites every 60 frames
+                screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+            for e in enemies:
+                screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+            display.flip()
+            time.wait(500)
+            encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
+            acoords = [(a.x,a.y) for a in allies] #allies' coordinates
+            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{}) #enemy's moveableSquares
+            enMoves = [(x,y) for x,y,m in enMoves]
+            action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
+            if action == "attack":
+                attackableSquares = getAttackableSquaresByMoving(enMoves,en) #attackableSquares by moving
+                attackableAllies = [a for a in allies if (a.x,a.y) in attackableSquares]
+                bestAlly,bestX,bestY = getOptimalAlly(en,chapterMaps[chapter],attackableAllies,enMoves)
+                en.x,en.y = bestX,bestY
+                screen.blit(self.filler,(0,0)) #fills the screen
+                #DRAWS PERSONS
+                for a in allies:
+                    #draws one of four frames in the map sprite - changes sprites every 60 frames
+                    screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+                for e in enemies:
+                    screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+                display.flip()
+                time.wait(500)
+                attack(en,bestAlly)
+                if yoyo.hp == 0 or player.hp == 0:
+                    return 0 #if yoyo or the player dies we leave the function
+            elif action == "move":
+                pass
+            self.turn += 1 #increases turn by 1
+            display.flip()
+            framelimiter.tick(60)
+        screen.blit(self.filler,(0,0)) #fills the screen
+        self.startTurn() #starts the turn      
     def gameOver(self):
         "draws game over screen"
         for i in range(50):

@@ -341,7 +341,8 @@ def getEnemyAction(enemy,stage,allies,moveableSquares):
 def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     "returns optimal ally out of attackableAllies, as well as which weapon to use and where to move"
     #returns a tuple (ally,x,y)
-    best = (0,0,100,100) #best is a tuple with priorities set from highest to lowest
+    
+    bestdam = 0 #best damage
     bestAlly = None
     bestWeapon = None
     bestx,besty = 0,0
@@ -351,43 +352,24 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
             #goes through all weapons, equips them, and checks damage
             if enemy.equipWeapon(w):
                 #equip sucess
-                allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,a.x,a.y)
-                             if (x,y) in moveableSquares] #all coordinates where enemy can attack ally
-                tmpBestX,tmpBestY = allCoords[0] #temporary best coords - only becomes best if ally is optimal
-                for x,y in allCoords:
-                    if not canAttackTarget(ally,x,y):
-                        #checks if ally can attack the enemy from position (x,y)
-                        #if they cannot, we set the tmpBestX and tmpBestY to this value and break
-                        tmpBestX,tmpBestY = x,y
+                for x,y in moveableSquares:
+                    if canAttackTarget(enemy,a.x,a.y,x,y):
                         break
-                perdam = enemy.getDamage(ally,stage)/ally.hp #percentage of health damage
-                hit = enemy.getHit(ally,stage) #hit chance of enemy to ally
-                aperdam = ally.getDamage(enemy,stage).enemy.hp #percentage of health damage to enemy from ally
-                ahit = ally.getHit(enemy,stage) #hit chance of ally to enemy
-                bestdam,besthit,bestadam,bestahit = best #the best stats that these stats must beat
+                else:
+                    #if we could not attack any allies with the current weapon, we move on
+                    break
+                perdam = 100*enemy.getDamage(a,stage)/a.hp #percentage of health damage
                 if perdam > bestdam:
-                    best = (perdam,hit,aperdam,ahit)
                     bestAlly = a
                     bestWeapon = w #sets the best stuff
-                    bestx,besty = tmpBestX,tmpBestY
-                elif perdam == bestdam:
-                    #if it's a tie, we check other stuff
-                    if hit > besthit:
-                        best = (perdam,hit,aperdam,ahit)
-                        bestAlly = a
-                        bestWeapon = w
-                        bestx,besty = tmpBestX,tmpBestY
-                    elif hit == besthit:
-                        if aperdam < bestadam:
-                            best = (perdam,hit,aperdam,ahit)
-                            bestAlly = a
-                            bestWeapon = w
-                            bestx,besty = tmpBestX,tmpBestY
-                        elif aperdam == bestadam:
-                            if ahit < bestahit:                                        
-                                best = (perdam,hit,aperdam,ahit)
-                                bestAlly = a
-                                bestWeapon = w
-                                bestx,besty = tmpBestX,tmpBestY
+    allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,bestAlly.x,bestAlly.y)
+                 if (x,y) in moveableSquares] #all coordinates where enemy can attack ally
+    bestx,besty = allCoords[0] #temporary best coords - only becomes best if ally is optimal
+    for x,y in allCoords:
+        if not canAttackTarget(bestAlly,x,y):
+            #checks if ally can attack the enemy from position (x,y)
+            #if they cannot, we set the bestx and besty to this value and break
+            bestx,besty = x,y
+            break
     enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
