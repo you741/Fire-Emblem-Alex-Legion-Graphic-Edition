@@ -16,6 +16,7 @@ YELLOW = (255,255,0,255)
 #----FONT----#
 font.init()
 sans = font.SysFont("Comic Sans MS",20)
+smallsans = font.SysFont("Chomic Sans MS",15)
 papyrus = font.SysFont("Papyrus",20)
 
 #----String formatting----#
@@ -198,14 +199,30 @@ def drawHealthBar(screen,person,x,y):
             hpy += 30
             hpx -= 160
         draw.line(screen,GREEN,(hpx+i*4,hpy),(hpx+i*4,hpy+30),3)
+def drawStatBox(screen,person1,person2,stage,x,y,color):
+    "draws a little stat box to show hit,dam and crit within a fight"
+    hit,dam,crit = person1.getHit(person2,stage),person1.getDamage(person2,stage),person1.getCritical(person2)
+    draw.rect(screen,color,(x,y,50,50)) #draw rect background for text
+    #draws text
+    screen.blit(smallsans.render("Hit "+str(hit),True,WHITE),(x,y))
+    screen.blit(smallsans.render("Dam "+str(dam),True,WHITE),(x,y+17))
+    screen.blit(smallsans.render("Crit "+str(crit),True,WHITE),(x,y+34))
 
-def drawBattleInfo(screen,ally,enemy):
+def drawBattleInfo(screen,ally,enemy,stage):
     "draws all the battle info on the screen"
-    draw.rect(screen,BLUE,(900,220,300,50)) #ally name rectangle
-    draw.rect(screen,RED,(0,220,300,50)) #enemy name rectangle
+    draw.rect(screen,BLUE,(900,0,300,50)) #ally name rectangle
+    draw.rect(screen,RED,(0,0,300,50)) #enemy name rectangle
+    draw.rect(screen,(250,240,204),(700,550,450,50)) #draws ally weapon name background
+    draw.rect(screen,(250,240,204),(50,550,450,50)) #draws enemy weapon name background
+    drawStatBox(screen,ally,enemy,stage,1150,550,BLUE) #draws two little boxes
+    drawStatBox(screen,enemy,ally,stage,0,550,RED) #each shows the hit, dam and crit
     #draws ally and enemy's names
-    screen.blit(sans.render(stripNums(ally.name),True,WHITE),(920,220))
-    screen.blit(sans.render(stripNums(enemy.name),True,WHITE),(50,220))
+    screen.blit(sans.render(stripNums(ally.name),True,WHITE),(920,0))
+    screen.blit(sans.render(stripNums(enemy.name),True,WHITE),(50,0))
+    if ally.equip != None:
+        screen.blit(sans.render(ally.equip.name,True,BLACK),(720,560))
+    if enemy.equip != None:
+        screen.blit(sans.render(enemy.equip.name,True,BLACK),(70,560))
     draw.rect(screen,BLUE,(700,600,500,120)) #draws ally health background
     draw.rect(screen,RED,(0,600,500,120)) #draws enemy health background
     #draws ally and enemy's health bar
@@ -242,7 +259,7 @@ def drawFrames(screen,frames):
     frameLimiter = time.Clock() #limits frames per second
     for f in frames:
         screen.blit(filler,(0,0))
-        screen.blit(f,(0,200)) #blits all frames
+        screen.blit(f,(0,0)) #blits all frames
         frameLimiter.tick(20)
         display.flip()
         
@@ -250,7 +267,7 @@ def singleAttack(screen,person,person2,isenemy,stage):
     "animates a single attack"
     hit,dam,crit = getAttackResults(person,person2,stage) #gets attack results
     #draws person 2's standing sprite
-    screen.blit(person2.anims["stand"],(0,200))
+    screen.blit(person2.anims["stand"],(0,0))
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
     #sets x and y for the text "MISS" and "NO DAMAGE"
     x = 725 if isenemy else 25

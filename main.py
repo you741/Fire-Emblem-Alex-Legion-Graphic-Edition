@@ -109,7 +109,7 @@ albert = Mage("Albert",0,0,
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":4,"skl":15,"lck":0,
+                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},10)
 enemies = []
@@ -117,6 +117,7 @@ enemies = []
 #MAPS
 chapter0 = [[plain for i in range(40)] for j in range(24)]
 chapter1 = [[plain for i in range(40)] for j in range(24)]
+chapterMaps = [chapter0,chapter1]
 #CHAPTER DATA
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
@@ -212,17 +213,17 @@ def attack(person,person2):
     screen.fill(GREEN) #green screen
     display.flip()
     time.wait(200)
-    drawBattleInfo(screen,ally,enemy)
+    drawBattleInfo(screen,ally,enemy,chapterMaps[chapter])
     actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
     #blits standing sprites for ally and enemy
-    screen.blit(ally.anims["stand"],(0,200))
-    screen.blit(enemy.anims["stand"],(0,200))
+    screen.blit(ally.anims["stand"],(0,0))
+    screen.blit(enemy.anims["stand"],(0,0))
     display.flip()
     time.wait(200)
     isenemy = person in enemies #is person an enemy? (boolean)
     #Draws damage for attack 1
     screen.blit(actionFiller,(0,0)) #covers both persons
-    singleAttack(screen,person,person2,isenemy,eval("chapter"+str(chapter)))
+    singleAttack(screen,person,person2,isenemy,chapterMaps[chapter])
     if checkDead(ally,enemy):
         #gains exp
         if enemy.hp == 0:
@@ -241,7 +242,7 @@ def attack(person,person2):
     if canAttackTarget(person2,person.x,person.y):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,person2,person,not isenemy,eval("chapter"+str(chapter)))
+        singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter])
         person2hit = True
     if checkDead(ally,enemy):#gains exp
         if enemy.hp == 0:
@@ -257,10 +258,10 @@ def attack(person,person2):
     #Draws damage for attack 3
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,ally,enemy,False,eval("chapter"+str(chapter)))
+        singleAttack(screen,ally,enemy,False,chapterMaps[chapter])
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,enemy,ally,True,eval("chapter"+str(chapter)))
+        singleAttack(screen,enemy,ally,True,chapterMaps[chapter])
     kill = False
     if checkDead(ally,enemy):
         kill = True
@@ -862,13 +863,13 @@ class Game():
                                 encoords = [(e.x,e.y) for e in enemies]
                                 if p in allies:
                                     #we get movements below
-                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,eval("chapter"+str(chapter)),acoords,encoords,{})
+                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],acoords,encoords,{})
                                     self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackables squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in acoords]
                                 elif p in enemies:
-                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,eval("chapter"+str(chapter)),encoords,acoords,{})
+                                    self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],encoords,acoords,{})
                                     self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackable squares that we cannot move to
@@ -1132,11 +1133,11 @@ class Game():
             #battleStatsMenu has name, HP, hit chance, damage, crit chance, weapon of use and whether the weapon has an advantage or not
             enemy = self.attackableEnemies[self.selectedEnemy] #the selected enemy
             #gets battle stats for the selected ally
-            battleStatsMenu = getBattleStats(self.selected,enemy,eval("chapter"+str(chapter)))
+            battleStatsMenu = getBattleStats(self.selected,enemy,chapterMaps[chapter])
             drawMenu(battleStatsMenu,x,y,210,210,-20) #draws battle stats menu for ally
 
             #battle stats from enemy's POV
-            battleStatsMenu = getBattleStats(enemy,self.selected,eval("chapter"+str(chapter)))
+            battleStatsMenu = getBattleStats(enemy,self.selected,chapterMaps[chapter])
             drawMenu(battleStatsMenu,x+7,y,210,210,-20,RED) #draws battle stats menu for enemy
         #ITEM MODE DISPLAY
         if self.mode == "item":
@@ -1183,7 +1184,7 @@ class Game():
         #TERRAIN DATA BOX
         if self.mode == "freemove":
             tbx,tby = 1020,630 #terrain box x and y
-            stage = eval("chapter"+str(chapter))
+            stage = chapterMaps[chapter]
             if self.selectx >= 20:
                 tbx = 0
             draw.rect(screen,BLUE,(tbx,tby,180,90))
