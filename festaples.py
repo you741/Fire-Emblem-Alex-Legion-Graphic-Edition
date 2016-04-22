@@ -171,11 +171,12 @@ def drawLevelUp(screen,person):
         screen.blit(sans.render(k.title()+": "+str(person.stats[k]),True,WHITE),statCoords[k])
     display.flip()
     time.wait(300)
-    for i,k in enumerate(person.growths):
+    for i,k in enumerate(statCoords):
         #draws a +1 next to every stat gained
         if person.stats[k] != eval("person."+k):
-            screen.blit(sans.render("+1",True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #150 more to the right
-            person.stats[k] = eval("person."+k)
+            newStatValue = eval("person."+k)
+            screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #150 more to the right
+            person.stats[k] = newStatValue
             display.flip()
             time.wait(500)
     time.wait(2000)
@@ -324,8 +325,8 @@ def drawExpGain(ally,expgain,screen):
         draw.rect(screen,BLACK,(450,345,300,30))
         draw.rect(screen,YELLOW,(450,345,int(300*(appExp/100)),30)) #draws filled exp bar
         screen.blit(sans.render(str(appExp),True,WHITE),(420,340)) #writes exp
-        framelimiter.tick(20) #ticks the clock to make it 20 FPS
         display.flip()
+        framelimiter.tick(20) #ticks the clock to make it 20 FPS
         
 #------ENEMY AI-------#
 def getOptimalSquare(moveableSquares,stage,allies):

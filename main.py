@@ -235,7 +235,7 @@ def attack(person,person2):
                 ally.levelUp()
                 drawLevelUp(screen,ally)
         display.flip()
-        time.wait(1000)
+        time.wait(500)
         return False #ends the function if either ally or enemy is dead
     #Draws damage for attack 2
     person2hit = False #did person2 hit? (person 1 hits no matter what, so I don't need that)
@@ -253,7 +253,7 @@ def attack(person,person2):
                 #level up
                 ally.levelUp()
         display.flip()
-        time.wait(1000)
+        time.wait(500)
         return False
     #Draws damage for attack 3
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y):
