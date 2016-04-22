@@ -336,12 +336,10 @@ class Button():
             x = mx
         if y == None:
             y = my
-        #return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
-        if Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
-            if self.background.get_at((x-self.x,y-self.y)) != WHITE:
-               return True
-        return False
-    
+        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
+##        if self.background.get_at((self.x,self.y)) != (255,255,255):
+##            return True
+##        return False
     def draw(self,screen):
         "draws button on screen"
         if self.istouch():
@@ -561,16 +559,16 @@ addAlly(player)
 """,
                                 "changemode(Game())"]),
                          
-                         Button(300,500,200,50,
-                                FilledSurface((200,50),BLUE,"LORD",WHITE,monospace,(40,10)),
-                                FilledSurface((200,50),YELLOW,"LORD",BLACK,monospace,(40,10)),
-                                FilledSurface((200,50),GREEN,"LORD",BLACK,monospace,(40,10)),
+                         Button(600,300,200,50,
+                                FilledSurface((200,50),BLUE,"KNIGHT",WHITE,monospace,(40,10)),
+                                FilledSurface((200,50),YELLOW,"KNIGHT",BLACK,monospace,(40,10)),
+                                FilledSurface((200,50),GREEN,"KNIGHT",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Lord(name,0,0,{"lv":1,"hp":18,"maxhp":18,"stren":5,"defen":3,"spd":5,"res":4,"skl":7,"lck":7,"con":5,"move":5},
-{"stren":40,"defen":20,"skl":70,"lck":70,"spd":40,"res":40,"maxhp":60},
-[iron_sword.getInstance(),vulnerary.getInstance()],
-{"Sword":200},
-{"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite})
+                                 """player = Knight(name,0,0,{"lv":1,"hp":25,"maxhp":25,"stren":7,"defen":7,"spd":4,"res":0,"skl":5,"lck":4,"con":5,"move":4},
+{"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
+[iron_lance.getInstance(),vulnerary.getInstance()],
+{"Lance":200},
+{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite})
 addAlly(player)
 """,
                                  "changemode(Game())"])]

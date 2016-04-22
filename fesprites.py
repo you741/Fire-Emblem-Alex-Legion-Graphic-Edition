@@ -7,6 +7,12 @@ playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+
                           for i in range(16)],10)
 playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
                         for i in range(12)] + playerMageAnimaSprite[0][1:],21)
+playerKnightStandSprite = image.load('images/Player/Knight/KnightAttackFrame1.png')
+playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png")
+                            for i in range(11)],5)
+playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png")
+                                for i in range(8)] + playerKnightLanceSprite[0],13)
+
 yoyoStandSprite = image.load("images/Yoyo/YoyoAttackFrame1.png")
 yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
                     for i in range(13)],5)
@@ -29,5 +35,6 @@ fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png")
 
 #MAP SPRITES
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif"),(30,30)) for i in range(4)],
-                  "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png"),(30,30)) for i in range(4)]}
+                  "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png"),(30,30)) for i in range(4)],
+                  "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif"),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[Surface((30,30))]*4}
