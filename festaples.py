@@ -365,7 +365,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
                     bestWeapon = w #sets the best stuff
     allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,bestAlly.x,bestAlly.y)
                  if (x,y) in moveableSquares] #all coordinates where enemy can attack ally
-    bestx,besty = allCoords[0] #temporary best coords - only becomes best if ally is optimal
+    bestx,besty = allCoords[0] #best place to move and attack ally
     for x,y in allCoords:
         if not canAttackTarget(bestAlly,x,y):
             #checks if ally can attack the enemy from position (x,y)
