@@ -1,6 +1,16 @@
 #fesprites.py
 #keeps all of the sprites
 from pygame import *
+def greyScale(img):
+    "returns a grey version of img"
+    new_img = Surface((img.get_width(),img.get_height()),SRCALPHA)
+    for x in range(img.get_width()):
+        for y in range(img.get_height()):
+            r,g,b,a = img.get_at((x,y))
+            grey = (r+g+b)//3
+            new_color = Color(grey,grey,grey,a)
+            new_img.set_at((x,y),new_color)
+    return new_img
 #ALLIES
 playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png')
 playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
@@ -38,3 +48,9 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png"),(30,30)) for i in range(4)],
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif"),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif"),(30,30)) for i in range(4)]}
+allyGreyMapSprites = {}
+for i,k in enumerate(allyMapSprites):
+    allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
+enemyGreyMapSprites = {}
+for i,k in enumerate(enemyMapSprites):
+    enemyGreyMapSprites[k] = [greyScale(img) for img in enemyMapSprites[k]]

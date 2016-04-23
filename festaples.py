@@ -179,7 +179,7 @@ def drawLevelUp(screen,person):
             person.stats[k] = newStatValue
             display.flip()
             time.wait(500)
-    time.wait(2000)
+    time.wait(1500)
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
@@ -361,6 +361,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
                     break
                 perdam = 100*enemy.getDamage(a,stage)/a.hp #percentage of health damage
                 if perdam > bestdam:
+                    bestdam = perdam
                     bestAlly = a
                     bestWeapon = w #sets the best stuff
     allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,bestAlly.x,bestAlly.y)
@@ -368,7 +369,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     bestx,besty = allCoords[0] #best place to move and attack ally
     for x,y in allCoords:
         if not canAttackTarget(bestAlly,x,y):
-            #checks if ally can attack the enemy from position (x,y)
+            #checks if ally can attack the enemy at position (x,y)
             #if they cannot, we set the bestx and besty to this value and break
             bestx,besty = x,y
             break

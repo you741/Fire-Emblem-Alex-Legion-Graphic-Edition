@@ -15,7 +15,6 @@ from feclasses import *
 from festaples import *
 from feterrain import *
 from feweapons import *
-from fesprites import *
 #---Initialization
 init()
 mixer.init()
@@ -53,6 +52,60 @@ sndEffs = mixer.Channel(1) #channel for sound effects
 #conquest = mixer.Sound("music/3-01-conquest.ogg")
 #----IMAGE LOAD----#
 logo = image.load("images/logo.png")
+def greyScale(img):
+    "returns a grey version of img"
+    new_img = Surface((img.get_width(),img.get_height()),SRCALPHA)
+    for x in range(img.get_width()):
+        for y in range(img.get_height()):
+            r,g,b,a = img.get_at((x,y))
+            grey = (r+g+b)//3
+            new_color = Color(grey,grey,grey,a)
+            new_img.set_at((x,y),new_color)
+    return new_img
+#ALLIES' ANIMATIONS
+playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png').convert_alpha()
+playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png").convert_alpha()
+                          for i in range(16)],10)
+playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png").convert_alpha()
+                        for i in range(12)] + playerMageAnimaSprite[0][1:],21)
+playerKnightStandSprite = image.load('images/Player/Knight/KnightAttackFrame1.png')
+playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png").convert_alpha()
+                            for i in range(11)],5)
+playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png").convert_alpha()
+                                for i in range(8)] + playerKnightLanceSprite[0],13)
+
+yoyoStandSprite = image.load("images/Yoyo/YoyoAttackFrame1.png").convert_alpha()
+yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png").convert_alpha()
+                    for i in range(13)],5)
+yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png").convert_alpha()
+                  for i in range(43)],29)
+
+albertStandSprite = playerMageStandSprite
+albertAnimacritSprite = playerMageAnimacritSprite
+albertAnimaSprite = playerMageAnimaSprite
+#ENEMIES' ANIMATIONS
+brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png").convert_alpha()
+brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png").convert_alpha()
+                       for i in range(14)],9)
+brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png").convert_alpha()
+                     for i in range(2)] + brigandAxeSprite[0],11)
+
+#MAGIC ANIMATIONS
+fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
+              for i in range(17)]
+
+#MAP SPRITES
+allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+allyGreyMapSprites = {}
+for i,k in enumerate(allyMapSprites):
+    allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
+enemyGreyMapSprites = {}
+for i,k in enumerate(enemyMapSprites):
+    enemyGreyMapSprites[k] = [greyScale(img) for img in enemyMapSprites[k]]
+#----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
 #WEAPONS
@@ -252,6 +305,7 @@ def attack(person,person2):
             if needLevelUp:
                 #level up
                 ally.levelUp()
+                drawLevelUp(screen,ally)
         display.flip()
         time.wait(500)
         return False
@@ -259,11 +313,14 @@ def attack(person,person2):
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,ally,enemy,False,chapterMaps[chapter])
+        person2hit = ally == person2 #person2hit becomes true if ally was person2
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,enemy,ally,True,chapterMaps[chapter])
     kill = False
     if checkDead(ally,enemy):
+        if ally.hp == 0:
+            return False #we exit function if ally is dead
         kill = True
     expgain = getExpGain(ally,enemy,kill) #experience points to gain
     expgain = min(100,expgain) #experience gain cannot exceed 100
@@ -694,6 +751,20 @@ class Game():
             a.stats["hp"] = a.maxhp
         draw.circle(screen,WHITE,(100,100),100) #NOTE TO ALBURITO!!!!!! !IJIOJOIASJFIOWJOIFWJFOIWJ!!!IJAOF! : th is this? got a circle fetish!? haha its a joke lol
         changemode(SaveGame())
+    def drawPeople(self):
+        "draws all people on the map"
+        for a in allies:
+            #draws one of four frames in the map sprite - changes sprites every 60 frames
+            if a not in self.attacked or a not in self.moved:
+                screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+            else:
+                #if the ally has moved already we draw it grey
+                screen.blit(allyGreyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
+        for e in enemies:
+            if e not in self.attacked or e not in self.moved:
+                screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+            else:
+                screen.blit(enemyGreyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
     def start(self):
         "starts a chapter, also serves a restart"
         global allies,enemies,oldAllies
@@ -736,6 +807,8 @@ class Game():
     def endTurn(self):
         "ends the turn"
         global running
+        self.attacked.clear()
+        self.moved.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         screenBuff = screen.copy()
         screen.blit(transform.scale(transRed,(1200,60)),(0,330)) #blits the text "ENEMY PHASE" on a translucent red strip
@@ -752,12 +825,8 @@ class Game():
                 if evnt.type == QUIT:
                     running = False
                     return 0
-            #DRAWS PERSONS
-            for a in allies:
-                #draws one of four frames in the map sprite - changes sprites every 60 frames
-                screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
-            for e in enemies:
-                screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+            #DRAWS PEOPLE
+            self.drawPeople()
             display.flip()
             time.wait(500)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
@@ -771,12 +840,8 @@ class Game():
                 bestAlly,bestX,bestY = getOptimalAlly(en,chapterMaps[chapter],attackableAllies,enMoves)
                 en.x,en.y = bestX,bestY
                 screen.blit(self.filler,(0,0)) #fills the screen
-                #DRAWS PERSONS
-                for a in allies:
-                    #draws one of four frames in the map sprite - changes sprites every 60 frames
-                    screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
-                for e in enemies:
-                    screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+                #DRAWS PEOPLE
+                self.drawPeople()
                 display.flip()
                 time.wait(500)
                 attack(en,bestAlly)
@@ -785,8 +850,12 @@ class Game():
             elif action == "move":
                 pass
             self.turn += 1 #increases turn by 1
+            self.moved.add(en)
+            self.attacked.add(en)
             display.flip()
             framelimiter.tick(60)
+        self.moved.clear()
+        self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         self.startTurn() #starts the turn      
     def gameOver(self):
@@ -1137,12 +1206,8 @@ class Game():
             fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
-        #DRAWS PERSONS
-        for a in allies:
-            #draws one of four frames in the map sprite - changes sprites every 60 frames
-            screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
-        for e in enemies:
-            screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
+        #DRAWS PEOPLE
+        self.drawPeople()
         #MAIN MENU MODE DISPLAY
         if self.mode == "mainmenu":
             #if it is menu mode we draw the menu
@@ -1201,7 +1266,7 @@ class Game():
             if self.selected2 == None:
                 #if we have no 2nd selected ally, we draw the selector around the 2nd selected ally
                 highlightedAlly = self.targetableAllies[self.selectedAlly] #highlighted ally
-                draw.rect(screen,WHITE,(highlightedAlly.x,highlightedAlly.y,30,30),1) #draws selector around highlighted ally
+                draw.rect(screen,WHITE,(highlightedAlly.x*30,highlightedAlly.y*30,30,30),1) #draws selector around highlighted ally
             else:
                 screen.fill(GREEN) #fills the screen with green
                 #draws item menu for both allies
