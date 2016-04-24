@@ -41,6 +41,13 @@ class Person():
         self.waterproof = False
         self.gift = gift #gift for killing unit; only applies to enemies
         self.exp = exp
+        self.caps = {"maxhp":60,
+                     "stren":20,
+                     "skl":20,
+                     "spd":20,
+                     "lck":20,
+                     "defen":20,
+                     "res":20} #caps for stats
     def getAdv(self,enemy):
         "returns whether weapon is advantageous or disadvantageous"
         #0 is disadvantageous, 1 is advantageous, -1 is neutral
@@ -173,6 +180,8 @@ class Person():
         for i,k in enumerate(self.growths):
             if randint(0,99) < self.growths[k]:
                 #increases stats based on luck
+                if eval("self."+k) >= self.caps[k]:
+                    continue #if we are at maximum, we don't increase this stat
                 exec("self."+k+"+=1")
                 
         self.exp = self.exp%100 #exp goes down to exp modulus 100

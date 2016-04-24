@@ -63,31 +63,31 @@ def greyScale(img):
             new_img.set_at((x,y),new_color)
     return new_img
 #ALLIES' ANIMATIONS
-playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png').convert_alpha()
-playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png").convert_alpha()
+playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png')
+playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
                           for i in range(16)],10)
-playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png").convert_alpha()
+playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
                         for i in range(12)] + playerMageAnimaSprite[0][1:],21)
 playerKnightStandSprite = image.load('images/Player/Knight/KnightAttackFrame1.png')
-playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png").convert_alpha()
+playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png")
                             for i in range(11)],5)
-playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png").convert_alpha()
+playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png")
                                 for i in range(8)] + playerKnightLanceSprite[0],13)
 
 yoyoStandSprite = image.load("images/Yoyo/YoyoAttackFrame1.png").convert_alpha()
-yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png").convert_alpha()
+yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
                     for i in range(13)],5)
-yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png").convert_alpha()
+yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
                   for i in range(43)],29)
 
 albertStandSprite = playerMageStandSprite
 albertAnimacritSprite = playerMageAnimacritSprite
 albertAnimaSprite = playerMageAnimaSprite
 #ENEMIES' ANIMATIONS
-brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png").convert_alpha()
-brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png").convert_alpha()
+brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png")
+brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
-brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png").convert_alpha()
+brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
                      for i in range(2)] + brigandAxeSprite[0],11)
 
 #MAGIC ANIMATIONS
@@ -164,7 +164,7 @@ allies = [] #allies
 bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},10)
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},20)
 enemies = []
 #----CHAPTERS----#
 #MAPS
@@ -277,6 +277,7 @@ def attack(person,person2):
     #Draws damage for attack 1
     screen.blit(actionFiller,(0,0)) #covers both persons
     singleAttack(screen,person,person2,isenemy,chapterMaps[chapter])
+    event.pump() #handles events so we don't get locked down
     if checkDead(ally,enemy):
         #gains exp
         if enemy.hp == 0:
@@ -297,6 +298,7 @@ def attack(person,person2):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter])
         person2hit = True
+    event.pump() #handles events so we don't get locked down
     if checkDead(ally,enemy):#gains exp
         if enemy.hp == 0:
             expgain = getExpGain(ally,enemy,True) #gains exp on a kill
@@ -317,6 +319,7 @@ def attack(person,person2):
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y):
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,enemy,ally,True,chapterMaps[chapter])
+    event.pump() #handles events so we don't get locked down
     kill = False
     if checkDead(ally,enemy):
         if ally.hp == 0:
@@ -328,12 +331,15 @@ def attack(person,person2):
         #if person2 did not hit and that was the ally, we only gain 1 exp
         expgain = 1
     drawExpGain(ally,expgain,screen)
+    event.pump() #handles events so we don't get locked down
     needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
     if needLevelUp:
         #level up
         ally.levelUp()
         drawLevelUp(screen,ally)
     time.wait(1000)
+    event.pump() #handles events so we don't get locked down
+    event.clear()
 #-------MANAGEMENT FUNCTIONS--------#
 #this is to help me manage image saving
 def stringifyImages(ally):
@@ -608,7 +614,7 @@ class NewGame():
                                 FilledSurface((200,50),GREEN,"MAGE",BLACK,monospace,(40,10)),
                                 ["global player",
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
-{'maxhp':55,'defen':10,'res':50,'stren':35,'spd':50,'skl':50,'lck':55},
+{'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
 {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})
@@ -802,7 +808,7 @@ class Game():
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
-        event.get()#clears events so that it doesnt allow events to occur as soon as this ends
+        event.clear()#clears events so that it doesnt allow events to occur as soon as this ends
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
         "ends the turn"

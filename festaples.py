@@ -130,7 +130,7 @@ def getBattleStats(person,person2,stage):
     else:
         hit=dam=crit = "--"
     return [stripNums(person.name),"HP: "+str(person.hp)+"/"+str(person.maxhp),
-                   "Hit: "+str(hit),"Dam: "+str(dam),"Crit: "+str(crit),"" if not person.equip else person.equip.name,
+                   "Hit: "+str(hit),"Dmg: "+str(dam),"Crt: "+str(crit),"" if not person.equip else person.equip.name,
                    "" if person.getAdv(person2) == -1 else ("Advantage" if person.getAdv(person2) else "Disadvantage")]
 #----Creation Functions----#
 def createEnemyList(enemies,amounts,coords):
@@ -206,8 +206,8 @@ def drawStatBox(screen,person1,person2,stage,x,y,color):
     draw.rect(screen,color,(x,y,50,50)) #draw rect background for text
     #draws text
     screen.blit(smallsans.render("Hit "+str(hit),True,WHITE),(x,y))
-    screen.blit(smallsans.render("Dam "+str(dam),True,WHITE),(x,y+17))
-    screen.blit(smallsans.render("Crit "+str(crit),True,WHITE),(x,y+34))
+    screen.blit(smallsans.render("Dmg "+str(dam),True,WHITE),(x,y+17))
+    screen.blit(smallsans.render("Crt "+str(crit),True,WHITE),(x,y+34))
 
 def drawBattleInfo(screen,ally,enemy,stage):
     "draws all the battle info on the screen"
