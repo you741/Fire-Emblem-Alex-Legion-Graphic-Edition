@@ -120,18 +120,6 @@ iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100)
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
-#------------------------------------------------------TESTING STUFF------------------------------------------------------#
-##file1 = shelve.open("saves/file1")
-##if not file1.get('display'):
-##    file1['display'] = "NEW gAME"
-
-##file1['allAllies'] = []
-##file2['allAllies'] = []
-##file3['allAllies'] = None
-##file1.close()
-##file2.close()
-##file3.close()
-#------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
 transBlue = Surface((30,30), SRCALPHA)
@@ -399,10 +387,11 @@ class Button():
             x = mx
         if y == None:
             y = my
-        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
-##        if self.background.get_at((self.x,self.y)) != (255,255,255):
-##            return True
-##        return False
+#        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
+        if Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
+            if self.background.get_at((x-self.x,y-self.y)) != (255,255,255):
+                return True
+        return False
     def draw(self,screen):
         "draws button on screen"
         if self.istouch():
