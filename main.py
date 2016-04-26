@@ -403,7 +403,22 @@ class Button():
         screen.blit(self.cbackground,(self.x,self.y))
         "runs button's func"
         exec("\n".join(self.func))
-        
+
+
+class Menu():
+    def __init__(self, x=0,y=0,width=0,height=0,background=Surface((1,1)),selected=0,items=[]):
+        self.x = x #co-rds
+        self.y = y
+        self.width = width #dimensions
+        self.height = height
+        self.background = backgroud #background of the menu, will most likely be a rectangle that we stretch (<> -> <==========>)
+        self.selected = selected #which item is being selected
+        self.items = items #items in the menu (this will most likely be 2d with commands
+    
+    
+    
+
+       
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
