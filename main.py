@@ -209,6 +209,7 @@ def save(file):
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
+    print(menu,x,y,width,height,menuselect)
     draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
         opt = menu[i].title() #option to draw
@@ -841,7 +842,7 @@ class Game():
                 time.wait(500)
                 attack(en,bestAlly)
                 if yoyo.hp == 0 or player.hp == 0:
-                    return 0 #if yoyo or the player dies we leave the function
+                    return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
                 pass
             self.turn += 1 #increases turn by 1
@@ -901,6 +902,8 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
+
+                
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
@@ -980,6 +983,8 @@ class Game():
                             self.mode = "mainmenu"
                             self.menu = ["end"] #menu has End turn
                             self.menuselect = 0
+
+                            
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares
@@ -1008,6 +1013,8 @@ class Game():
                             #WAIT OPTION
                             self.menu.append("wait") #a person can always wait
                     #MAIN MENU CLICK
+
+                            
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
