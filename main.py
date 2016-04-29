@@ -209,7 +209,6 @@ def save(file):
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
-    print(menu,x,y,width,height,menuselect)
     draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
         opt = menu[i].title() #option to draw
@@ -642,7 +641,7 @@ class NewGame():
 {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})
 addAlly(player)
 """,
-                                "changemode(Game())"]),
+                                "changemode(getStory(chapter))"]),
                          
                          Button(600,300,200,50,
                                 FilledSurface((200,50),BLUE,"KNIGHT",WHITE,monospace,(40,10)),
@@ -656,7 +655,7 @@ addAlly(player)
 {"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite})
 addAlly(player)
 """,
-                                 "changemode(Game())"])]
+                                 "changemode(getStory(chapter))"])]
         
     def draw(self,screen):
         "draws newgame screen"
@@ -738,6 +737,15 @@ addAlly(player)
             #draws class select buttons
             for b in self.buttons2:
                 b.draw(screen)
+
+def getStory(chapter,end=False):
+    "gets story based on the chapter number"
+    storyFile = open("chapters/chapter"+str(chapter)+".txt")
+    story = storyFile.readlines() #story
+    title = story[0].strip() #title
+    background = story[1].strip() #background image source
+    story = story[2:] #actual story
+    return Story(story,image.load(background),title)
 class Story():
     "screen mode for user to see the story"
     def __init__(self,dialogue,background,title,music=None):
@@ -747,32 +755,37 @@ class Story():
         self.title = title
         self.music=None
         self.currDial = 0 #current dialogue we are on
+        self.limit = len(dialogue) #limit of the dialogue - once reached the story ends
     def draw(self,screen):
         "draws screen on - starts on title screen"
-        screen.fill((125,100,255),(0,0))
+        screen.fill((125,100,255))
         title_img = papyrus.render(self.title,True,WHITE) #surface containing title
-        screen.blit(title_img,(600-title_img.get_width(),360-title_img.get_width())) #draws title in the center of the screen
+        screen.blit(title_img,(600-title_img.get_width()//2,360-title_img.get_width()//2)) #draws title in the center of the screen
     def playMusic(self):
         "Plays music"
         #WIP
         pass
-    def run(self):
+    def run(self,screen):
         "runs the story dialogue"
         global running
         fpsLimiter = time.Clock()
-        for frame in range(120):
-            #loops until the user presses z/x or until 120 frames
-            breakLoop = False
-            for e in event.get():
-                if e.type == QUIT:
-                    running = False
-                    return 0
-                if e.type == KEYDOWN:
-                    if e.key in [K_z,K_x]:
-                        breakLoop = True
-            if breakLoop:
-                break
-            fpsLimiter.tick(60)
+        if self.currDial == 0:
+            self.draw(screen)
+            for frame in range(120):
+                #loops until the user presses z/x or until 120 frames
+                breakLoop = False
+                for e in event.get():
+                    if e.type == QUIT:
+                        running = False
+                        return 0
+                    if e.type == KEYDOWN:
+                        if e.key in [K_z,K_x]:
+                            breakLoop = True
+                if breakLoop:
+                    break
+                display.flip()
+                fpsLimiter.tick(60)
+        screen.blit(self.background,(0,0))
         sentence = self.dialogue[self.currDial] #sentence to display
         character = 1 #up to which character we display
         while character <= len(sentence):
@@ -784,21 +797,24 @@ class Story():
                 if e.type == KEYDOWN:
                     if e.key == K_z:
                         character = len(sentence)
-            drawSentence(sentence[:character]) #draws the sentence up to character
+            drawSentence(screen,sentence[:character]) #draws the sentence up to character
             character += 1 #prepares to draw one more character
             display.flip()
-            fpsLimiter.tick(20) #limits it to 20 FPS
-        while True:
+            fpsLimiter.tick(30) #limits it to 30 FPS
+        breakLoop = False
+        while not breakLoop:
             #loops until user hits z or x to move on
             for e in event.get():
                 if e.type == QUIT:
                     running = False
-                    break
+                    breakLoop = True
                 if e.type == KEYDOWN:
                     if e.key == K_z or e.key == K_x:
                         self.currDial += 1
-                        break
-                
+                        breakLoop = True
+        if self.currDial >= self.limit:
+            #once we hit the limit we transition to the game mode
+            changemode(Game())
 class Game():
     "screen mode for user to actually play the game"
     def __init__(self):
