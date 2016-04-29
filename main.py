@@ -120,18 +120,6 @@ iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100)
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,"Heals for 10 HP")
-#------------------------------------------------------TESTING STUFF------------------------------------------------------#
-##file1 = shelve.open("saves/file1")
-##if not file1.get('display'):
-##    file1['display'] = "NEW gAME"
-
-##file1['allAllies'] = []
-##file2['allAllies'] = []
-##file3['allAllies'] = None
-##file1.close()
-##file2.close()
-##file3.close()
-#------------------------------------------------------TESTING STUFF------------------------------------------------------#
 
 #TRANSLUCENT SQUARES
 transBlue = Surface((30,30), SRCALPHA)
@@ -221,6 +209,7 @@ def save(file):
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
+    print(menu,x,y,width,height,menuselect)
     draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
         opt = menu[i].title() #option to draw
@@ -381,6 +370,7 @@ class FilledSurface(Surface):
 #----UI CLASSES----#
 #these classes are the user interface classes - any classes that help user interaction are here
 class Button():
+    "Allows user to perform an action by clicking on a button"
     def __init__(self,x=0,y=0,width=0,height=0,background=Surface((1,1)),hlbackground=Surface((1,1)),cbackground=Surface((1,1)),func=[]):
         "sets all the class's members"
         self.x = x #co-ordinates
@@ -399,10 +389,11 @@ class Button():
             x = mx
         if y == None:
             y = my
-        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
-##        if self.background.get_at((self.x,self.y)) != (255,255,255):
-##            return True
-##        return False
+#        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
+        if Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
+            if self.background.get_at((x-self.x,y-self.y)) != (255,255,255):
+                return True
+        return False
     def draw(self,screen):
         "draws button on screen"
         if self.istouch():
@@ -413,11 +404,40 @@ class Button():
         screen.blit(self.cbackground,(self.x,self.y))
         "runs button's func"
         exec("\n".join(self.func))
-        
+
+
+class Menu():
+    "menu so the user can select from a list of buttons"
+    def __init__(self, x=0,y=0,width=0,height=0,background=Surface((1,1)),selected=0,items=[]):
+        self.x = x #co-rds
+        self.y = y
+        self.width = width #dimensions
+        self.height = height
+        self.background = backgroud #background of the menu, will most likely be a rectangle that we stretch (<> -> <==========>)
+        self.selected = selected #which item is being selected
+        self.items = items #items in the menu (this will most likely be 2d with commands
+    def moveSelect(self):
+        "moves menu selector and returns new value"
+        #moves self.selected up and down
+        kp = key.get_pressed()
+        if kp[K_UP]:
+            self.selected -= 1
+        elif kp[K_DOWN]:
+            self.selected += 1
+        #wrapping around seleced
+        if self.selected < 0:
+            self.selected = len(items) - 1
+        elif self.selected >= len(items):
+            self.selected = 0
+    
+    
+    
+
+       
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
-    #start menu mode
+    "start menu mode"
     def __init__(self):
         "sets button list of mode"
         self.stopped = False
@@ -451,6 +471,7 @@ class StartMenu():
         for b in self.buttons:
             b.draw(screen)
 class SaveGame():
+    "Screen mode for saving the game"
     def __init__(self):
 
         self.background = Surface((1200,720))
@@ -534,6 +555,7 @@ class SaveGame():
             draw.rect(screen,YELLOW,(500,420-60+self.filenum*60,200,50),5)
             
 class LoadGame():
+    "screen for loading game files"
     def __init__(self):
         self.stopped = False
 
@@ -716,8 +738,69 @@ addAlly(player)
             #draws class select buttons
             for b in self.buttons2:
                 b.draw(screen)
-            
+class Story():
+    "screen mode for user to see the story"
+    def __init__(self,dialogue,background,title,music=None):
+        "initialize the Story class contains all dialogue (which also includes which picture to put)"
+        self.dialogue = dialogue
+        self.background = background
+        self.title = title
+        self.music=None
+        self.currDial = 0 #current dialogue we are on
+    def draw(self,screen):
+        "draws screen on - starts on title screen"
+        screen.fill((125,100,255),(0,0))
+        title_img = papyrus.render(self.title,True,WHITE) #surface containing title
+        screen.blit(title_img,(600-title_img.get_width(),360-title_img.get_width())) #draws title in the center of the screen
+    def playMusic(self):
+        "Plays music"
+        #WIP
+        pass
+    def run(self):
+        "runs the story dialogue"
+        global running
+        fpsLimiter = time.Clock()
+        for frame in range(120):
+            #loops until the user presses z/x or until 120 frames
+            breakLoop = False
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key in [K_z,K_x]:
+                        breakLoop = True
+            if breakLoop:
+                break
+            fpsLimiter.tick(60)
+        sentence = self.dialogue[self.currDial] #sentence to display
+        character = 1 #up to which character we display
+        while character <= len(sentence):
+            #loops to draw all the characters one by one
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key == K_z:
+                        character = len(sentence)
+            drawSentence(sentence[:character]) #draws the sentence up to character
+            character += 1 #prepares to draw one more character
+            display.flip()
+            fpsLimiter.tick(20) #limits it to 20 FPS
+        while True:
+            #loops until user hits z or x to move on
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    break
+                if e.type == KEYDOWN:
+                    if e.key == K_z or e.key == K_x:
+                        self.currDial += 1
+                        break
+                
 class Game():
+    "screen mode for user to actually play the game"
     def __init__(self):
         "initializes game"
         self.selectx,self.selecty = 0,0 #select cursor starting point
@@ -852,7 +935,7 @@ class Game():
                 time.wait(500)
                 attack(en,bestAlly)
                 if yoyo.hp == 0 or player.hp == 0:
-                    return 0 #if yoyo or the player dies we leave the function
+                    return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
                 pass
             self.turn += 1 #increases turn by 1
@@ -940,6 +1023,7 @@ class Game():
                         self.selectedEnemy = len(self.attackableEnemies)-1
                     self.selectx,self.selecty = self.attackableEnemies[self.selectedEnemy].x,self.attackableEnemies[self.selectedEnemy].y
                 if self.mode in ["trade","heal"] and self.selected2 == None:
+                    #changes ally selected
                     if kp[K_RIGHT] or kp[K_DOWN]:
                         self.selectedAlly += 1
                     if kp[K_LEFT] or kp[K_UP]:
@@ -956,7 +1040,6 @@ class Game():
                     elif kp[K_LEFT]:
                         self.menuselect[0] = 0
                     #vertical movement within the item menu
-                    selectedAllies = [self.selected,self.selected2] #the selected allies
                     self.menuselect[1] = self.moveMenuSelect(self.menuselect[1],5)
                 #---------Z--------#
                 if e.unicode.lower() == "z":
@@ -991,6 +1074,8 @@ class Game():
                             self.mode = "mainmenu"
                             self.menu = ["end"] #menu has End turn
                             self.menuselect = 0
+
+                            
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares

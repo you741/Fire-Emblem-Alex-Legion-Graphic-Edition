@@ -375,3 +375,31 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
             break
     enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
+#----STORY FUNCTIONS----#
+def drawSentence(sentence):
+    "draws the sentence as a dialogue box"
+    draw.rect(screen,BLUE,(0,900,1200,300))
+    words = sentence.split()
+    x = 10
+    y = 910
+    for i in range(len(words)):
+        word = words[i] #current word
+        nextWord = None
+        if i < len(words):
+            nextWord = words[i+1]
+        img = sans.render(word+" ",True,WHITE) #img of blitted word
+        width = img.get_width()
+        if width + x > 1200:
+            x = 10
+            y += 25 #moves on to next line if we go over
+        screen.blit(img,(x,y))
+        x += width
+def getStory(chapter):
+    "gets story based on the chapter number"
+    storyFile = open("chapter/chapter"+str(chapter)+".txt")
+    story = storyFile.strip().readlines() #story
+    title = story[0].strip() #title
+    background = story[1].strip() #background image source
+    story = story[2:] #actual story
+    return Story(story,image.load(background),title)
+    
