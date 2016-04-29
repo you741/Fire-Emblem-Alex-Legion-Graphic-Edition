@@ -995,6 +995,8 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
+
+                
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
@@ -1104,6 +1106,8 @@ class Game():
                             #WAIT OPTION
                             self.menu.append("wait") #a person can always wait
                     #MAIN MENU CLICK
+
+                            
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
