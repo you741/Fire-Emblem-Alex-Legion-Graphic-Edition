@@ -430,8 +430,6 @@ class Menu():
             self.selected = 0
     
     
-    
-
        
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
@@ -921,7 +919,7 @@ class Game():
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        framelimiter = time.Clock()
+        fpslimiter = time.Clock()
         #ENEMY'S PHASE GOES HERE
         for i in range(len(enemies)-1,-1,-1):
             en = enemies[i]
@@ -958,7 +956,7 @@ class Game():
             self.moved.add(en)
             self.attacked.add(en)
             display.flip()
-            framelimiter.tick(60)
+            fpslimiter.tick(60)
         self.moved.clear()
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen

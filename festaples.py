@@ -163,7 +163,7 @@ def drawLevelUp(screen,person):
     #that's how we calculate which stats changed
     screenBuff = screen.copy() #screen buffer    
     draw.rect(screen,(0,0,255),(300,240,600,240))
-    person.stats["lv"] += 1
+    person.stats["lv"] += 1 #increases stats level member by one (should be same as person's lv member after the increase)
     screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
     statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
                   "res":(300,450)} #dictionary of the coordinates of every stat
@@ -174,8 +174,9 @@ def drawLevelUp(screen,person):
     for i,k in enumerate(statCoords):
         #draws a +1 next to every stat gained
         if person.stats[k] != eval("person."+k):
+            event.pump() #pumps events so we don't get locked down
             newStatValue = eval("person."+k)
-            screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #150 more to the right
+            screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
             person.stats[k] = newStatValue
             display.flip()
             time.wait(500)
@@ -237,6 +238,7 @@ def drawHealthLoss(screen,person,dam,enemy=True):
     "draws a depleting health bar lowering at 20 FPS"
     framelimiter = time.Clock() #clock to delay the blitting
     for i in range(dam):
+        event.pump() #pumps events so we don't get locked down
         #for every point of damage we loop and remove it
         if person.hp == 0:
             break
@@ -259,6 +261,7 @@ def drawFrames(screen,frames):
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
     frameLimiter = time.Clock() #limits frames per second
     for f in frames:
+        event.pump() #pumps events so we don't get locked down
         screen.blit(filler,(0,0))
         screen.blit(f,(0,0)) #blits all frames
         frameLimiter.tick(20)
@@ -327,7 +330,20 @@ def drawExpGain(ally,expgain,screen):
         screen.blit(sans.render(str(appExp),True,WHITE),(420,340)) #writes exp
         display.flip()
         framelimiter.tick(20) #ticks the clock to make it 20 FPS
-        
+def drawChangingBar(amount,newAmount,total,x,y,width,height,label,wrap=True,col=BLUE):
+    "draws a changing bar"
+    screenBuff = screen.copy()
+    fpslimiter = time.Clock()
+    direction = 1 if amount < newAmount else -1 #direction of change
+    draw.rect(screen,col,(x,y,width,height))#draws outside rect
+    draw.rect(screen,BLACK,(x+30,y+15,width-60,height-30))#draws full bar black
+    draw.rect(screen,YELLOW,(x+30,y+15,int((width-60)*amount/total),height-30)) #draws filled part yellow
+    display.flip()
+    time.wait(200) #updates screen so user can see original for a bit
+    appAmount = amount #apparent amount
+    for i in range(amount,newAmount,direction):
+        #loops through each unit of change
+        event.pump() #pumps events so we don't get locked down
 #------ENEMY AI-------#
 def getOptimalSquare(moveableSquares,stage,allies):
     "returns optimal square to move to, assuming enemy can't attack"
