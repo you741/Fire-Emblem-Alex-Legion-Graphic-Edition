@@ -59,7 +59,7 @@ def greyScale(img):
         for y in range(img.get_height()):
             r,g,b,a = img.get_at((x,y))
             grey = (r+g+b)//3
-            new_color = Color(grey,grey,grey,a)
+            new_color = Color(grey,grey,grey,a) #greyscale version of pixel
             new_img.set_at((x,y),new_color)
     return new_img
 #ALLIES' ANIMATIONS
@@ -270,7 +270,7 @@ def attack(person,person2):
         #gains exp
         if enemy.hp == 0:
             expgain = getExpGain(ally,enemy,True) #gains exp on a kill
-            drawExpGain(ally,expgain,screen)
+            drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
@@ -290,7 +290,7 @@ def attack(person,person2):
     if checkDead(ally,enemy):#gains exp
         if enemy.hp == 0:
             expgain = getExpGain(ally,enemy,True) #gains exp on a kill
-            drawExpGain(ally,expgain,screen)
+            drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
@@ -318,7 +318,7 @@ def attack(person,person2):
     if ally == person2 and not person2hit:
         #if person2 did not hit and that was the ally, we only gain 1 exp
         expgain = 1
-    drawExpGain(ally,expgain,screen)
+    drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
     event.pump() #handles events so we don't get locked down
     needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
     if needLevelUp:
@@ -530,17 +530,17 @@ class SaveGame():
                 running = False
             if e.type == MOUSEBUTTONDOWN:
                 for b in self.buttons1:
-                    if b.istouch():
+                    if b.istouch() and currmode == self:
                         b.click()
                 if self.savingfile: 
                     for b in self.buttons2:
-                        if b.istouch():
+                        if b.istouch() and currmode == self:
                             b.click()
             screen.blit(self.background,(0,0))
             kp = key.get_pressed()
             if kp[K_x]:
                 self.savingfile = False
-        if self.stopped:
+        if currmode != self:
             return 0 #if we have stopped, we return to stop the method
         #draws buttons
         for b in self.buttons1:
@@ -601,12 +601,12 @@ class LoadGame():
                 running = False
             if e.type == MOUSEBUTTONDOWN:
                 for b in self.buttons1:
-                    if b.istouch():
+                    if b.istouch() and currmode == self:
                         b.click()
             kp = key.get_pressed()
             if kp[K_x]:
                 changemode(StartMenu())
-        if self.stopped:
+        if currmode != self:
             return 0 #if we have stopped, we return to stop the method
         #draws buttons
         for b in self.buttons1:
@@ -739,26 +739,22 @@ addAlly(player)
 def getStory(chapter,end=False):
     "gets story based on the chapter number"
     storyFile = open("chapters/chapter"+str(chapter)+".txt")
-    story = storyFile.readlines() #story
-    title = story[0].strip() #title
-    background = story[1].strip() #background image source
-    story = story[2:] #actual story
-    return Story(story,image.load(background),title)
+    story = storyFile.read().strip().split("\n") #story
+    background = story[0].strip() #background image source
+    story = story[1:] #actual story
+    return Story(story,image.load(background))
 class Story():
     "screen mode for user to see the story"
-    def __init__(self,dialogue,background,title,music=None):
+    def __init__(self,dialogue,background,music=None):
         "initialize the Story class contains all dialogue (which also includes which picture to put)"
         self.dialogue = dialogue
         self.background = background
-        self.title = title
         self.music=None
         self.currDial = 0 #current dialogue we are on
         self.limit = len(dialogue) #limit of the dialogue - once reached the story ends
     def draw(self,screen):
         "draws screen on - starts on title screen"
-        screen.fill((125,100,255))
-        title_img = papyrus.render(self.title,True,WHITE) #surface containing title
-        screen.blit(title_img,(600-title_img.get_width()//2,360-title_img.get_width()//2)) #draws title in the center of the screen
+        screen.blit(self.background,(0,0))
     def playMusic(self):
         "Plays music"
         #WIP
@@ -767,38 +763,30 @@ class Story():
         "runs the story dialogue"
         global running
         fpsLimiter = time.Clock()
-        if self.currDial == 0:
-            self.draw(screen)
-            for frame in range(120):
-                #loops until the user presses z/x or until 120 frames
-                breakLoop = False
+        screen.blit(self.background,(0,0))
+        func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
+        if func == "":
+            #display narration function
+            character = 1 #up to which character we display
+            while character <= len(sentence):
+                #loops to draw all the characters one by one
                 for e in event.get():
                     if e.type == QUIT:
                         running = False
                         return 0
                     if e.type == KEYDOWN:
-                        if e.key in [K_z,K_x]:
-                            breakLoop = True
-                if breakLoop:
-                    break
+                        if e.key == K_z:
+                            character = len(sentence)
+                drawSentence(screen,sentence[:character]) #draws the sentence up to character
+                character += 1 #prepares to draw one more character
                 display.flip()
-                fpsLimiter.tick(60)
-        screen.blit(self.background,(0,0))
-        sentence = self.dialogue[self.currDial] #sentence to display
-        character = 1 #up to which character we display
-        while character <= len(sentence):
-            #loops to draw all the characters one by one
-            for e in event.get():
-                if e.type == QUIT:
-                    running = False
-                    return 0
-                if e.type == KEYDOWN:
-                    if e.key == K_z:
-                        character = len(sentence)
-            drawSentence(screen,sentence[:character]) #draws the sentence up to character
-            character += 1 #prepares to draw one more character
-            display.flip()
-            fpsLimiter.tick(30) #limits it to 30 FPS
+                fpsLimiter.tick(30) #limits it to 30 FPS
+        elif func == "TITLE":
+            #display the title
+            screen.fill(BLACK)
+            draw.rect(screen,BLUE,(0,330,1200,60))
+            img = sans.render(sentence,True,WHITE) #img of string to blit
+            screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
         breakLoop = False
         while not breakLoop:
             #loops until user hits z or x to move on
@@ -1089,9 +1077,7 @@ class Game():
                             #if the user presses a blank spot, we set the mode to main menu
                             self.mode = "mainmenu"
                             self.menu = ["end"] #menu has End turn
-                            self.menuselect = 0
-
-                            
+                            self.menuselect = 0   
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares
@@ -1120,8 +1106,6 @@ class Game():
                             #WAIT OPTION
                             self.menu.append("wait") #a person can always wait
                     #MAIN MENU CLICK
-
-                            
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu[self.menuselect] == "end":
@@ -1191,6 +1175,8 @@ class Game():
                                 self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             else:
                                 #use option
+                                #draws increasing health
+                                drawChangingBar(screen,self.selected.hp,self.selected.hp+self.selectedItem.hpGain,self.selected.maxhp,420,330,360,60,"HP",False)
                                 if not self.selectedItem.use(self.selected):
                                     #uses consumable
                                     #if it breaks we remove it
@@ -1199,11 +1185,11 @@ class Game():
                                 self.attacked.add(self.selected)
                                 self.oldx,self.oldy = self.selected.x,self.selected.y #no moving back after using a consumable
                                 self.moveableSquares,self.attackableSquares = [],[] #empties moveablesquares
-                                self.mode = "optionmenu"
+                                self.mode = "freemove"
                                 self.menuselect = 0
                             self.selectedItem = None #resets selectedItem
-                        if len(self.selected.items) == 0:
-                            #if we have no items left, we go back to option menu and remove items from the list
+                        if len(self.selected.items) == 0 and self.optselected:
+                            #if we discarded all items, we go back to option menu and remove item
                             self.menu.remove("item")
                             self.mode = "optionmenu"
                             self.menuselect = 0
@@ -1273,16 +1259,19 @@ class Game():
                     elif self.mode == "attack":
                         self.menuselect = 0
                         self.mode = "itemattack"
-                if e.unicode == "v":
-                    #skips battle for now
-                    self.gameVictory()
-        if self.stopped:
+        if currmode != self:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
-        if self.mode == "gameVictory":
-            return 0
-        if self.mode == "gameover":
-            return 0
+        if len(self.moved) == len(self.attacked) == len(allies):
+            #if all allies have moved and attacked, we end the turn by default
+            self.mode = "enemyphase"
+            self.endTurn() #ends turn
+        if len(enemies) == 0:
+            #no more enemies means the player won
+            self.mode = "gameVictory"
+            self.gameVictory()
+        if self.mode in ["gameVictory","gameover"]:
+            return 0#we quit the function if it is gameVictory or game over
         screen.blit(self.filler,(0,0)) #blits the filler
         if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
             self.gameOver()

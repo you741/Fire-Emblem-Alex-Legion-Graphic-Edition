@@ -309,41 +309,34 @@ def singleAttack(screen,person,person2,isenemy,stage):
             person.removeItem(person.equip) #removes the weapon
     time.wait(300)
 
-def drawExpGain(ally,expgain,screen):
-    "draws exp gain (a bar filling up with exp at 20 FPS)"
-    screenBuff = screen.copy()
-    framelimiter = time.Clock() #clock to limit blitting to 20 FPS
-    draw.rect(screen,BLUE,(420,330,360,60)) #backdrop for exp bar
-    draw.rect(screen,BLACK,(450,345,300,30)) #draws exp bar black (non-filled exp)
-    draw.rect(screen,YELLOW,(450,345,int(300*(ally.exp/100)),30)) #draws filled exp
-    screen.blit(sans.render(str(ally.exp),True,WHITE),(422,335)) #writes exp
-    display.flip()
-    time.wait(200)
-    appExp = ally.exp #apparent exp
-    for i in range(expgain):
-        appExp += 1
-        if appExp >= 100:
-            appExp = 0 #makes sure apparent Experience does not exceed 99
-        draw.rect(screen,BLUE,(420,330,360,60)) #backdrop for exp bar
-        draw.rect(screen,BLACK,(450,345,300,30))
-        draw.rect(screen,YELLOW,(450,345,int(300*(appExp/100)),30)) #draws filled exp bar
-        screen.blit(sans.render(str(appExp),True,WHITE),(420,340)) #writes exp
-        display.flip()
-        framelimiter.tick(20) #ticks the clock to make it 20 FPS
-def drawChangingBar(amount,newAmount,total,x,y,width,height,label,wrap=True,col=BLUE):
+def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=True,col=BLUE):
     "draws a changing bar"
     screenBuff = screen.copy()
-    fpslimiter = time.Clock()
     direction = 1 if amount < newAmount else -1 #direction of change
     draw.rect(screen,col,(x,y,width,height))#draws outside rect
     draw.rect(screen,BLACK,(x+30,y+15,width-60,height-30))#draws full bar black
     draw.rect(screen,YELLOW,(x+30,y+15,int((width-60)*amount/total),height-30)) #draws filled part yellow
+    draw.rect(screen,col,(x,y-25,50,25)) #draws a background for the label
+    screen.blit(sans.render(label,True,WHITE),(x,y-25)) #blits label
+    screen.blit(sans.render(str(amount),True,WHITE),(x+2,y+5)) #writes amount
     display.flip()
     time.wait(200) #updates screen so user can see original for a bit
     appAmount = amount #apparent amount
-    for i in range(amount,newAmount,direction):
+    for i in range(abs(newAmount-amount)):
         #loops through each unit of change
-        event.pump() #pumps events so we don't get locked down
+        appAmount += direction #changes apparent amount
+        if wrap and appAmount >= total:
+            appAmount = 0
+        elif appAmount >= total:
+            appAmount = total #if we do not wrap the apparent amout becomes max
+        draw.rect(screen,col,(x,y,width,height))#draws outside rect
+        draw.rect(screen,BLACK,(x+30,y+15,width-60,height-30))#draws full bar black
+        draw.rect(screen,YELLOW,(x+30,y+15,int((width-60)*appAmount/total),height-30)) #draws filled part yellow
+        draw.rect(screen,col,(x,y-25,50,25)) #draws a background for the label
+        screen.blit(sans.render(label,True,WHITE),(x,y-25)) #blits label
+        screen.blit(sans.render(str(appAmount),True,WHITE),(x+2,y+5)) #writes amount
+        display.flip()
+        time.wait(50)
 #------ENEMY AI-------#
 def getOptimalSquare(moveableSquares,stage,allies):
     "returns optimal square to move to, assuming enemy can't attack"
@@ -394,10 +387,10 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence):
     "draws the sentence as a dialogue box"
-    draw.rect(screen,BLUE,(0,420,1200,300))
+    draw.rect(screen,BLUE,(0,520,1200,200))
     words = sentence.split()
     x = 10
-    y = 430
+    y = 530
     for i in range(len(words)):
         word = words[i] #current word
         nextWord = None

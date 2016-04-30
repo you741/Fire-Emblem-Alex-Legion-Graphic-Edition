@@ -1,4 +1,3 @@
-Prologue: The lost one in the woods
 images/backgrounds/forest.jpg
 :Long ago, the land of Randonia was ruled by the kingdom of randomness.
 :The man who started this kingdom was named King You Zhou I.
@@ -9,4 +8,5 @@ images/backgrounds/forest.jpg
 :Only Prince You Zhou XVII managed to escape, along with a few trustworthy helpers.
 :However Alex supporting bandits separated Prince You Zhou from his allies.
 :You Zhou now finds a man unconscious in the woods of Leadia...
+TITLE:Prologue- The lost one in the woods
 Yoyo: I found you sleeping here. I'm Prince You Zhou XVII, but you can call me Yoyo, as my formal name is quite long.
