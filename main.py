@@ -434,6 +434,10 @@ class Menu():
             self.selected = len(self.items) - 1
         elif self.selected >= len(self.items):
             self.selected = 0
+    def makeBackground(self):
+        "transforms the background based on how many items are in it"
+        #WIP
+        pass
     def draw(self):
         "draws a list of strings as a vertical menu at positions x and y"
         draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
@@ -849,7 +853,7 @@ class Game():
         self.framecounter = 0
         self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.mode = "freemove" #mode Game is in
-        self.menu = Menu(0,0,0,0,FilledSurface((200,50),BLUE,"",WHITE,monospace,(40,10)),0,[]) #menu for optionmenu mode
+        self.menu = Menu(0,0,0,0,FilledSurface((200,50),RED,"",WHITE,monospace,(40,10)),0,[]) #menu for optionmenu mode
         self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
         self.selected = None #selected ally
         self.selected2 = None #2nd selected ally - only for trading option
