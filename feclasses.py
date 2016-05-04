@@ -14,7 +14,7 @@ weaponTriangle = {"Sword":"Axe",
 #in the format advantageous:disadvantageous
 class Person():
     "person class - root of all classes"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         "initializes person"
         #takes in stats and growth - dictionaries
         self.name = name
@@ -24,6 +24,7 @@ class Person():
         self.items = items #items
         self.mast = mast #mastery of weapons
         self.anims = anims #animations
+        self.face = face #face
         #the way animations are stored is through a dictionary
         #each key points to a list of frames
         #some items will be a tuple that represents
@@ -206,11 +207,11 @@ class Person():
         return internalLV
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.gift,self.exp)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,self.gift,self.exp)")
 class Mage(Person):
     "mage class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
-        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
         self.magical = True
 class Knight(Person):
     "knight class"
@@ -223,7 +224,7 @@ class Lord(Person):
     pass
 class Brigand(Person):
     "brigand class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,gift=0,exp=0):
-        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
         self.mountainous = True
     

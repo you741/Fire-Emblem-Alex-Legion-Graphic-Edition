@@ -19,6 +19,8 @@ sans = font.SysFont("Comic Sans MS",20)
 smallsans = font.SysFont("Chomic Sans MS",15)
 papyrus = font.SysFont("Papyrus",20)
 
+fpsLimiter = time.Clock() #fps Limiting clock
+
 #----String formatting----#
 def stripNums(string):
     "strips all numbers from end of a string"
@@ -236,7 +238,6 @@ def drawBattleInfo(screen,ally,enemy,stage):
         
 def drawHealthLoss(screen,person,dam,enemy=True):
     "draws a depleting health bar lowering at 20 FPS"
-    framelimiter = time.Clock() #clock to delay the blitting
     for i in range(dam):
         event.pump() #pumps events so we don't get locked down
         #for every point of damage we loop and remove it
@@ -254,17 +255,16 @@ def drawHealthLoss(screen,person,dam,enemy=True):
         drawHealthBar(screen,person,x,y)
         screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
         display.flip()
-        framelimiter.tick(20) #lowers health at 20 FPS
+        fpsLimiter.tick(20) #lowers health at 20 FPS
         
 def drawFrames(screen,frames):
     "draws all frames with an FPS of 20"
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
-    frameLimiter = time.Clock() #limits frames per second
     for f in frames:
         event.pump() #pumps events so we don't get locked down
         screen.blit(filler,(0,0))
         screen.blit(f,(0,0)) #blits all frames
-        frameLimiter.tick(20)
+        fpsLimiter.tick(20)
         display.flip()
         
 def singleAttack(screen,person,person2,isenemy,stage):
