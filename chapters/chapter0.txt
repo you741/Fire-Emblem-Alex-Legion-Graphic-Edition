@@ -10,3 +10,12 @@ images/backgrounds/forest.jpg
 :You Zhou now finds a man unconscious in the woods of Leadia...
 TITLE:Prologue- The lost one in the woods
 Yoyo: I found you sleeping here. I'm Prince You Zhou XVII, but you can call me Yoyo, as my formal name is quite long.
+*Player*: I forget... who I am...
+Yoyo: Do you at least remember your name?
+*Player*: I think it was... *Player*...
+Yoyo: Pleasure to be your acquaintance. Come with me to Hypobrit and I'll find somewhere safe for you to stay. Do you need anything -
+:*Bandits flood the fields*
+Bandit: Haha! Got ya surrounded. Prepare to die!
+Yoyo: Oh no! The bandits caught up to me! Quick! Hide!
+*Player*: No... for some reason I feel inclined to help you fight.
+Yoyo: Alright, just be careful!

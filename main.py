@@ -105,6 +105,9 @@ for i,k in enumerate(allyMapSprites):
 enemyGreyMapSprites = {}
 for i,k in enumerate(enemyMapSprites):
     enemyGreyMapSprites[k] = [greyScale(img) for img in enemyMapSprites[k]]
+faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
+                      "Player":image.load("images/faces/player.png"),
+                      "Bandit":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
@@ -139,20 +142,20 @@ yoyo = Lord("Yoyo",0,0,
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
-               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite})
+               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite},faces["Yoyo"])
 albert = Mage("Albert",0,0,
               {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
                 "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
               [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
-              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})#test person for chapter 1
+              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces["Player"])#test person for chapter 1
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},20)
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 enemies = []
 #----CHAPTERS----#
 #MAPS
@@ -167,12 +170,15 @@ chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),
                ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
-#CHAPTER MUSIC
+
+#----MUSIC----#
+#add at the end because Albert's mac is funny
 #each index represents what music is played in the chapter of that index
 #chapterMusic = [conquest]
 
-#important variables for the Game class
+#miscellaneous
 chapter = 0 #changes when load new/old game, so stays global
+fpsLimiter = time.Clock()
 
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
@@ -636,7 +642,7 @@ class NewGame():
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
-{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite})
+{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'])
 addAlly(player)
 """,
                                 "changemode(getStory(chapter))"]),
@@ -650,7 +656,7 @@ addAlly(player)
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
-{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite})
+{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'])
 addAlly(player)
 """,
                                  "changemode(getStory(chapter))"])]
@@ -739,10 +745,11 @@ addAlly(player)
 def getStory(chapter,end=False):
     "gets story based on the chapter number"
     storyFile = open("chapters/chapter"+str(chapter)+".txt")
-    story = storyFile.read().strip().split("\n") #story
+    story = storyFile.read().strip().replace("*Player*",player.name).split("\n") #story
     background = story[0].strip() #background image source
     story = story[1:] #actual story
     return Story(story,image.load(background))
+
 class Story():
     "screen mode for user to see the story"
     def __init__(self,dialogue,background,music=None):
@@ -759,34 +766,58 @@ class Story():
         "Plays music"
         #WIP
         pass
+    def writeDialogue(self,sentence):
+        "writes the sentence on the screen character by character"
+        global running
+        character = 1 #up to which character we display
+        while character <= len(sentence):
+            #loops to draw all the characters one by one
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key == K_z:
+                        character = len(sentence)
+            drawSentence(screen,sentence[:character]) #draws the sentence up to character
+            character += 1 #prepares to draw one more character
+            display.flip()
+            fpsLimiter.tick(30) #limits it to 30 FPS
+        return 1
     def run(self,screen):
         "runs the story dialogue"
         global running
-        fpsLimiter = time.Clock()
         screen.blit(self.background,(0,0))
         func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
+        
         if func == "":
-            #display narration function
-            character = 1 #up to which character we display
-            while character <= len(sentence):
-                #loops to draw all the characters one by one
-                for e in event.get():
-                    if e.type == QUIT:
-                        running = False
-                        return 0
-                    if e.type == KEYDOWN:
-                        if e.key == K_z:
-                            character = len(sentence)
-                drawSentence(screen,sentence[:character]) #draws the sentence up to character
-                character += 1 #prepares to draw one more character
-                display.flip()
-                fpsLimiter.tick(30) #limits it to 30 FPS
+            #displays narration
+            if not self.writeDialogue(sentence):
+                #writes narration
+                return 0 #if it returns false it means the user quit, so we quit as well
         elif func == "TITLE":
             #display the title
             screen.fill(BLACK)
             draw.rect(screen,BLUE,(0,330,1200,60))
             img = sans.render(sentence,True,WHITE) #img of string to blit
             screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
+        else:
+            #displays a character talking (func = name of character in this case)
+            allynames = [a.name.lower() for a in allAllies] #names of all allies
+            x=0
+            if func.lower() not in allynames:
+                x = 900 #changes the x to other side of the screen
+            if func.lower() == player.name.lower():
+                img = faces["Player"] #player's face
+            else:
+                img = faces[func] #anyone else's face
+            screen.blit(img,(x,410)) #blits face of character speaking
+            draw.rect(screen,YELLOW,(x,490,300,30)) #draws background box for name
+            draw.rect(screen,BLUE,(x+2,492,294,26))
+            screen.blit(sans.render(func,True,WHITE),(x+2,490)) #draws the name
+            if not self.writeDialogue(sentence):
+                #writes dialogue
+                return 0 #if it returns false it means the user quit, so we quit as well
         breakLoop = False
         while not breakLoop:
             #loops until user hits z or x to move on
@@ -798,6 +829,8 @@ class Story():
                     if e.key == K_z or e.key == K_x:
                         self.currDial += 1
                         breakLoop = True
+            display.flip()
+            fpsLimiter.tick(60) #limits to 60 FPS
         if self.currDial >= self.limit:
             #once we hit the limit we transition to the game mode
             changemode(Game())
@@ -808,7 +841,6 @@ class Game():
         self.selectx,self.selecty = 0,0 #select cursor starting point
         self.framecounter = 0
         self.clickedFrame = 0 #the frame user clicked (pressed z)
-        self.fpsTracker = time.Clock() #fpsTracker
         self.mode = "freemove" #mode Game is in
         self.menuselect = 0 #option in menu selected
         self.menu = [] #menu for optionmenu mode
@@ -901,13 +933,13 @@ class Game():
         self.attacked.clear()
         self.moved.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
+        self.drawPeople()
         screenBuff = screen.copy()
         screen.blit(transform.scale(transRed,(1200,60)),(0,330)) #blits the text "ENEMY PHASE" on a translucent red strip
         screen.blit(papyrus.render("ENEMY PHASE",True,WHITE),(450,340))
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        fpslimiter = time.Clock()
         #ENEMY'S PHASE GOES HERE
         for i in range(len(enemies)-1,-1,-1):
             en = enemies[i]
@@ -944,7 +976,7 @@ class Game():
             self.moved.add(en)
             self.attacked.add(en)
             display.flip()
-            fpslimiter.tick(60)
+            fpsLimiter.tick(60)
         self.moved.clear()
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
@@ -952,7 +984,7 @@ class Game():
     def gameOver(self):
         "draws game over screen"
         for i in range(50):
-            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fadinge effect
+            screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fading effect
             display.flip()
             time.wait(50)
         screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
@@ -997,13 +1029,14 @@ class Game():
                     self.start()
                     continue
                 kp = key.get_pressed()
-
-                
                 #MOVEMENT OF SELECTION CURSOR OR MENU OPTION
+                #HANDLES ARROW KEYS
+                #----MOVE MODE
                 if self.mode in ["freemove","move"]:
                     #freemove moves freely; move picks a location
                     self.moveSelect() #handles movements by player
                     self.clickedFrame = self.framecounter #sets the clickedFrame to self
+                #----MENU MODE
                 if self.mode in ["optionmenu","itemattack","item","mainmenu"]:                    
                     #moves selected menu item
                     if self.mode in ["optionmenu","mainmenu"]:
@@ -1015,6 +1048,7 @@ class Game():
                             self.optselected = self.moveMenuSelect(self.optselected,2) #item submenu has a limit 2
                     else:
                         self.menuselect = self.moveMenuSelect(self.menuselect,5)
+                #----ATTACK MODE
                 if self.mode == "attack":
                     #changes enemy selected
                     if kp[K_RIGHT] or kp[K_DOWN]:
@@ -1026,6 +1060,7 @@ class Game():
                     elif self.selectedEnemy == -1:
                         self.selectedEnemy = len(self.attackableEnemies)-1
                     self.selectx,self.selecty = self.attackableEnemies[self.selectedEnemy].x,self.attackableEnemies[self.selectedEnemy].y
+                #----TRADE/HEAL MODE
                 if self.mode in ["trade","heal"] and self.selected2 == None:
                     #changes ally selected
                     if kp[K_RIGHT] or kp[K_DOWN]:
@@ -1262,7 +1297,7 @@ class Game():
         if currmode != self:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
-        if len(self.moved) == len(self.attacked) == len(allies):
+        if len(self.moved) == len(self.attacked) == len(allies) and self.mode != "enemyphase":
             #if all allies have moved and attacked, we end the turn by default
             self.mode = "enemyphase"
             self.endTurn() #ends turn
@@ -1379,6 +1414,11 @@ class Game():
                 if self.selectedItem != None:
                     #if the selected Item isn't none, we draw the cursor
                     draw.rect(screen,WHITE,((8+self.selectedItem[0]*16)*30,(9+self.selectedItem[1])*30,240,30),1)
+        #INFO MODE DISPLAY
+        #displays character info screen
+        if self.mode == "info":
+            screen.fill(RED)
+            draw.rect(screen,BLUE,(600,0,600,360)) #blits background for stats
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
         if self.mode == "freemove":
@@ -1403,7 +1443,7 @@ class Game():
         #----------------ENDING THE LOOP-------------------#
         display.flip()
         self.framecounter += 1 #increases frame counter
-        self.fpsTracker.tick(60) #limits FPS to 60
+        fpsLimiter.tick(60) #limits FPS to 60
 #----CHANGE MODE FUNCTION----#
 def changemode(mode):
     "changes the screen's mode"
