@@ -187,7 +187,7 @@ def addAlly(ally):
     allAllies.append(ally) #adds ally to allAllies
 def load(file):
     "loads the file into the game, and returning 0 if it is empty"
-    global chapter,allAllies
+    global chapter,allAllies,player
     if "chapter" not in file:
         file.close()
         changemode(NewGame())#goes to new game
@@ -359,7 +359,7 @@ def imagifyStrings(ally):
         if w.anims != None:
             w.anims = eval(w.anims)
     #resets the faces
-    if ally.name.lower() == player.name.lower():
+    if ally.name.lower() not in usedNames:
         #if it's the player we set to player face
         ally.face = faces["Player"]
     else:
@@ -1008,7 +1008,7 @@ class Game():
             time.wait(50)
         screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
         display.flip()
-        changemode(StartMenu)
+        self.mode = "gameover"
     def moveSelect(self):
         "moves selector"
         kp = key.get_pressed()
@@ -1312,7 +1312,12 @@ class Game():
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
-
+        if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
+            self.gameOver()
+            return 0
+        if self.mode in ["gameVictory","gameover"]:
+            display.flip()
+            return 0#we quit the function if it is gameVictory or game over
         if len(self.moved) == len(self.attacked) == len(allies) and self.mode != "enemyphase":
             #if all allies have moved and attacked, we end the turn by default
             self.mode = "enemyphase"
@@ -1321,13 +1326,7 @@ class Game():
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()
-        if self.mode in ["gameVictory","gameover"]:
-            return 0#we quit the function if it is gameVictory or game over
         screen.blit(self.filler,(0,0)) #blits the filler
-        if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
-            self.gameOver()
-            self.mode = "gameover"
-            return 0
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
         if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
