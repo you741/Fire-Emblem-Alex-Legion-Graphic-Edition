@@ -1,26 +1,33 @@
 from pygame import *
-from copy import *
+from math import *
 screen = display.set_mode((1200,720))
-img = image.load("images/logo.png")
+img = image.load("images/faces/Yoyo.png")
 
-def makeBackground(background,tilenum):
-    ##background should be all set width and height
-    background = transform.smoothscale(background,(300,30))
-    tiledbackground = Surface((300,int(30*tilenum)))
-    ##take top quarter, bottom quarter, place at top and bottom
+def tileBackground(background,tilenum):
+    "returns tiled background tilenum times, tilenum > 0"
+    tiledbackground = Surface((background.get_width(),background.get_height()*tilenum))
+    ##take top tier, bottom tier, place at top and bottom
     ##stretch the middle
-    top = copy(background.subsurface((0,0,300,30//4)))
-    bottom = copy(background.subsurface((0,90//4,300,30//4)))
-    middle = copy(background.subsurface((0,90//4,300,30//4)))
+    top = background.subsurface((0,0,int(background.get_width()),int(background.get_height()/3)))
+    bottom = background.subsurface((0,int(2*(background.get_height()/3)),int(background.get_width()),int(background.get_height()/3)))
+    middle = background.subsurface((0,int(background.get_height()/3),int(background.get_width()),int(background.get_width()/3)))
+    ##for each tilenum-1(tilenum times, but the original is already there, and starts at 0), blit 3 of the middle
+    for i in range (tilenum):
+        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((0)*background.get_height()/3)))
+        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((1)*background.get_height()/3)))
+        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((2)*background.get_height()/3)))
     tiledbackground.blit(top,(0,0))
-    tiledbackground.blit(bottom,(0,tiledbackground.get_height()-30//4))
-    for i in range (tilenum-1):
-        tiledbackground.blit(middle,(0,i*30//2+30//4))
+    tiledbackground.blit(middle,(0,int(tiledbackground.get_height()/3)))
+    tiledbackground.blit(bottom,(0,int(tiledbackground.get_height()-background.get_height()/3)))
+
     return tiledbackground
+
+
 while True:
     for e in event.get():
         if e.type == QUIT:
             break
-    screen.blit(makeBackground(img,5),(0,0))
+    screen.blit(makeBackground(img,8),(0,0))
+    screen.blit(img,(500,500))
     display.flip()
 quit()
