@@ -1143,10 +1143,11 @@ class Game():
                             #WAIT OPTION
                             self.menu.items.append("wait") #a person can always wait
                     #MAIN MENU CLICK
+
+                            
                     elif self.mode == "mainmenu":
                         #allows user to select options
                         if self.menu.items[self.menu.selected].lower() == "end":
-                            print("meow")
                             self.mode = "enemyphase"
                             self.endTurn() #ends turn
                     #OPTION MENU CLICK
