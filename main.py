@@ -1437,9 +1437,27 @@ class Game():
         #INFO MODE DISPLAY
         #displays character info screen
         if self.mode == "info":
-            screen.fill(RED)
-            draw.rect(screen,BLUE,(600,0,600,420)) #blits background for stats
-            screen.blit(transform.scale(self.selected.face,(450,400)),(75,10))
+            screen.fill(GREEN)
+            a = self.selected #selected ally
+            draw.rect(screen,BLUE,(600,100,600,520)) #blits background for stats
+            displayList = [["Str: "+str(a.stren),"Move: "+str(a.move)],
+                           ["Skill: "+str(a.skl),"Con: "+str(a.con)],
+                           ["Spd: "+str(a.spd),""],
+                           ["Luck: "+str(a.lck),""],
+                           ["Def: "+str(a.defen),""],
+                           ["Res: "+str(a.res),""]]
+            draw.rect(screen,BLUE,(610,20,580,60))
+            screen.blit(sans.render("PERSONAL DATA",True,WHITE),(610,30))
+            for i in range(len(displayList)):
+                #blits all the things in displayList
+                #all the items are lists representing a row
+                cell1,cell2 = displayList[i] #cell1 and cell2 in the row
+                screen.blit(sans.render(cell1,True,WHITE),(610,100+i*30))
+                screen.blit(sans.render(cell2,True,WHITE),(910,100+i*30))
+            draw.rect(screen,(230,240,233),(30,30,540,520)) #background for face
+            screen.blit(transform.scale(self.selected.face,(450,400)),(75,40))
+            screen.blit(sans.render(stripNums(a.name),True,BLACK),(75,440)) #blits name of the selected ally
+            screen.blit(transform.scale(transBlack,(570,150)),(0,560))
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
         if self.mode == "freemove":
