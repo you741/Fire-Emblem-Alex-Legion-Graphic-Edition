@@ -226,7 +226,7 @@ def drawItemMenu(person,x,y,menuselect):
         x -= 9
     if y + 5 > 24:
         y -= 4
-    draw.rect(screen,BLUE,(x*30,y*30,240,150))
+    draw.rect(screen,BLUE,(x*30,y*30,240,150)) #########CANCEEEEEEEEERRRRRRRRRR
     for i in range(5):
         if i < len(person.items):
             col = WHITE
@@ -427,9 +427,14 @@ class Menu():
         self.background = background #background of the menu, will most likely be a rectangle that we stretch (<> -> <==========>)
         self.selected = selected #which item is being selected
         self.items = items #items in the menu (this will most likely be 2d with commands
+        self.subMenu = None #allows for menus inside menus
+        self.subMenuSelecting = False #check if selecting in the submenu
     def moveSelect(self):
         "moves menu selector and returns new value"
         #moves self.selected up and down
+        if self.subMenu:
+            #this is menu object that scrolls through there.
+            pass
         kp = key.get_pressed()
         if kp[K_UP]:
             self.selected -= 1
@@ -452,9 +457,25 @@ class Menu():
             opt = self.items[i].title() #option to draw
             screen.blit(sans.render(opt,True,WHITE),(self.x*30,(self.y+i)*30))
         draw.rect(screen,WHITE,(self.x*30,(self.y+self.selected)*30,self.width,30),1) #draws a border around the selected option
-
-    
-       
+    def drawItem(self,person):
+        "draws an item menu for a person"
+        ##controlling coordinates?
+        if self.x + 8 > 39:
+            self.x -= 9
+        if self.y + 5 > 24:
+            self.y -= 4
+        draw.rect(screen,BLUE,(self.x*30,self.y*30,240,150)) #########CANCEEEEEEEEERRRRRRRRRR
+        for i in range(5):
+            if i < len(person.items):
+                col = WHITE
+                if type(person.items[i]) == Weapon:
+                    if not person.canEquip(person.items[i]):
+                        #if the person cannot equip, the color goes grey
+                        col = GREY
+                screen.blit(sans.render(person.items[i].name,True,col),(self.x*30,(self.y+i)*30))
+                screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((self.x+6)*30,(self.y+i)*30)) #blits durability
+        draw.rect(screen,WHITE,(self.x*30,(self.y+menuselect)*30,240,30),1) #draws selected item
+           
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
@@ -1375,7 +1396,7 @@ class Game():
         #ATTACK MODE DISPLAY
         if self.mode == "itemattack":
             #displays item selection menu for attack
-            drawItemMenu(self.selected,self.selected.x+1,self.selected.y,self.menu.selected)
+            self.menu.drawItem(self.selected)
         if self.mode == "attack":
             #highlights all attackable squares
             fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed)
