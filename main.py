@@ -432,15 +432,19 @@ class Menu():
     def moveSelect(self):
         "moves menu selector and returns new value"
         #moves self.selected up and down
-        if self.subMenu != None:
+
+        if self.subMenuSelecting:
             #this is menu object that scrolls through there.
             self.subMenu.moveSelect()
+            
         kp = key.get_pressed()
         if kp[K_UP]:
             self.selected -= 1
         elif kp[K_DOWN]:
             self.selected += 1
-        #wrapping around selected
+
+        #wrapping around seleced
+        print(self.selected,self.items)
         if self.selected < 0:
             self.selected = len(self.items) - 1
         elif self.selected >= len(self.items):
@@ -535,6 +539,7 @@ class TradeMenu(Menu):
         if self.firstSelection != None:
             draw.rect(screen,WHITE,(self.x*30+self.firstSelection[0]*(self.width+30),(self.y+self.firstSelection[1])*30,self.width,30),1) #draws a border around the first option
         draw.rect(screen,WHITE,(self.x*30+self.selectedPerson*(self.width+30),(self.y+self.selected)*30,self.width,30),1) #draws border around selected option
+
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
@@ -887,6 +892,10 @@ class Story():
         global running
         screen.blit(self.background,(0,0))
         func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
+
+        kp = key.get_pressed()
+        if kp[K_RETURN]:
+            changemode(Game())
         
         if func == "":
 
@@ -1259,15 +1268,19 @@ class Game():
                         self.mode = "freemove"
                     #ITEM MODE CLICK
                     elif self.mode == "item":
+                        self.menu.subMenu = Menu(1,1,1,1,Surface((1,1)),0,[])
+                        self.menu.subMenuSelecting = True
                         #handles item selection
                         if self.selectedItem == None:
                             #selects an item and creates a submenu
                             self.optselected = 0 #option selected for the submenu
                             self.selectedItem = self.menu.getOption()
+
                         elif type(self.selectedItem) == Weapon:
                             #if a weapon is selected, we check whether user equips or discards
                             #0 is equip, 1 is discard
-                            if self.optselected:
+                            self.menu.subMenu.items = ["Equip","Discard"]
+                            if self.menu.subMenu.selected:
                                 #discard option
                                 self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             else:
@@ -1283,6 +1296,7 @@ class Game():
                         elif type(self.selectedItem) == Consumable:
                             #if a consumable is a selected, we check whehther uses or discards
                             #0 is use, 1 is discard
+                            self.menu.subMenu.items = ["Use","Discard"]
                             if self.optselected:
                                 #discard option
                                 self.selected.removeItem(self.selectedItem) #removes selectedItem from items
@@ -1493,7 +1507,7 @@ class Game():
                 draw.rect(screen,BLUE,(22*30,8*30,120,len(options)*30)) #draws submenu backdrop for item
                 screen.blit(sans.render(options[0],True,col),(22*30,8*30)) #draws first option
                 screen.blit(sans.render(options[1],True,WHITE),(22*30,9*30)) #draws discard option
-                draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
+                draw.rect(screen,WHITE,(22*30,(8+self.menu.subMenu.selected)*30,120,30),1) #selected option
         #TRADE MODE DISPLAY
         if self.mode == "trade":
             if self.selected2 == None:
