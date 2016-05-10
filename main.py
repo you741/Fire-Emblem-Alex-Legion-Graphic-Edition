@@ -965,6 +965,9 @@ class Game():
         "draws game on screen - also starts game"
         self.start()
         self.filler = screen.copy() #filler
+    def animWalk(self):
+        #WIP
+        pass
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
@@ -1223,6 +1226,7 @@ class Game():
                         #moves the unit if it is an ally and within the moveable squares or it's own square
                         if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
                             self.selected.x,self.selected.y = self.selectx,self.selecty
+                            self.animWalk()
                             self.mode = "optionmenu"
                             self.createOptionMenu() #creates the option menu and sets the menu to it
                     #MAIN MENU CLICK
