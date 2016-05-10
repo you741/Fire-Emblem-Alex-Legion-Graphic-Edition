@@ -435,16 +435,17 @@ class Menu():
         if self.subMenu != None:
             #this is menu object that scrolls through there.
             self.subMenu.moveSelect()
-        kp = key.get_pressed()
-        if kp[K_UP]:
-            self.selected -= 1
-        elif kp[K_DOWN]:
-            self.selected += 1
-        #wrapping around selected
-        if self.selected < 0:
-            self.selected = len(self.items) - 1
-        elif self.selected >= len(self.items):
-            self.selected = 0
+        else:
+            kp = key.get_pressed()
+            if kp[K_UP]:
+                self.selected -= 1
+            elif kp[K_DOWN]:
+                self.selected += 1
+            #wrapping around selected
+            if self.selected < 0:
+                self.selected = len(self.items) - 1
+            elif self.selected >= len(self.items):
+                self.selected = 0
     def makeBackground(self):
         "transforms the background based on how many items are in it"
         #WIP
@@ -463,6 +464,8 @@ class Menu():
                 screen.blit(sans.render(opt.name,True,col),(self.x*30,(self.y+i)*30))
                 screen.blit(sans.render(str(opt.dur)+"/"+str(opt.maxdur),True,col),((self.x+6)*30,(self.y+i)*30)) #blits durability
         draw.rect(screen,WHITE,(self.x*30,(self.y+self.selected)*30,self.width,30),1) #draws a border around the selected option
+        if self.subMenu != None:
+            self.subMenu.draw(person)#draws the subMenu
     def getOption(self):
         "returns the option that is selected"
         if self.subMenu == None:
@@ -941,7 +944,7 @@ class Game():
         self.framecounter = 0
         self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.mode = "freemove" #mode Game is in
-        self.menu = Menu(0,0,0,0,FilledSurface((200,50),RED),0,[]) #menu for optionmenu mode
+        self.menu = Menu(0,0,0,0,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
         self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
         self.selected = None #selected ally
         self.selected2 = None #2nd selected ally - only for trading option
@@ -1038,8 +1041,6 @@ class Game():
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        framelimiter = time.Clock()
-
         #ENEMY'S PHASE GOES HERE
         for i in range(len(enemies)-1,-1,-1):
             en = enemies[i]
@@ -1054,7 +1055,7 @@ class Game():
             time.wait(500)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
-            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{}) #enemy's moveableSquares
+            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move)] #enemy's moveableSquares
             enMoves = [(x,y) for x,y,m in enMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
@@ -1106,7 +1107,7 @@ class Game():
             self.selecty = min(23,max(0,self.selecty))
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
-        self.menu = Menu(36,2,0,0,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
+        self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
         #----Menu Creation
         #ATTACK OPTION
         if not (self.selected in self.attacked or self.selected.equip == None):
@@ -1236,7 +1237,6 @@ class Game():
                         elif self.menu.getOption().lower() == "trade":
                             self.mode = "trade"
                             self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
-                            self.menu.selected = [0,0] #menuselect becomes a list, first element is the selected person, second is the selected item
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
@@ -1262,43 +1262,37 @@ class Game():
                         #handles item selection
                         if self.selectedItem == None:
                             #selects an item and creates a submenu
-                            self.optselected = 0 #option selected for the submenu
                             self.selectedItem = self.menu.getOption()
-                        elif type(self.selectedItem) == Weapon:
+                            firOp = "Equip" if type(self.selectedItem) == Weapon else "" #first option
+                            firOp = "Use" if type(self.selectedItem) == Consumable else firOp
+                            self.menu.subMenu = Menu(24,8,120,60,items=[firOp,"Discard"])
+                        else:
                             #if a weapon is selected, we check whether user equips or discards
-                            #0 is equip, 1 is discard
-                            if self.optselected:
-                                #discard option
-                                self.selected.removeItem(self.selectedItem) #removes selectedItem from items
-                            else:
+                            optselected = self.menu.getOption()
+                            if optselected.lower() == "use":
+                                #use option
+                                drawChangingBar(screen,self.selected.hp,self.selected.hp+self.selectedItem.hpGain,self.selected.maxhp,420,330,360,60,"Hp",False)
+                                if not self.selectedItem.use(self.selected):
+                                    #uses consumable
+                                    #if it breaks we remove it
+                                    self.selected.removeItem(self.selectedItem) #removes selectedItem from items
+                                self.moved.add(self.selected)
+                                self.attacked.add(self.selected) #guy who used consumable can't move - treated like attack
+                                self.mode = "freemove"
+                            elif optselected.lower() == "equip":
                                 #equip option
                                 self.selected.equipWeapon(self.selectedItem) #tries to equip
+                            elif optselected.lower() == "discard":
+                                #discard option
+                                self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             self.selectedItem = None #resets self.selectedItem
+                            self.menu.subMenu = None
                             if self.selected.equip == None:
                                 #if we have no equipped item we remove the attack option from menu
                                 if "attack" in self.menu.items:
                                     self.menu.items.remove("attack")
                                 #we also empty attackableSquares
                                 self.attackableSquares = []
-                        elif type(self.selectedItem) == Consumable:
-                            #if a consumable is a selected, we check whehther uses or discards
-                            #0 is use, 1 is discard
-                            if self.optselected:
-                                #discard option
-                                self.selected.removeItem(self.selectedItem) #removes selectedItem from items
-                            else:
-                                #use option
-                                if not self.selectedItem.use(self.selected):
-                                    #uses consumable
-                                    #if it breaks we remove it
-                                    self.selected.removeItem(self.selectedItem) #removes selectedItem from items
-                                self.moved.add(self.selected) #unit must wait after using a consumable
-                                self.attacked.add(self.selected)
-                                self.oldx,self.oldy = self.selected.x,self.selected.y #no moving back after using a consumable
-                                self.moveableSquares,self.attackableSquares = [],[] #empties moveablesquares
-                                self.mode = "optionmenu"
-                                self.menu.selected = 0
-                            self.selectedItem = None #resets selectedItem
                         if len(self.selected.items) == 0:
                             #if we have no items left, we go back to option menu
                             self.mode = "optionmenu"
@@ -1357,6 +1351,7 @@ class Game():
                             #we have a submenu, so we close that instead
                             self.mode = "item"
                             self.selectedItem = None
+                            self.menu.subMenu = None
                         else:
                             self.mode = "optionmenu"
                             self.createOptionMenu() #creates the option menu and sets the menu to it
@@ -1406,24 +1401,10 @@ class Game():
         screen.blit(self.filler,(0,0)) #blits the filler
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%6:
+        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%5:
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
-        #--------------------HIGHLIGHTING A PERSON---------------#
-        if self.mode == "freemove":
-            for p in allies+enemies:
-                if self.selectx == p.x and self.selecty == p.y:
-                    #DRAWS PERSON MINI DATA BOX
-                    pdbx,pdby = 0,0 #person data box x and y
-                    if self.selectx < 20 and self.selecty <= 12:
-                        pdby = 630
-                    draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
-                    screen.blit(sans.render(stripNums(p.name),True,WHITE),(pdbx+15,pdby+3)) #person's name
-                    screen.blit(smallsans.render("HP: "+str(p.hp)+"/"+str(p.maxhp),True,WHITE),(pdbx+15,pdby+33)) #health
-                    draw.line(screen,(80,60,30),(pdbx+90,pdby+48),(pdbx+270,pdby+48),30) #health bar
-                    draw.line(screen,YELLOW,(pdbx+90,pdby+48),(pdbx+90+(p.hp/p.maxhp)*180,pdby+48),30)
-                    break
         #---------------DIFFERENT MODE DISPLAYS------------------#
         #MOVE MODE DISPLAY
         if self.mode == "move":
@@ -1442,10 +1423,10 @@ class Game():
  #          drawMenu(self.menu,menux,menuy,120,480,self.menu.selected) #draws the main menu
         #OPTION MENU MODE DISPLAY
         if self.mode == "optionmenu":
-            self.menu.x,self.menu.y = 36,2
+            self.menu.x,self.menu.y = 32,2
             if self.selected.x >= 20:
                 self.menu.x = 0
-            self.menu.width=150
+            self.menu.width=270
             self.menu.height=30*len(self.menu.items)
             self.menu.draw()
 #            drawMenu(self.menu,menux,menuy,120,len(self.menu.items)*30,self.menu.selected)
@@ -1477,23 +1458,6 @@ class Game():
             self.menu.width = 240
             self.menu.height = 150
             self.menu.draw(self.selected)
-            if self.selectedItem != None:
-                #if we have a selected Item we draw the submenu
-                if type(self.selectedItem) == Weapon:
-                    if self.selected.canEquip(self.selectedItem):
-                        #green means can, grey means can't
-                        col = GREEN #color to write "Equip" with
-                    else:
-                        col = GREY
-                    #options user can choose for the selected item
-                    options = ["Equip","Discard"] #weapons can be equipped or discarded
-                if type(self.selectedItem) == Consumable:
-                    col = GREEN
-                    options = ["Use","Discard"] #consumables can be used or discarded
-                draw.rect(screen,BLUE,(22*30,8*30,120,len(options)*30)) #draws submenu backdrop for item
-                screen.blit(sans.render(options[0],True,col),(22*30,8*30)) #draws first option
-                screen.blit(sans.render(options[1],True,WHITE),(22*30,9*30)) #draws discard option
-                draw.rect(screen,WHITE,(22*30,(8+self.optselected)*30,120,30),1) #selected option
         #TRADE MODE DISPLAY
         if self.mode == "trade":
             if self.selected2 == None:
@@ -1529,8 +1493,22 @@ class Game():
                 screen.blit(sans.render(cell2,True,WHITE),(910,100+i*30))
             draw.rect(screen,(230,240,233),(30,30,540,520)) #background for face
             screen.blit(transform.scale(self.selected.face,(450,400)),(75,40))
-            screen.blit(sans.render(stripNums(a.name),True,BLACK),(75,440)) #blits name of the selected ally
+            screen.blit(sans.render(a.name,True,BLACK),(75,440)) #blits name of the selected unit
             screen.blit(transform.scale(transBlack,(570,150)),(0,560))
+        #--------------------HIGHLIGHTING A PERSON---------------#
+        if self.mode == "freemove":
+            for p in allies+enemies:
+                if self.selectx == p.x and self.selecty == p.y:
+                    #DRAWS PERSON MINI DATA BOX
+                    pdbx,pdby = 0,0 #person data box x and y
+                    if self.selectx < 20 and self.selecty <= 12:
+                        pdby = 630
+                    draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
+                    screen.blit(sans.render(p.name,True,WHITE),(pdbx+15,pdby+3)) #person's name
+                    screen.blit(smallsans.render("HP: "+str(p.hp)+"/"+str(p.maxhp),True,WHITE),(pdbx+15,pdby+33)) #health
+                    draw.line(screen,(80,60,30),(pdbx+90,pdby+48),(pdbx+270,pdby+48),30) #health bar
+                    draw.line(screen,YELLOW,(pdbx+90,pdby+48),(pdbx+90+(p.hp/p.maxhp)*180,pdby+48),30)
+                    break
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
         if self.mode == "freemove":

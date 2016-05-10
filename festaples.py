@@ -21,17 +21,6 @@ papyrus = font.SysFont("Papyrus",20)
 
 fpsLimiter = time.Clock() #fps Limiting clock
 
-#----String formatting----#
-def stripNums(string):
-    "strips all numbers from end of a string"
-    while True:
-        try:
-            int(string[-1]) #tries to int last character
-        except:
-            break #if it failed we break the loop
-        string = string[:-1] #removes last character of string
-    return string
-
 #----Map Calculations----#
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
     "gets all moveable squares for a person"
@@ -131,7 +120,7 @@ def getBattleStats(person,person2,stage):
             dam += " x 2" #if we are fast enough to attack twice, we let the player know
     else:
         hit=dam=crit = "--"
-    return [stripNums(person.name),"HP: "+str(person.hp)+"/"+str(person.maxhp),
+    return [person.name,"HP: "+str(person.hp)+"/"+str(person.maxhp),
                    "Hit: "+str(hit),"Dmg: "+str(dam),"Crt: "+str(crit),"" if not person.equip else person.equip.name,
                    "" if person.getAdv(person2) == -1 else ("Advantage" if person.getAdv(person2) else "Disadvantage")]
 #----Creation Functions----#
@@ -143,7 +132,6 @@ def createEnemyList(enemies,amounts,coords):
         for j in range(amounts[i]):
             newEnemy = enemies[i].getInstance()
             newEnemy.x,newEnemy.y = coords[enemyat]
-            newEnemy.name = newEnemy.name + str(enemyat)
             enemyat += 1
             enemyList.append(newEnemy)
     return enemyList
@@ -221,8 +209,8 @@ def drawBattleInfo(screen,ally,enemy,stage):
     drawStatBox(screen,ally,enemy,stage,1150,550,BLUE) #draws two little boxes
     drawStatBox(screen,enemy,ally,stage,0,550,RED) #each shows the hit, dam and crit
     #draws ally and enemy's names
-    screen.blit(sans.render(stripNums(ally.name),True,WHITE),(920,0))
-    screen.blit(sans.render(stripNums(enemy.name),True,WHITE),(50,0))
+    screen.blit(sans.render(ally.name,True,WHITE),(920,0))
+    screen.blit(sans.render(enemy.name,True,WHITE),(50,0))
     if ally.equip != None:
         screen.blit(sans.render(ally.equip.name,True,BLACK),(720,560))
     if enemy.equip != None:
