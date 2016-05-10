@@ -428,7 +428,6 @@ class Menu():
         self.selected = selected #which item is being selected
         self.items = items #items in the menu (this will most likely be 2d with commands
         self.subMenu = None #allows for menus inside menus
-        self.subMenuSelecting = False #check if selecting in the submenu
     def moveSelect(self):
         "moves menu selector and returns new value"
         #moves self.selected up and down
@@ -538,6 +537,7 @@ class TradeMenu(Menu):
         if self.firstSelection != None:
             draw.rect(screen,WHITE,(self.x*30+self.firstSelection[0]*(self.width+30),(self.y+self.firstSelection[1])*30,self.width,30),1) #draws a border around the first option
         draw.rect(screen,WHITE,(self.x*30+self.selectedPerson*(self.width+30),(self.y+self.selected)*30,self.width,30),1) #draws border around selected option
+
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
@@ -890,6 +890,10 @@ class Story():
         global running
         screen.blit(self.background,(0,0))
         func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
+
+        kp = key.get_pressed()
+        if kp[K_RETURN]:
+            changemode(Game())
         
         if func == "":
 
@@ -959,6 +963,9 @@ class Game():
         "draws game on screen - also starts game"
         self.start()
         self.filler = screen.copy() #filler
+    def animWalk(self):
+        #WIP
+        pass
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
@@ -1215,6 +1222,7 @@ class Game():
                         #moves the unit if it is an ally and within the moveable squares or it's own square
                         if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
                             self.selected.x,self.selected.y = self.selectx,self.selecty
+                            self.animWalk()
                             self.mode = "optionmenu"
                             self.createOptionMenu() #creates the option menu and sets the menu to it
                     #MAIN MENU CLICK
@@ -1236,6 +1244,7 @@ class Game():
                             self.menu.items = self.selected.items
                         elif self.menu.getOption().lower() == "trade":
                             self.mode = "trade"
+                            self.selectedAlly = 0
                             self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
