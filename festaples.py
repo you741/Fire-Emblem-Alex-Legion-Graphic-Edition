@@ -4,6 +4,7 @@
 from pygame import *
 from random import *
 from feweapons import *
+from queue import *
 
 #----COLORS----#
 BLACK = (0,0,0,255)
@@ -42,6 +43,20 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
                 moveable += getMoves(person,x,y+1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
     moveable = [(x,y,m) for x,y,m in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
     return moveable
+
+def getOptimalpath(person,x,y,movesleft,stage,allies,enemies,visited):
+    "returns the optimal path from point to point as a list of coordinates"
+    paths = Queue() #stores the paths as (travel dist, [coords])
+    paths.put(0,[person.x,person.y])
+    while True:
+        node = paths.get()
+        if node[0] - movesleft <= 0:
+            break
+    
+
+    
+    return node[1]
+        
 def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
     "returns attackable enemies by person (optional parameters for different (x,y))"
     atten = [] #attackble enemies

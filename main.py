@@ -964,7 +964,12 @@ class Game():
         self.start()
         self.filler = screen.copy() #filler
     def animWalk(self):
+        #uses self.selected.x,y and self.selectx,y
         #WIP
+        pass
+    def drawArrow(self):
+        #draws an arrow from self.selected.x,y  to self.selectx,y
+        #wip
         pass
     def playMusic(self):
         "plays music for the chapter"
@@ -1112,6 +1117,8 @@ class Game():
         if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
+        if self.mode == "move":
+            self.drawArrow()
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
@@ -1221,8 +1228,8 @@ class Game():
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares or it's own square
                         if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
-                            self.selected.x,self.selected.y = self.selectx,self.selecty
                             self.animWalk()
+                            self.selected.x,self.selected.y = self.selectx,self.selecty
                             self.mode = "optionmenu"
                             self.createOptionMenu() #creates the option menu and sets the menu to it
                     #MAIN MENU CLICK
@@ -1344,6 +1351,8 @@ class Game():
                     #handles backtracing
                     if self.mode == "move":
                         self.mode = "freemove"
+                        self.selectx = self.selected.x
+                        self.selecty = self.selected.y
                     elif self.mode == "mainmenu":
                         self.mode = "freemove"
                     elif self.mode == "optionmenu":
