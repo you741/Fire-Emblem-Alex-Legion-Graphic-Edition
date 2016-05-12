@@ -977,7 +977,12 @@ class Game():
         self.start()
         self.filler = screen.copy() #filler
     def animWalk(self):
+        #uses self.selected.x,y and self.selectx,y
         #WIP
+        pass
+    def drawArrow(self):
+        #draws an arrow from self.selected.x,y  to self.selectx,y
+        #wip
         pass
     def playMusic(self):
         "plays music for the chapter"
@@ -1075,7 +1080,7 @@ class Game():
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
             enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move)] #enemy's moveableSquares
-            enMoves = [(x,y) for x,y,m in enMoves]
+            enMoves = [(x,y) for x,y,m,ali in enMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
                 attackableSquares = getAttackableSquaresByMoving(enMoves,en) #attackableSquares by moving
@@ -1124,6 +1129,8 @@ class Game():
         if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
+        if self.mode == "move":
+            self.drawArrow()
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
@@ -1212,16 +1219,16 @@ class Game():
                                 if p in allies:
                                     #we get movements below
                                     self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],acoords,encoords,{})
-                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
+                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackables squares that we cannot move to
-                                        self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in acoords]
+                                        self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m,ali in self.moveableSquares] and sq not in acoords]
                                 elif p in enemies:
                                     self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],encoords,acoords,{})
-                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m in self.moveableSquares]+[(p.x,p.y)],p)
+                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares]+[(p.x,p.y)],p)
                                     if self.attackableSquares:
                                         #we get all attackable squares that we cannot move to
-                                        self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m in self.moveableSquares] and sq not in encoords]
+                                        self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m,ali in self.moveableSquares] and sq not in encoords]
                                 break#if we are in move mode we constantly fill moveable and attackable squares
                         else:
                             #if the user presses a blank spot, we set the mode to main menu
@@ -1232,9 +1239,9 @@ class Game():
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares or it's own square
-                        if (self.selectx,self.selecty) in [(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
-                            self.selected.x,self.selected.y = self.selectx,self.selecty
+                        if (self.selectx,self.selecty) in [(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
                             self.animWalk()
+                            self.selected.x,self.selected.y = self.selectx,self.selecty
                             self.mode = "optionmenu"
                             self.createOptionMenu() #creates the option menu and sets the menu to it
                     #MAIN MENU CLICK
@@ -1356,6 +1363,8 @@ class Game():
                     #handles backtracing
                     if self.mode == "move":
                         self.mode = "freemove"
+                        self.selectx = self.selected.x
+                        self.selecty = self.selected.y
                     elif self.mode == "mainmenu":
                         self.mode = "freemove"
                     elif self.mode == "optionmenu":
@@ -1430,7 +1439,7 @@ class Game():
         #MOVE MODE DISPLAY
         if self.mode == "move":
             #fills moveable and attackable squares
-            fillSquares(screen,set([(x,y) for x,y,m in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
+            fillSquares(screen,set([(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
         #DRAWS PEOPLE
