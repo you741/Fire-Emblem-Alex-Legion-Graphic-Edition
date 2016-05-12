@@ -976,6 +976,15 @@ class Game():
         "draws game on screen - also starts game"
         self.start()
         self.filler = screen.copy() #filler
+    def getPath(self):
+        coords = [(x,y) for x,y,m,ali in self.moveableSquares]
+        for i in range(len(coords)):
+            if coords[i] == (self.selectx,self.selecty):
+                spot = i
+            else:
+                return
+        steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the cords to get to the steps
+        return steps
     def animWalk(self):
         #uses self.selected.x,y and self.selectx,y
         #WIP
@@ -983,7 +992,9 @@ class Game():
     def drawArrow(self):
         #draws an arrow from self.selected.x,y  to self.selectx,y
         #wip
-        pass
+        steps = self.getPath()
+        return steps
+        
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)

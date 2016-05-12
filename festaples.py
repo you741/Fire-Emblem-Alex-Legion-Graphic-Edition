@@ -81,7 +81,8 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
                         for k in [(0,1),(0,-1),(1,0),(-1,0)]:
                             q.put((node[0]+stage[place[1]][place[0]].hind,node[1]+[(place[0]+k[0],place[1]+k[1])]))                        
 
-    moveable = [(x,y,m,ali) for x,y,m,ali in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)    
+    moveable = [(x,y,m,ali) for x,y,m,ali in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
+    print(moveable)
     return moveable
         
 def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
