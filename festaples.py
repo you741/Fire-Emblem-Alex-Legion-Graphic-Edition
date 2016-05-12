@@ -23,39 +23,66 @@ papyrus = font.SysFont("Papyrus",20)
 fpsLimiter = time.Clock() #fps Limiting clock
 
 #----Map Calculations----#
+##def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
+##    "gets all moveable squares for a person"
+##    moveable = [] #moveable squares
+##    #NOTE: the dictionary "visited" stores the amount of moves left after travelling to a point
+##    #in order to make this value optimal, I reset everytime I find a lower movesleft value
+##    #this is only really useful for mounted units
+##    if movesleft >= 0 and 0 <= y < len(stage) and 0 <= x < len(stage[0]) and ((x,y) not in visited or visited.get((x,y)) < movesleft):           
+##        if (x,y) not in allies+enemies:
+##            moveable.append((x,y,movesleft))
+##        if (x,y) not in enemies:
+##            if person.canPass(stage[y][x]):
+##                #if the person can pass this terrain
+##                #we call the function in four directions
+##                visited[(x,y)] = movesleft #sets visited at (x,y) to movesleft
+##                moveable += getMoves(person,x-1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
+##                moveable += getMoves(person,x+1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
+##                moveable += getMoves(person,x,y-1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
+##                moveable += getMoves(person,x,y+1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
+##    moveable = [(x,y,m) for x,y,m in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
+##    return moveable
+##
+##def getOptimalpath(person,x,y,movesleft,stage,allies,enemies,visited):
+##    "returns the optimal path from point to point as a list of coordinates"
+##    paths = Queue() #stores the paths as (travel dist, [coords])
+##    paths.put(0,[person.x,person.y])
+##    while True:
+##        node = paths.get()
+##        if node[0] - movesleft <= 0:
+##            break
+##    
+##
+##    
+##    return node[1]
+
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
-    "gets all moveable squares for a person"
-    moveable = [] #moveable squares
-    #NOTE: the dictionary "visited" stores the amount of moves left after travelling to a point
-    #in order to make this value optimal, I reset everytime I find a lower movesleft value
-    #this is only really useful for mounted units
-    if movesleft >= 0 and 0 <= y < len(stage) and 0 <= x < len(stage[0]) and ((x,y) not in visited or visited.get((x,y)) < movesleft):           
-        if (x,y) not in allies+enemies:
-            moveable.append((x,y,movesleft))
-        if (x,y) not in enemies:
-            if person.canPass(stage[y][x]):
-                #if the person can pass this terrain
-                #we call the function in four directions
-                visited[(x,y)] = movesleft #sets visited at (x,y) to movesleft
-                moveable += getMoves(person,x-1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-                moveable += getMoves(person,x+1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-                moveable += getMoves(person,x,y-1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-                moveable += getMoves(person,x,y+1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-    moveable = [(x,y,m) for x,y,m in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
+    "returns all moveable squares with the pathing to it"
+##    #NOTE: the dictionary "visited" stores the amount of moves left after travelling to a point
+##    #in order to make this value optimal, I reset everytime I find a lower movesleft value
+##    #this is only really useful for mounted units
+
+    moveable = []
+    q = Queue() #stored as (movesused,[paths]) 
+    q.put((0,[(person.x,person.y)]))
+    while not q.empty():
+        node = q.get()
+        place = node[-1][-1]
+        if node[0] < movesleft:
+            if 0 <= place[0] < len(stage) and 0 <= place[1] < len(stage[0]) and (place not in visited or visited.get(place) < movesleft - node[0]):
+                if place not in allies+enemies:
+                    #the path is already the shortest
+                    moveable.append((place[0],place[1],movesleft-node[0],node[1]))
+                if place not in enemies:
+                    if person.canPass(stage[place[1]][place[0]]):
+                        #put  four directions in the queue
+                        visited[place] = movesleft - node[0]
+                        for k in [(0,1),(0,-1),(1,0),(-1,0)]:
+                            q.put((node[0]+stage[place[1]][place[0]].hind,node[1]+[(place[0]+k[0],place[1]+k[1])]))                        
+
+    moveable = [(x,y,m,ali) for x,y,m,ali in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)    
     return moveable
-
-def getOptimalpath(person,x,y,movesleft,stage,allies,enemies,visited):
-    "returns the optimal path from point to point as a list of coordinates"
-    paths = Queue() #stores the paths as (travel dist, [coords])
-    paths.put(0,[person.x,person.y])
-    while True:
-        node = paths.get()
-        if node[0] - movesleft <= 0:
-            break
-    
-
-    
-    return node[1]
         
 def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
     "returns attackable enemies by person (optional parameters for different (x,y))"
