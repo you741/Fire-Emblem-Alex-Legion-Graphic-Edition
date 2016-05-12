@@ -156,6 +156,10 @@ bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+alexTheBandit = Brigand("Alex the Bandit",0,0,
+                        {"lv":3,"stren":8,"defen":4,"skl":4,"lck":3,
+                         "spd":4,"con":10,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70)
 enemies = []
 #----CHAPTERS----#
 #MAPS
@@ -166,8 +170,10 @@ chapterMaps = [chapter0,chapter1]
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),"Defeat all enemies",image.load("images/Maps/prologue.png"))]
+chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
+                "Defeat all enemies",image.load("images/Maps/prologue.png")),
+               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),
+                "Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
@@ -845,21 +851,25 @@ addAlly(player)
 
 def getStory(chapter,end=False):
     "gets story based on the chapter number"
-    storyFile = open("chapters/chapter"+str(chapter)+".txt")
+    fileName = "chapters/chapter"+str(chapter)
+    fileName = fileName + "end" if end else fileName #adds end to the file name if it's the end
+    fileName += ".txt"
+    storyFile = open(fileName)
     story = storyFile.read().strip().replace("*Player*",player.name).split("\n") #story
     background = story[0].strip() #background image source
     story = story[1:] #actual story
-    return Story(story,image.load(background))
+    return Story(story,image.load(background),end=end)
 
 class Story():
     "screen mode for user to see the story"
-    def __init__(self,dialogue,background,music=None):
+    def __init__(self,dialogue,background,music=None,end=False):
         "initialize the Story class contains all dialogue (which also includes which picture to put)"
         self.dialogue = dialogue
         self.background = background
         self.music=None
         self.currDial = 0 #current dialogue we are on
         self.limit = len(dialogue) #limit of the dialogue - once reached the story ends
+        self.end = end #is it an ending story?
     def draw(self,screen):
         "draws screen on - starts on title screen"
         screen.blit(self.background,(0,0))
@@ -938,8 +948,11 @@ class Story():
             display.flip()
             fpsLimiter.tick(60) #limits to 60 FPS
         if self.currDial >= self.limit:
-            #once we hit the limit we transition to the game mode
-            changemode(Game())
+            if self.end:
+                changemode(SaveGame()) #we change to savegame if it's the end
+            else:
+                #once we hit the limit we transition to the game mode
+                changemode(Game())
         
 class Game():
     def __init__(self):
@@ -980,8 +993,7 @@ class Game():
             #brings all allies back to full health
             a.hp = a.maxhp
             a.stats["hp"] = a.maxhp
-        draw.circle(screen,WHITE,(100,100),100) #NOTE TO ALBURITO!!!!!! !IJIOJOIASJFIOWJOIFWJFOIWJ!!!IJAOF! : th is this? got a circle fetish!? haha its a joke lol
-        changemode(SaveGame())
+        changemode(getStory(chapter,True))
     def drawPeople(self):
         "draws all people on the map"
         for a in allies:
@@ -1504,6 +1516,9 @@ class Game():
             screen.blit(transform.scale(self.selected.face,(450,400)),(75,40))
             screen.blit(sans.render(a.name,True,BLACK),(75,440)) #blits name of the selected unit
             screen.blit(transform.scale(transBlack,(570,150)),(0,560))
+            screen.blit(sans.render(a.__class__.__name__,True,WHITE),(20,565))
+            screen.blit(sans.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(20,595))
+            screen.blit(sans.render("HP "+str(a.hp)+"/"+str(a.maxhp),True,WHITE),(20,625))
         #--------------------HIGHLIGHTING A PERSON---------------#
         if self.mode == "freemove":
             for p in allies+enemies:
