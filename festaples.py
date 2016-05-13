@@ -82,7 +82,6 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
                             q.put((node[0]+stage[place[1]][place[0]].hind,node[1]+[(place[0]+k[0],place[1]+k[1])]))                        
 
     moveable = [(x,y,m,ali) for x,y,m,ali in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
-    print(moveable)
     return moveable
         
 def getAttackableEnemies(person,enemies,x=None,y=None,weapon=None):
@@ -214,6 +213,7 @@ def drawLevelUp(screen,person):
             display.flip()
             time.wait(500)
     time.wait(1500)
+    
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
@@ -234,6 +234,7 @@ def drawHealthBar(screen,person,x,y):
             hpy += 30
             hpx -= 160
         draw.line(screen,GREEN,(hpx+i*4,hpy),(hpx+i*4,hpy+30),3)
+        
 def drawStatBox(screen,person1,person2,stage,x,y,color):
     "draws a little stat box to show hit,dam and crit within a fight"
     hit,dam,crit = person1.getHit(person2,stage),person1.getDamage(person2,stage),person1.getCritical(person2)

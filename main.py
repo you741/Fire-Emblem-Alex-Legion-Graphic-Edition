@@ -977,24 +977,34 @@ class Game():
         self.start()
         self.filler = screen.copy() #filler
     def getPath(self):
+        "Gets path"
         coords = [(x,y) for x,y,m,ali in self.moveableSquares]
+        spot = -1
         for i in range(len(coords)):
             if coords[i] == (self.selectx,self.selecty):
                 spot = i
-            else:
-                return
+        if spot == -1:
+            return [(self.selected.x,self.selected.y)] #return the spot the character is on
         steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the cords to get to the steps
         return steps
     def animWalk(self):
-        #uses self.selected.x,y and self.selectx,y
-        #WIP
-        pass
+        "uses self.selected.x,y and self.selectx,y"
+        #WIP!!!
+ #       draw.rect(screen,GREEN,(self.selected.x*30,self.selected.y*30,30,30)) #coverup to cover the character when animated
+        snap = screen.copy()
+        for cord in self.getPath():
+            screen.blit(snap,(0,0))
+            draw.rect(screen,BLACK,(cord[0]*30,cord[1]*30,30,30))##need sprite?
+            display.flip()
+            time.wait(100)
+            event.pump() #pumps events so we don't lock down
+        event.clear()
     def drawArrow(self):
-        #draws an arrow from self.selected.x,y  to self.selectx,y
+        "draws an arrow from self.selected.x,y  to self.selectx,y"
         #wip
         steps = self.getPath()
-        return steps
-        
+        for cord in steps:
+            draw.rect(screen,GREEN,(cord[0]*30,cord[1]*30,30,30))
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
@@ -1010,16 +1020,18 @@ class Game():
             a.hp = a.maxhp
             a.stats["hp"] = a.maxhp
         changemode(getStory(chapter,True))
-    def drawPeople(self):
+    def drawPeople(self,alliesToDraw=False,enemiesToDraw=False):
         "draws all people on the map"
-        for a in allies:
+        alliesToDraw = allies if not alliesToDraw else alliesToDraw
+        enemiesToDraw = enemies if not enemiesToDraw else enemiesToDraw
+        for a in alliesToDraw:
             #draws one of four frames in the map sprite - changes sprites every 60 frames
             if a not in self.attacked or a not in self.moved:
                 screen.blit(allyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
             else:
                 #if the ally has moved already we draw it grey
                 screen.blit(allyGreyMapSprites[a.__class__.__name__][self.framecounter%40//10],(a.x*30,a.y*30))
-        for e in enemies:
+        for e in enemiesToDraw:
             if e not in self.attacked or e not in self.moved:
                 screen.blit(enemyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
             else:
@@ -1140,8 +1152,7 @@ class Game():
         if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
-        if self.mode == "move":
-            self.drawArrow()
+
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
@@ -1453,6 +1464,8 @@ class Game():
             fillSquares(screen,set([(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
+            if self.selected in allies:
+                self.drawArrow()
         #DRAWS PEOPLE
         self.drawPeople()
         #MAIN MENU MODE DISPLAY
@@ -1488,7 +1501,6 @@ class Game():
             #gets battle stats for the selected ally
             battleStatsMenu = getBattleStats(self.selected,enemy,chapterMaps[chapter])
             drawMenu(battleStatsMenu,x,y,210,210,-20) #draws battle stats menu for ally
-
             #battle stats from enemy's POV
             battleStatsMenu = getBattleStats(enemy,self.selected,chapterMaps[chapter])
             drawMenu(battleStatsMenu,x+7,y,210,210,-20,RED) #draws battle stats menu for enemy
