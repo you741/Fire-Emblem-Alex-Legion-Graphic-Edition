@@ -369,6 +369,7 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
         screen.blit(sans.render(str(appAmount),True,WHITE),(x+2,y+5)) #writes amount
         display.flip()
         time.wait(50)
+        event.pump()
 #------ENEMY AI-------#
 def getOptimalSquare(moveableSquares,stage,allies):
     "returns optimal square to move to, assuming enemy can't attack"
