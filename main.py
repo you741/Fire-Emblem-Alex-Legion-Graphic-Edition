@@ -988,8 +988,15 @@ class Game():
         return steps
     def animWalk(self):
         #uses self.selected.x,y and self.selectx,y
-        #WIP
-        pass
+        #WIP!!!
+ #       draw.rect(screen,GREEN,(self.selected.x*30,self.selected.y*30,30,30)) #coverup to cover the character when animated
+        snap = screen.copy()
+        for cord in self.getPath():
+            screen.blit(snap,(0,0))
+            draw.rect(screen,BLACK,(cord[0]*30,cord[1]*30,30,30))##need sprite?
+            display.flip()
+            time.wait(10)
+
     def drawArrow(self):
         #draws an arrow from self.selected.x,y  to self.selectx,y
         #wip
