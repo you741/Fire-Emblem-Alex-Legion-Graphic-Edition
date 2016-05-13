@@ -978,11 +978,12 @@ class Game():
         self.filler = screen.copy() #filler
     def getPath(self):
         coords = [(x,y) for x,y,m,ali in self.moveableSquares]
+        spot = -1
         for i in range(len(coords)):
             if coords[i] == (self.selectx,self.selecty):
                 spot = i
-            else:
-                return
+        if spot == -1:
+            return [(self.selected.x,self.selected.y)] #return the spot the character is on
         steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the cords to get to the steps
         return steps
     def animWalk(self):
@@ -993,7 +994,8 @@ class Game():
         #draws an arrow from self.selected.x,y  to self.selectx,y
         #wip
         steps = self.getPath()
-        return steps
+        for cord in steps:
+            draw.rect(screen,GREEN,(cord[0]*30,cord[1]*30,30,30))
         
     def playMusic(self):
         "plays music for the chapter"
@@ -1140,8 +1142,7 @@ class Game():
         if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
-        if self.mode == "move":
-            self.drawArrow()
+
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
@@ -1453,6 +1454,8 @@ class Game():
             fillSquares(screen,set([(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
+            if self.selected in allies:
+                self.drawArrow()
         #DRAWS PEOPLE
         self.drawPeople()
         #MAIN MENU MODE DISPLAY
