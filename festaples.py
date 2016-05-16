@@ -63,7 +63,7 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
 ##    #in order to make this value optimal, I reset everytime I find a lower movesleft value
 ##    #this is only really useful for mounted units
 
-    moveable = []
+    moveable = [(person.x,person.y,movesleft,[(person.x,person.y)])]
     q = Queue() #stored as (movesused,[paths]) 
     q.put((0,[(person.x,person.y)]))
     while not q.empty():
