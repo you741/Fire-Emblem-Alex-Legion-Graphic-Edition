@@ -43,6 +43,8 @@ brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+"
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png")
               for i in range(17)]
 
+arrows = [image.load("images/Arrow/arrowHead.png"),image.load("image/Arrow/arrowBent.png"),image.load("image/Arrow/arrowStraight.png")]
+arrowbents = [[arrows[1],transform.rotate(arrows[1],90)],[transform.rotate(arrows[1],90),transform.rotate(arrows[1],90)]]
 #MAP SPRITES
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif"),(30,30)) for i in range(4)],
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png"),(30,30)) for i in range(4)],

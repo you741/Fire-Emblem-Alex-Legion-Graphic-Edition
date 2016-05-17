@@ -996,9 +996,12 @@ class Game():
         event.clear()
     def drawArrow(self):
         "draws an arrow from self.selected.x,y  to self.selectx,y"
-        #wip
+        #WIP - find smart way to figure out which one to draw using indices of 2x2 array
         steps = self.getPath()
-        for cord in steps:
+        #steps includes the self character x&y
+        
+        #loop through each, check the next one and previous one to see which one of the three to draw
+        for i in range (1,len(steps)-1):
             draw.rect(screen,GREEN,(cord[0]*30,cord[1]*30,30,30))
     def playMusic(self):
         "plays music for the chapter"
