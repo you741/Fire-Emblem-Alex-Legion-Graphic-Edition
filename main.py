@@ -108,6 +108,10 @@ for i,k in enumerate(enemyMapSprites):
 faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
                       "Player":image.load("images/faces/player.png"),
                       "Bandit":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
+#ARROW SPRITES
+arrowHead = image.load("images/Arrow/arrowHead.png")
+arrowBent = image.load("images/Arrow/arrowBent.png")
+arrowStraight = image.load("images/Arrow/arrowStraight.png")
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
@@ -980,7 +984,7 @@ class Game():
                 spot = i
         if spot == -1:
             return [(self.selected.x,self.selected.y)] #return the spot the character is on
-        steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the cords to get to the steps
+        steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the coords to get to the steps
         return steps
     def animWalk(self):
         "uses self.selected.x,y and self.selectx,y"
@@ -994,12 +998,69 @@ class Game():
             time.wait(100)
             event.pump() #pumps events so we don't lock down
         event.clear()
+    def getArrow(self,coord,coord1,coord2,head=False):
+        "takes in two coordinates and returns an image that represents the proper arrowpiece"
+        dx1 = coord[0] - coord1[0] #change in x and y for the first coordinate
+        dy1 = coord[1] - coord1[1]
+        if head:
+            #returns proper arrow head
+            if dx1 == 0:
+                #vertical arrowhead
+                if dy1 == -1:
+                    #from downwards
+                    return transform.rotate(arrowHead,90)
+                else:
+                    #from upwards
+                    return transform.rotate(arrowHead,-90)
+            else:
+                #horizontal arrowhead
+                if dx1 == -1:
+                    #from right
+                    return transform.flip(arrowHead,1,0)
+                else:
+                    #from left
+                    return arrowHead
+                    
+        dx2 = coord[0] - coord2[0] #change in x and y for second coordinate
+        dy2 = coord[1] - coord2[1]
+        if abs(dx1 - dx2) == 1:
+            #handles bent arrowpieces
+            if (dx1,dy2) == (-1,1) or (dx2,dy1) == (-1,1):
+                #top-right
+                return transform.flip(arrowBent,1,1)
+            elif (dx1,dy2) == (-1,-1) or (dx2,dy1) == (-1,-1):
+                #bottom-right
+                return transform.flip(arrowBent,1,0)
+            elif (dx1,dy2) == (1,-1) or (dx2,dy1) == (1,-1):
+                #bottom-left
+                return arrowBent
+            else:
+                #top-left
+                return transform.flip(arrowBent,0,1)
+        else:
+            #handles straight arrowpieces
+            if abs(dx1 - dx2) == 2:
+                #horizontal
+                return arrowStraight
+            else:
+                #vertical
+                return transform.rotate(arrowStraight,90)
+        return 1
     def drawArrow(self):
         "draws an arrow from self.selected.x,y  to self.selectx,y"
-        #wip
-        steps = self.getPath()
-        for cord in steps:
-            draw.rect(screen,GREEN,(cord[0]*30,cord[1]*30,30,30))
+        #WIP - find smart way to figure out which one to draw using indices of 2x2 array
+        steps = [(self.selected.x,self.selected.y)]+self.getPath()
+        #steps includes the self character x&y
+        
+        #loop through each, check the next one and previous one to see which one of the three to draw
+        for i in range (1,len(steps)-1):
+            coord1 = steps[i-1] #previous coord
+            coord = steps[i] #current coord
+            coord2 = steps[i+1] #subsequent coord
+            screen.blit(self.getArrow(coord,coord1,coord2),(coord[0]*30,coord[1]*30)) #blits proper arrow piece
+            #draw.rect(screen,GREEN,(coord[0]*30,coord[1]*30,30,30))
+        if len(steps) > 1:
+            screen.blit(self.getArrow(steps[-1],steps[-2],steps[0],True),(steps[-1][0]*30,steps[-1][1]*30)) #Blits arrowhead
     def playMusic(self):
         "plays music for the chapter"
         #bgMusic.play(chapterMusic[chapter],-1)
@@ -1097,7 +1158,8 @@ class Game():
             time.wait(500)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
-            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{}) #enemy's moveableSquares
+            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
+
             enMoves = [(x,y) for x,y,m,ali in enMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
