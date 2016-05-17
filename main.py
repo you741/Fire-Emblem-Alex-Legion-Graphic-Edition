@@ -1050,6 +1050,7 @@ class Game():
         "draws an arrow from self.selected.x,y  to self.selectx,y"
         #WIP - find smart way to figure out which one to draw using indices of 2x2 array
         steps = [(self.selected.x,self.selected.y)]+self.getPath()
+
         #steps includes the self character x&y
         
         #loop through each, check the next one and previous one to see which one of the three to draw
@@ -1058,7 +1059,6 @@ class Game():
             coord = steps[i] #current coord
             coord2 = steps[i+1] #subsequent coord
             screen.blit(self.getArrow(coord,coord1,coord2),(coord[0]*30,coord[1]*30)) #blits proper arrow piece
-            #draw.rect(screen,GREEN,(coord[0]*30,coord[1]*30,30,30))
         if len(steps) > 1:
             screen.blit(self.getArrow(steps[-1],steps[-2],steps[0],True),(steps[-1][0]*30,steps[-1][1]*30)) #Blits arrowhead
     def playMusic(self):
