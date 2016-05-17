@@ -888,7 +888,7 @@ class Story():
                     running = False
                     return 0
                 if e.type == KEYDOWN:
-                    if e.key == K_z:
+                    if e.key == K_z or e.key == K_x or e.key == K_RETURN:
                         character = len(sentence)
             drawSentence(screen,sentence[:character]) #draws the sentence up to character
             character += 1 #prepares to draw one more character
@@ -902,13 +902,10 @@ class Story():
         func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
 
         kp = key.get_pressed()
-        if kp[K_RETURN]:
-            changemode(Game())
         
         if func == "":
-
             #displays narration
-            if not self.writeDialogue(sentence):
+            if not writeDialogue(screen,sentence):
                 #writes narration
                 return 0 #if it returns false it means the user quit, so we quit as well
         elif func == "TITLE":
@@ -922,16 +919,12 @@ class Story():
             allynames = [a.name.lower() for a in allAllies] #names of all allies
             x=0
             if func.lower() not in allynames:
-                x = 900 #changes the x to other side of the screen
+                x = 900 #changes the x to other side of the screen if it's not an ally
             if func.lower() == player.name.lower():
                 img = faces["Player"] #player's face
             else:
                 img = faces[func] #anyone else's face
-            screen.blit(img,(x,410)) #blits face of character speaking
-            draw.rect(screen,YELLOW,(x,490,300,30)) #draws background box for name
-            draw.rect(screen,BLUE,(x+2,492,294,26))
-            screen.blit(sans.render(func,True,WHITE),(x+2,490)) #draws the name
-            if not self.writeDialogue(sentence):
+            if not writeDialogue(screen,sentence,x,530,func,img):
                 #writes dialogue
                 return 0 #if it returns false it means the user quit, so we quit as well
         breakLoop = False
@@ -953,6 +946,8 @@ class Story():
             else:
                 #once we hit the limit we transition to the game mode
                 changemode(Game())
+        if kp[K_RETURN] or kp[K_x]:
+            changemode(Game())
         
 class Game():
     def __init__(self):
@@ -1103,6 +1098,7 @@ class Game():
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
             enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
+
             enMoves = [(x,y) for x,y,m,ali in enMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
@@ -1241,13 +1237,13 @@ class Game():
                                 if p in allies:
                                     #we get movements below
                                     self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],acoords,encoords,{})
-                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares]+[(p.x,p.y)],p)
+                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares],p)
                                     if self.attackableSquares:
                                         #we get all attackables squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m,ali in self.moveableSquares] and sq not in acoords]
                                 elif p in enemies:
                                     self.moveableSquares = getMoves(p,p.x,p.y,p.move,chapterMaps[chapter],encoords,acoords,{})
-                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares]+[(p.x,p.y)],p)
+                                    self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares],p)
                                     if self.attackableSquares:
                                         #we get all attackable squares that we cannot move to
                                         self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m,ali in self.moveableSquares] and sq not in encoords]
@@ -1261,7 +1257,7 @@ class Game():
                     #MOVE MODE
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares or it's own square
-                        if (self.selectx,self.selecty) in [(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)] and self.selected in allies:
+                        if (self.selectx,self.selecty) in [(x,y) for x,y,m,ali in self.moveableSquares] and self.selected in allies:
                             self.animWalk()
                             self.selected.x,self.selected.y = self.selectx,self.selecty
                             self.mode = "optionmenu"
@@ -1461,7 +1457,7 @@ class Game():
         #MOVE MODE DISPLAY
         if self.mode == "move":
             #fills moveable and attackable squares
-            fillSquares(screen,set([(x,y) for x,y,m,ali in self.moveableSquares]+[(self.selected.x,self.selected.y)]),transBlue)
+            fillSquares(screen,set([(x,y) for x,y,m,ali in self.moveableSquares]),transBlue)
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
             if self.selected in allies:

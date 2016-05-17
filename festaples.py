@@ -64,12 +64,13 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
 ##    #this is only really useful for mounted units
 
     moveable = [(person.x,person.y,movesleft,[(person.x,person.y)])]
+
     q = Queue() #stored as (movesused,[paths]) 
     q.put((0,[(person.x,person.y)]))
     while not q.empty():
         node = q.get()
         place = node[-1][-1]
-        if node[0] < movesleft:
+        if node[0] <= movesleft:
             if 0 <= place[0] < len(stage) and 0 <= place[1] < len(stage[0]) and (place not in visited or visited.get(place) < movesleft - node[0]):
                 if place not in allies+enemies:
                     #the path is already the shortest
@@ -418,12 +419,10 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
 #----STORY FUNCTIONS----#
-def drawSentence(screen,sentence):
+def drawSentence(screen,sentence,x=10,y=530):
     "draws the sentence as a dialogue box"
     draw.rect(screen,BLUE,(0,520,1200,200))
     words = sentence.split()
-    x = 10
-    y = 530
     for i in range(len(words)):
         word = words[i] #current word
         nextWord = None
@@ -436,6 +435,30 @@ def drawSentence(screen,sentence):
             y += 25 #moves on to next line if we go over
         screen.blit(img,(x,y))
         x += width
+
+def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None):
+    "writes the sentence on the screen character by character, char by char"
+    global running
+    character = 1 #up to which character we display
+    while character <= len(sentence):
+        #loops to draw all the characters one by one
+        for e in event.get():
+            if e.type == QUIT:
+                running = False
+                return 0
+            if e.type == KEYDOWN:
+                if e.key == K_z or e.key == K_x or e.key == K_RETURN:
+                    character = len(sentence)
+        if name != None:
+            screen.blit(face,(x,y-120)) #blits face of character speaking
+            draw.rect(screen,YELLOW,(x,y-40,300,30)) #draws background box for name
+            draw.rect(screen,BLUE,(x+2,y-38,294,26))
+            screen.blit(sans.render(name,True,WHITE),(x+2,y-38))
+        drawSentence(screen,sentence[:character],10,y) #draws the sentence up to character
+        character += 1 #prepares to draw one more character
+        display.flip()
+        fpsLimiter.tick(30) #limits it to 30 FPS
+    return 1
 #----AESTHETIC FUNCTIONS----#
 def tileBackground(background,tilenum):
     "returns tiled background tilenum times, tilenum > 0"
