@@ -106,8 +106,13 @@ enemyGreyMapSprites = {}
 for i,k in enumerate(enemyMapSprites):
     enemyGreyMapSprites[k] = [greyScale(img) for img in enemyMapSprites[k]]
 faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
-                      "Player":image.load("images/faces/player.png"),
-                      "Bandit":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
+        "Player":image.load("images/faces/player.png"),
+        "Franny":image.load("images/faces/Franny.png"),
+        "Albert":image.load("images/faces/Albert.png"),
+        "Gary":image.load("images/faces/Gary.png"),
+        "Henning":image.load("images/faces/Henning.png"),
+        "Bandit":image.load("images/faces/Bandit.png"),
+        "Mercenary":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
 arrowBent = image.load("images/Arrow/arrowBent.png")
@@ -207,8 +212,10 @@ def load(file):
         allAllies = file["allAllies"]
         for a in allAllies:
             imagifyStrings(a) #imagify all images as they were strings while data of allies
+            if a.name.lower() not in usedNames:
+                player = a
         file.close()
-        changemode(Game())
+        changemode(getStory(chapter))
 def save(file):
     "saves game into file"
     global chapter, allAllies
@@ -221,7 +228,7 @@ def save(file):
     for a in allAllies:
         imagifyStrings(a) #imagify all images of allies
     file.close()
-    changemode(Game())
+    changemode(getStory(chapter))
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
