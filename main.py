@@ -181,7 +181,7 @@ chapterMaps = [chapter0,chapter1]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(3,3),(3,1),(4,2)]),
+               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
@@ -1183,6 +1183,7 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
+                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enMoves)
                 pass
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
@@ -1201,7 +1202,7 @@ class Game():
             time.wait(50)
         screen.blit(papyrus.render("GAME OVER",True,RED),(500,300))
         display.flip()
-        self.mode = "gameover"
+        self.mode = "gameOver"
     def moveSelect(self):
         "moves selector"
         kp = key.get_pressed()
@@ -1247,7 +1248,7 @@ class Game():
             if e.type == QUIT:
                 running = False
             if e.type == KEYDOWN:
-                if self.mode == "gameover":
+                if self.mode == "gameOver":
                     self.start()
                     continue
                 kp = key.get_pressed()
@@ -1497,13 +1498,16 @@ class Game():
                                 self.selected = p
                                 self.mode = "info" #sets to info mode
                                 break
+                #-------##temporary##-------#
+                if e.key == K_v:
+                    self.gameVictory()
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
-        if 0 in [player.hp,yoyo.hp] and self.mode != "gameover":
+        if 0 in [player.hp,yoyo.hp] and self.mode != "gameOver":
             self.gameOver()
             return 0
-        if self.mode in ["gameVictory","gameover"]:
+        if self.mode in ["gameVictory","gameOver"]:
             display.flip()
             return 0#we quit the function if it is gameVictory or game over
         if len(self.moved) == len(self.attacked) == len(allies) and self.mode != "enemyphase":
