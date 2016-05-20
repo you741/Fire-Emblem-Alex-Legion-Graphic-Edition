@@ -372,9 +372,22 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
         time.wait(50)
         event.pump()
 #------ENEMY AI-------#
-def getOptimalSquare(moveableSquares,stage,allies):
+def optimalValue(square,stage,allies):
+    "returns how optimal the moving to that square is largest=good"
+    #returns weighted:
+    #if there are more allies to attack, if enemies can reach etc.
+    return -1
+def getOptimalSquare(enemy,stage,allies,moveableSquares):
     "returns optimal square to move to, assuming enemy can't attack"
-    pass
+    best = 0
+    point = (enemy.x,enemy.y)
+    for i in moveableSquares:
+        ##optimize such that the square that is moved to is the one where the next move will hit the best ally
+        tmp = optimalValue(i,stage,allies)
+        if tmp > best:
+            point = i
+            #returns best coord to move to
+    return point
 def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
     attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
