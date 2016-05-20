@@ -1151,7 +1151,7 @@ class Game():
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        #ENEMY'S PHASE GOES HERE
+        #ENEMY'S PHASE GOES HERE, AI use
         for i in range(len(enemies)-1,-1,-1):
             en = enemies[i]
             screen.blit(self.filler,(0,0)) #fills the screen
@@ -1165,9 +1165,9 @@ class Game():
             time.wait(500)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
-            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
+            enemyMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
 
-            enMoves = [(x,y) for x,y,m,ali in enMoves]
+            enMoves = [(x,y) for x,y,m,ali in enemyMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
                 attackableSquares = getAttackableSquaresByMoving(enMoves,en) #attackableSquares by moving
@@ -1183,7 +1183,8 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
-                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enMoves)
+                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+                en.x,en.y = bestX,bestY
                 pass
             self.turn += 1 #increases turn by 1
             self.moved.add(en)

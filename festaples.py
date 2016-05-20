@@ -5,6 +5,7 @@ from pygame import *
 from random import *
 from feweapons import *
 from queue import *
+from math import *
 
 #----COLORS----#
 BLACK = (0,0,0,255)
@@ -376,18 +377,33 @@ def optimalValue(square,stage,allies):
     "returns how optimal the moving to that square is largest=good"
     #returns weighted:
     #if there are more allies to attack, if enemies can reach etc.
-    return -1
+#    getOptimalAlly(enemy,stage,allies,moveableSquares)
+    return 10
+
+def distAlly(enemy,stage,allies):
+    smallest = 1000000
+    for a in allies:
+        #all values are positive
+        tmp = hypot(a.x-enemy.x,a.y-enemy.y)
+        if tmp < smallest:
+            smallest = tmp
+    return smallest
+
 def getOptimalSquare(enemy,stage,allies,moveableSquares):
     "returns optimal square to move to, assuming enemy can't attack"
     best = 0
     point = (enemy.x,enemy.y)
     for i in moveableSquares:
         ##optimize such that the square that is moved to is the one where the next move will hit the best ally
-        tmp = optimalValue(i,stage,allies)
+        #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
+        #optimal value is maximum damage with multiplier?
+        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies)*3
         if tmp > best:
-            point = i
-            #returns best coord to move to
+            point = (i[0],i[1])
+            best = tmp
+    #returns best coord to move to
     return point
+
 def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
     attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
@@ -395,6 +411,7 @@ def getEnemyAction(enemy,stage,allies,moveableSquares):
     if len(attackableAllies) > 0:
         return "attack" #enemy attacks if enemy can
     return "move" #if enemy can't attack they just move
+
 def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     "returns optimal ally out of attackableAllies, as well as which weapon to use and where to move"
     #returns a tuple (ally,x,y)
