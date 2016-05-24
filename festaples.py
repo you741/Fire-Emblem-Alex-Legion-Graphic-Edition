@@ -380,13 +380,30 @@ def optimalValue(square,stage,allies):
 #    getOptimalAlly(enemy,stage,allies,moveableSquares)
     return 10
 
+def pathtoAlly(enemy,stage,ally):
+    "returns the path to the ally"
+    #hypot does not work as it does not take into consideration of terrain
+    #uses a priority direction, order of BFS goes in order with the direction the enemy needs to travel
+    directions = [[(1,0),(-1,0)],[(0,1),(0,-1)]]
+    #if abs(deltax) > abs(deltay):
+    #   direction = directions[0][int(deltax/abs(deltax))]
+    #else:
+    #   direction = directions[1][int(deltay/abs(deltay))]
+    
+    return
+
 def distAlly(enemy,stage,allies):
+    "returns the length of the path to the nearest ally"
     smallest = 1000000
-    for a in allies:
-        #all values are positive
-        tmp = hypot(a.x-enemy.x,a.y-enemy.y)
-        if tmp < smallest:
-            smallest = tmp
+##    for a in allies:
+##        for b in moveableSquares:
+##            #b is in form x,y,m,ali
+##            print(a.x,a.y,"     ",b[0],b[1])
+##            if (a.x,a.y) == (b[0],b[1]):
+##                print("enemy square",len(b[3]))
+##                if smallest > len(b[3]):
+##                    smallest = len(b[3])
+##    print(smallest)
     return smallest
 
 def getOptimalSquare(enemy,stage,allies,moveableSquares):
@@ -397,7 +414,8 @@ def getOptimalSquare(enemy,stage,allies,moveableSquares):
         ##optimize such that the square that is moved to is the one where the next move will hit the best ally
         #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
         #optimal value is maximum damage with multiplier?
-        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies)*3
+        #i is in form x,y,m,ali
+        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies,moveableSquares)*3
         if tmp > best:
             point = (i[0],i[1])
             best = tmp
@@ -448,6 +466,8 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
             break
     enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
+
+
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence,x=10,y=530):
     "draws the sentence as a dialogue box"
