@@ -5,6 +5,7 @@ from pygame import *
 from random import *
 from feweapons import *
 from queue import *
+from math import *
 
 #----COLORS----#
 BLACK = (0,0,0,255)
@@ -376,18 +377,51 @@ def optimalValue(square,stage,allies):
     "returns how optimal the moving to that square is largest=good"
     #returns weighted:
     #if there are more allies to attack, if enemies can reach etc.
-    return -1
+#    getOptimalAlly(enemy,stage,allies,moveableSquares)
+    return 10
+
+def pathtoAlly(enemy,stage,ally):
+    "returns the path to the ally"
+    #hypot does not work as it does not take into consideration of terrain
+    #uses a priority direction, order of BFS goes in order with the direction the enemy needs to travel
+    directions = [[(1,0),(-1,0)],[(0,1),(0,-1)]]
+    #if abs(deltax) > abs(deltay):
+    #   direction = directions[0][int(deltax/abs(deltax))]
+    #else:
+    #   direction = directions[1][int(deltay/abs(deltay))]
+    
+    return
+
+def distAlly(enemy,stage,allies):
+    "returns the length of the path to the nearest ally"
+    smallest = 1000000
+##    for a in allies:
+##        for b in moveableSquares:
+##            #b is in form x,y,m,ali
+##            print(a.x,a.y,"     ",b[0],b[1])
+##            if (a.x,a.y) == (b[0],b[1]):
+##                print("enemy square",len(b[3]))
+##                if smallest > len(b[3]):
+##                    smallest = len(b[3])
+##    print(smallest)
+    return smallest
+
 def getOptimalSquare(enemy,stage,allies,moveableSquares):
     "returns optimal square to move to, assuming enemy can't attack"
     best = 0
     point = (enemy.x,enemy.y)
     for i in moveableSquares:
         ##optimize such that the square that is moved to is the one where the next move will hit the best ally
-        tmp = optimalValue(i,stage,allies)
+        #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
+        #optimal value is maximum damage with multiplier?
+        #i is in form x,y,m,ali
+        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies,moveableSquares)*3
         if tmp > best:
-            point = i
-            #returns best coord to move to
+            point = (i[0],i[1])
+            best = tmp
+    #returns best coord to move to
     return point
+
 def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
     attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
@@ -395,6 +429,7 @@ def getEnemyAction(enemy,stage,allies,moveableSquares):
     if len(attackableAllies) > 0:
         return "attack" #enemy attacks if enemy can
     return "move" #if enemy can't attack they just move
+
 def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     "returns optimal ally out of attackableAllies, as well as which weapon to use and where to move"
     #returns a tuple (ally,x,y)
@@ -431,6 +466,8 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
             break
     enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
+
+
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence,x=10,y=530):
     "draws the sentence as a dialogue box"

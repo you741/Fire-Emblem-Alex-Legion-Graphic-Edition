@@ -63,30 +63,38 @@ def greyScale(img):
             new_img.set_at((x,y),new_color)
     return new_img
 #ALLIES' ANIMATIONS
-playerMageStandSprite = image.load('images/Player/Mage/MageAttackFrame1.png')
 playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
                           for i in range(16)],10)
+playerMageStandSprite = playerMageAnimaSprite[0][0]
 playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
                         for i in range(12)] + playerMageAnimaSprite[0][1:],21)
-playerKnightStandSprite = image.load('images/Player/Knight/KnightAttackFrame1.png')
 playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png")
                             for i in range(11)],5)
+playerKnightStandSprite = playerKnightLanceSprite[0][0]
 playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png")
                                 for i in range(8)] + playerKnightLanceSprite[0],13)
 
-yoyoStandSprite = image.load("images/Yoyo/YoyoAttackFrame1.png").convert_alpha()
+
 yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
                     for i in range(13)],5)
+yoyoStandSprite = yoyoSwordSprite[0][0]
 yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
                   for i in range(43)],29)
 
+#change albert's later
 albertStandSprite = playerMageStandSprite
 albertAnimacritSprite = playerMageAnimacritSprite
 albertAnimaSprite = playerMageAnimaSprite
+
+frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".png")
+                      for i in range(10)],5)
+frannyStandSprite = frannyLanceSprite[0][0]
+frannyLancecritSprite = (frannyLanceSprite[0][:2] + [image.load("images/Franny/FrannyCritFrame"+str(i+1)+".png")
+                                                  for i in range(11)] + frannyLanceSprite[0][2:],16)
 #ENEMIES' ANIMATIONS
-brigandStandSprite = image.load("images/Brigand/BrigandAttackFrame1.png")
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
+brigandStandSprite = brigandAxeSprite[0][0]
 brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
                      for i in range(2)] + brigandAxeSprite[0],11)
 
@@ -97,7 +105,8 @@ fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha
 #MAP SPRITES
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
-                  "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
@@ -159,6 +168,13 @@ albert = Mage("Albert",0,0,
                 "spd":40,"res":40,"maxhp":60},
               [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
               {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces["Player"])#test person for chapter 1
+franny = Cavalier("Franny",0,0,
+                  {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
+                   "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
+                  {"stren":35,"defen":25,"skl":50,"spd":55,"lck":45,"res":15,"maxhp":70},
+                  [iron_lance.getInstance(),vulnerary.getInstance()],{'Lance':200},
+                  {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite},faces["Franny"])
+
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
@@ -181,7 +197,7 @@ chapterMaps = [chapter0,chapter1]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert],[(0,1),(0,0),(1,1)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
+               ([albert,franny],[(0,1),(0,0),(1,1),(1,0)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
@@ -939,6 +955,7 @@ class Story():
                 #writes dialogue
                 return 0 #if it returns false it means the user quit, so we quit as well
         breakLoop = False
+        cM = False #change mode?
         while not breakLoop:
             #loops until user hits z or x to move on
             for e in event.get():
@@ -946,19 +963,22 @@ class Story():
                     running = False
                     breakLoop = True
                 if e.type == KEYDOWN:
-                    if e.key == K_z or e.key == K_x or e.key == K_RETURN:
+                    if e.key == K_z:
                         self.currDial += 1
                         breakLoop = True
+                                
+                if e.key == K_RETURN or e.key == K_x:
+                    cM = True
+                    breakLoop = True
+                    
             display.flip()
             fpsLimiter.tick(60) #limits to 60 FPS
-        if self.currDial >= self.limit:
+        if self.currDial >= self.limit or cM:
             if self.end:
                 changemode(SaveGame()) #we change to savegame if it's the end
             else:
                 #once we hit the limit we transition to the game mode
                 changemode(Game())
-        if kp[K_RETURN] or kp[K_x]:
-            changemode(Game())
         
 class Game():
     def __init__(self):
@@ -1151,7 +1171,7 @@ class Game():
         display.flip()
         time.wait(1000)
         screen.blit(screenBuff,(0,0))
-        #ENEMY'S PHASE GOES HERE
+        #ENEMY'S PHASE GOES HERE, AI use
         for i in range(len(enemies)-1,-1,-1):
             en = enemies[i]
             screen.blit(self.filler,(0,0)) #fills the screen
@@ -1165,9 +1185,9 @@ class Game():
             time.wait(500)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
-            enMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
+            enemyMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
 
-            enMoves = [(x,y) for x,y,m,ali in enMoves]
+            enMoves = [(x,y) for x,y,m,ali in enemyMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
                 attackableSquares = getAttackableSquaresByMoving(enMoves,en) #attackableSquares by moving
@@ -1183,7 +1203,8 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
-                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enMoves)
+                #(bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+                #en.x,en.y = bestX,bestY
                 pass
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
