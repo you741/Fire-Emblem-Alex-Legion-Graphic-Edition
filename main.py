@@ -91,6 +91,10 @@ frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".pn
 frannyStandSprite = frannyLanceSprite[0][0]
 frannyLancecritSprite = (frannyLanceSprite[0][:2] + [image.load("images/Franny/FrannyCritFrame"+str(i+1)+".png")
                                                   for i in range(11)] + frannyLanceSprite[0][2:],16)
+frannySwordSprite = ([image.load("images/Franny/FrannySwordFrame"+str(i+1)+".png")
+                      for i in range(11)],4)
+frannySwordcritSprite = ([frannySwordSprite[0][0]] + [image.load("images/Franny/FrannySwordcritFrame"+str(i+1)+".png")
+                                                    for i in range(16)] + frannySwordSprite[0][1:],20)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
@@ -172,8 +176,9 @@ franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
                   {"stren":35,"defen":25,"skl":50,"spd":55,"lck":45,"res":15,"maxhp":70},
-                  [iron_lance.getInstance(),vulnerary.getInstance()],{'Lance':200},
-                  {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite},faces["Franny"])
+                  [iron_lance.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Lance':200,'Sword':200},
+                  {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
+                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"])
 
 allies = [] #allies
 #ENEMIES
@@ -296,8 +301,14 @@ def attack(person,person2):
     drawBattleInfo(screen,ally,enemy,chapterMaps[chapter])
     actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
     #blits standing sprites for ally and enemy
-    screen.blit(ally.anims["stand"],(0,0))
-    screen.blit(enemy.anims["stand"],(0,0))
+    if ally.equip == None:
+        screen.blit(ally.anims["stand"],(0,0))
+    else:
+        screen.blit(ally.anims[ally.equip.typ][0][0],(0,0))
+    if enemy.equip == None:
+        screen.blit(enemy.anims["stand"],(0,0))
+    else:
+        screen.blit(enemy.anims[enemy.equip.typ][0][0],(0,0))
     display.flip()
     time.wait(200)
     isenemy = person in enemies #is person an enemy? (boolean)
@@ -966,10 +977,9 @@ class Story():
                     if e.key == K_z:
                         self.currDial += 1
                         breakLoop = True
-                                
-                if e.key == K_RETURN or e.key == K_x:
-                    cM = True
-                    breakLoop = True
+                    if e.key == K_RETURN or e.key == K_x:
+                        cM = True
+                        breakLoop = True
                     
             display.flip()
             fpsLimiter.tick(60) #limits to 60 FPS

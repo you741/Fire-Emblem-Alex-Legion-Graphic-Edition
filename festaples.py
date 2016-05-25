@@ -305,7 +305,10 @@ def singleAttack(screen,person,person2,isenemy,stage):
     "animates a single attack"
     hit,dam,crit = getAttackResults(person,person2,stage) #gets attack results
     #draws person 2's standing sprite
-    screen.blit(person2.anims["stand"],(0,0))
+    if person2.equip == None:
+        screen.blit(person2.anims["stand"],(0,0))
+    else:
+        screen.blit(person2.anims[person2.equip.typ][0][0],(0,0))
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
     #sets x and y for the text "MISS" and "NO DAMAGE"
     x = 725 if isenemy else 25
@@ -333,7 +336,7 @@ def singleAttack(screen,person,person2,isenemy,stage):
     else:
         drawHealthLoss(screen,person2,dam,not isenemy) #draws the health bar losing health for person2
     screen.blit(filler,(0,0)) #covers the screen
-    drawFrames(screen,frames[hitFrame:]+[person.anims["stand"]]) #draws all frames with standing frame at the end
+    drawFrames(screen,frames[hitFrame:]+[frames[0]]) #draws all frames with standing frame at the end
     if hit or person.equip.mag:
         #reduces durability if person hits enemy
         #or if the weapon is magical (they lose durability whether they hit or not)
