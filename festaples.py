@@ -384,16 +384,39 @@ def optimalValue(square,stage,allies):
     return 10
 
 def pathtoAlly(enemy,stage,ally):
-    "returns the path to the ally"
+    "returns list of paths to all ally"
     #hypot does not work as it does not take into consideration of terrain
-    #uses a priority direction, order of BFS goes in order with the direction the enemy needs to travel
+    #uses a priority direction, order of DFS goes in order with the direction the enemy needs to travel
+
+        
     directions = [[(1,0),(-1,0)],[(0,1),(0,-1)]]
-    #if abs(deltax) > abs(deltay):
-    #   direction = directions[0][int(deltax/abs(deltax))]
-    #else:
-    #   direction = directions[1][int(deltay/abs(deltay))]
-    
-    return
+    stack = []
+    stack.append([(enemy.x,enemy.y),[enemy.x,enemy.y]])
+    while not q.empty():
+        node = stack.pop()
+        spot = node[0]
+            
+        if spot == (ally.x,ally.y):
+            break
+        #deltas calculated by spot - target
+        deltax = spot[0] - ally.x
+        deltay = spot[1] - ally.y
+        direction = []
+        if abs(deltax) > abs(deltay):
+           direction.append(directions[0][int(deltax/abs(deltax))])
+           direction.append(directions[0][-1*int(deltax/abs(deltax))])
+           for i in directions[1]:
+               direction.append(i)
+        else:
+           direction.append(directions[1][int(deltay/abs(deltay))])
+           direction.append(directions[1][-1*int(deltay/abs(deltay))])
+           for i in directions[0]:
+               direction.append(i)
+        for d in direction:
+            stack.append([(spot[0]+d[0],spot[1]+d[1]),node[1] + [spot[0] + d[0], spot[1] + d[1]]])
+        
+            
+    return node[1]
 
 def distAlly(enemy,stage,allies):
     "returns the length of the path to the nearest ally"
@@ -413,6 +436,8 @@ def getOptimalSquare(enemy,stage,allies,moveableSquares):
     "returns optimal square to move to, assuming enemy can't attack"
     best = 0
     point = (enemy.x,enemy.y)
+    print(pathtoAlly(enemy,stage,allies[0]))
+
     for i in moveableSquares:
         ##optimize such that the square that is moved to is the one where the next move will hit the best ally
         #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
