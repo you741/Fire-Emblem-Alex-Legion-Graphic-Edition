@@ -116,7 +116,7 @@ class Person():
             return False #nothing can pass walls
         if self.flying:
             return True #there ain't nothing flying dudes can't pass
-        if terrain.name.lower() == "mountain":
+        if terrain.name.lower() == "peak":
             #only mountainous dudes can pass this
             return True if self.mountainous else False
         if terrain.name.lower() == "water":

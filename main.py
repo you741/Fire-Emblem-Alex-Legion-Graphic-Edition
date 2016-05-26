@@ -130,9 +130,13 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
 arrowHead = image.load("images/Arrow/arrowHead.png")
 arrowBent = image.load("images/Arrow/arrowBent.png")
 arrowStraight = image.load("images/Arrow/arrowStraight.png")
+
+#TERRAIN IMAGES
+peakImg = image.load("images/terrain/peak.png")
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
+peak = Terrain("Peak",4,40,4,peakImg)
 #WEAPONS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,0,2,46,False,[],2)
@@ -183,7 +187,7 @@ franny = Cavalier("Franny",0,0,
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":4,"skl":3,"lck":0,
+                  {"lv":1,"stren":3000,"defen":4,"skl":3000,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
@@ -193,8 +197,20 @@ alexTheBandit = Brigand("Alex the Bandit",0,0,
 enemies = []
 #----CHAPTERS----#
 #MAPS
-chapter0 = [[plain for i in range(40)] for j in range(24)]
-chapter1 = [[plain for i in range(40)] for j in range(24)]
+def createMap(width,height,terrains=[]):
+    "creates a map (2d list)"
+    newMap = [[plain for i in range(width)] for j in range(height)]
+    for t,coords in terrains:
+        for x,y in coords:
+            newMap[y][x] = t
+    return newMap
+def drawMap(maptodraw):
+    for y in range(len(maptodraw)):
+        for x in range(len(maptodraw[y])):
+            if maptodraw[y][x].img != None:
+                screen.blit(maptodraw[y][x].img,(x*30,y*30))
+chapter0 = createMap(40,24)
+chapter1 = createMap(40,24,[(peak,[(7,10),(10,7),(11,11),(8,10),(7,11)])])
 chapterMaps = [chapter0,chapter1]
 #CHAPTER DATA
 #Stored in tuples
@@ -908,6 +924,7 @@ class Story():
         self.currDial = 0 #current dialogue we are on
         self.limit = len(dialogue) #limit of the dialogue - once reached the story ends
         self.end = end #is it an ending story?
+        self.cond = False
     def draw(self,screen):
         "draws screen on - starts on title screen"
         screen.blit(self.background,(0,0))
@@ -941,32 +958,55 @@ class Story():
 
         kp = key.get_pressed()
         
-        if func == "":
-            #displays narration
-            if not writeDialogue(screen,sentence):
-                #writes narration
-                return 0 #if it returns false it means the user quit, so we quit as well
-        elif func == "TITLE":
-            #display the title
-            screen.fill(BLACK)
-            draw.rect(screen,BLUE,(0,330,1200,60))
-            img = sans.render(sentence,True,WHITE) #img of string to blit
-            screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
-        else:
-            #displays a character talking (func = name of character in this case)
-            allynames = [a.name.lower() for a in allAllies] #names of all allies
-            x=0
-            if func.lower() not in allynames:
-                x = 900 #changes the x to other side of the screen if it's not an ally
-            if func.lower() == player.name.lower():
-                img = faces["Player"] #player's face
+        if func == "CONDITION":
+            if sentence == "*End*":
+                self.cond = False
             else:
-                img = faces[func] #anyone else's face
-            if not writeDialogue(screen,sentence,x,530,func,img):
-                #writes dialogue
-                return 0 #if it returns false it means the user quit, so we quit as well
-        breakLoop = False
-        cM = False #change mode?
+                alive,dead = sentence.split(";")
+                alive = alive.lower().split(",")
+                dead = dead.lower().split(",")
+                names = [a.name.lower() for a in allAllies]
+                if alive != ['']:
+                    if len([n for n in alive if n in names]) == len(alive):
+                        self.cond = False
+                    else:
+                        self.cond = True
+                if dead != ['']:
+                    if len([n for n in dead if n not in names]) == len(dead):
+                        self.cond = False
+                    else:
+                        self.cond = True
+            self.currDial += 1
+        elif self.cond:
+            #self.cond == True indicates we did not meet the condition, so we skip over
+            self.currDial += 1
+        else:
+            if func == "":
+                #displays narration
+                if not writeDialogue(screen,sentence):
+                    #writes narration
+                    return 0 #if it returns false it means the user quit, so we quit as well
+            elif func == "TITLE":
+                #display the title
+                screen.fill(BLACK)
+                draw.rect(screen,BLUE,(0,330,1200,60))
+                img = sans.render(sentence,True,WHITE) #img of string to blit
+                screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
+            else:
+                #displays a character talking (func = name of character in this case)
+                allynames = [a.name.lower() for a in allAllies] #names of all allies
+                x=0
+                if func.lower() not in allynames:
+                    x = 900 #changes the x to other side of the screen if it's not an ally
+                if func.lower() == player.name.lower():
+                    img = faces["Player"] #player's face
+                else:
+                    img = faces[func] #anyone else's face
+                if not writeDialogue(screen,sentence,x,530,func,img):
+                    #writes dialogue
+                    return 0 #if it returns false it means the user quit, so we quit as well
+        breakLoop = False if func != "CONDITION" and not self.cond else True
+        cM = False #boolean: change mode?
         while not breakLoop:
             #loops until user hits z or x to move on
             for e in event.get():
@@ -978,6 +1018,7 @@ class Story():
                         self.currDial += 1
                         breakLoop = True
                     if e.key == K_RETURN or e.key == K_x:
+                        #enter or x skips entirely
                         cM = True
                         breakLoop = True
                     
@@ -1152,6 +1193,7 @@ class Game():
         self.moved.clear()
         self.attacked.clear()
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
+        drawMap(chapterMaps[chapter])#draws all terrain
         drawGrid(screen)
         self.startTurn()
     def startTurn(self):
@@ -1532,6 +1574,7 @@ class Game():
                 #-------##temporary##-------#
                 if e.key == K_v:
                     self.gameVictory()
+                    return 0
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
@@ -1549,6 +1592,7 @@ class Game():
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()
+            return 0
         screen.blit(self.filler,(0,0)) #blits the filler
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS

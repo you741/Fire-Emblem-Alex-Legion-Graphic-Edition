@@ -1,0 +1,6 @@
+images/backgrounds/forest.jpg
+Yoyo:They did quite a number on us... but we have to press forward!
+*Player*:Yes... let's head on to the sacred isle...
+CONDITION:Albert;
+Albert:Let's go then
+CONDITION:*End*
