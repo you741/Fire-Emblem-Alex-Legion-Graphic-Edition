@@ -95,6 +95,11 @@ frannySwordSprite = ([image.load("images/Franny/FrannySwordFrame"+str(i+1)+".png
                       for i in range(11)],4)
 frannySwordcritSprite = ([frannySwordSprite[0][0]] + [image.load("images/Franny/FrannySwordcritFrame"+str(i+1)+".png")
                                                     for i in range(16)] + frannySwordSprite[0][1:],20)
+garyAxeSprite = ([image.load("images/Gary/GaryAttackFrame"+str(i+1)+".png")
+                  for i in range(18)],10)
+garyStandSprite = garyAxeSprite[0][0]
+garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"+str(i+1)+".png")
+                                          for i in range(12)] + garyAxeSprite[0][7:],15)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
@@ -110,7 +115,8 @@ fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
-                  "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
@@ -183,11 +189,17 @@ franny = Cavalier("Franny",0,0,
                   [iron_lance.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Lance':200,'Sword':200},
                   {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
                    'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"])
+gary = Fighter("Gary",0,0,
+               {"lv":3,"stren":9,"defen":5,"skl":6,"lck":4,
+                "spd":5,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
+               {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
+               [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
+               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
 
 allies = [] #allies
 #ENEMIES
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":3000,"defen":4,"skl":3000,"lck":0,
+                  {"lv":1,"stren":8,"defen":4,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
@@ -218,7 +230,7 @@ chapterMaps = [chapter0,chapter1]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png")),
-               ([albert,franny],[(0,1),(0,0),(1,1),(1,0)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
+               ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
                 "Defeat all enemies",image.load("images/Maps/prologue.png"))]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist

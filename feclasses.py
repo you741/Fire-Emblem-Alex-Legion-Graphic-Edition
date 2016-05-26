@@ -232,3 +232,8 @@ class Cavalier(Person):
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
         self.mounted = True    
+
+class Fighter(Person):
+    "fighter class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
