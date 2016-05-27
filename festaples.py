@@ -384,38 +384,42 @@ def optimalValue(square,stage,allies):
     return 10
 
 def pathtoAlly(enemy,stage,ally):
-    "returns list of paths to all ally"
+    "returns list of paths to an ally"
     #hypot does not work as it does not take into consideration of terrain
     #uses a priority direction, order of DFS goes in order with the direction the enemy needs to travel
-
-        
+    visited = [[0 for i in range (40)]for j in range (40)]
     directions = [[(1,0),(-1,0)],[(0,1),(0,-1)]]
     stack = []
-    stack.append([(enemy.x,enemy.y),[enemy.x,enemy.y]])
-    while not q.empty():
+    stack.append([(enemy.x,enemy.y),[(enemy.x,enemy.y)]])
+    while stack != []:
         node = stack.pop()
         spot = node[0]
             
         if spot == (ally.x,ally.y):
             break
-        #deltas calculated by spot - target
-        deltax = spot[0] - ally.x
-        deltay = spot[1] - ally.y
-        direction = []
-        if abs(deltax) > abs(deltay):
-           direction.append(directions[0][int(deltax/abs(deltax))])
-           direction.append(directions[0][-1*int(deltax/abs(deltax))])
-           for i in directions[1]:
-               direction.append(i)
-        else:
-           direction.append(directions[1][int(deltay/abs(deltay))])
-           direction.append(directions[1][-1*int(deltay/abs(deltay))])
-           for i in directions[0]:
-               direction.append(i)
-        for d in direction:
-            stack.append([(spot[0]+d[0],spot[1]+d[1]),node[1] + [spot[0] + d[0], spot[1] + d[1]]])
+        if 0 <= spot[1] < len(stage) and 0 <= spot[0] < len(stage[0]) and not visited[spot[0]][spot[1]]:
+            print(node)
+            #deltas calculated by spot - target
+            visited[spot[0]][spot[1]] = 1
+            deltax = spot[0] - ally.x
+            deltay = spot[1] - ally.y
+            direction = []
+            if abs(deltax) > abs(deltay):
+               direction.append(directions[0][int(deltax/abs(deltax))])
+               for i in directions[1]:
+                   direction.append(i)
+               direction.append(directions[0][-1*int(deltax/abs(deltax))])
+
+            else:
+               direction.append(directions[1][int(deltay/abs(deltay))])
+               direction.append(directions[1][-1*int(deltay/abs(deltay))])
+               for i in directions[0]:
+                   direction.append(i)
+            print(direction)
+            for d in direction:
+                stack.append([(spot[0]+d[0],spot[1]+d[1]),node[1] + [(spot[0] + d[0], spot[1] + d[1])]])
         
-            
+    print(node[1])           
     return node[1]
 
 def distAlly(enemy,stage,allies):
@@ -443,7 +447,7 @@ def getOptimalSquare(enemy,stage,allies,moveableSquares):
         #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
         #optimal value is maximum damage with multiplier?
         #i is in form x,y,m,ali
-        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies,moveableSquares)*3
+        tmp = optimalValue((i[0],i[1]),stage,allies)+i[2]-distAlly(enemy,stage,allies)*3
         if tmp > best:
             point = (i[0],i[1])
             best = tmp

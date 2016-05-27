@@ -1278,9 +1278,8 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
-                #(bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
-                #en.x,en.y = bestX,bestY
-                pass
+ #               (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+#                en.x,en.y = bestX,bestY
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
             self.attacked.add(en)
