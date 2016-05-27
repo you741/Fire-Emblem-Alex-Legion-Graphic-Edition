@@ -46,6 +46,7 @@ monospace = font.SysFont("Monospace",30)
 smallsans = font.SysFont("Comic Sans MS",15)
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
+superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
 #----MUSIC----#
 bgMusic = mixer.Channel(0) #channel for background music
 sndEffs = mixer.Channel(1) #channel for sound effects
@@ -144,6 +145,10 @@ peakImg = image.load("images/terrain/peak.png")
 plainsBackground = image.load("images/Maps/prologue.png")
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
+
+#UI Backgrounds
+menuBG = image.load("images/backgrounds/menuBackground.png")
+statsBG = image.load('images/backgrounds/statsMenu.png')
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
@@ -1679,7 +1684,7 @@ class Game():
                 highlightedAlly = self.targetableAllies[self.selectedAlly] #highlighted ally
                 draw.rect(screen,WHITE,(highlightedAlly.x*30,highlightedAlly.y*30,30,30),1) #draws selector around highlighted ally
             else:
-                screen.fill(GREEN) #fills the screen with green
+                screen.blit(menuBG,(0,0)) #blits menu background
                 #draws item menu for both allies
                 #first we set which item selected out of the two menus
                 #this is based on which ally the selector is on
@@ -1688,30 +1693,30 @@ class Game():
         #INFO MODE DISPLAY
         #displays character info screen
         if self.mode == "info":
-            screen.fill(GREEN)
             a = self.selected #selected ally
-            draw.rect(screen,BLUE,(600,100,600,520)) #blits background for stats
-            displayList = [["Str: "+str(a.stren),"Move: "+str(a.move)],
-                           ["Skill: "+str(a.skl),"Con: "+str(a.con)],
-                           ["Spd: "+str(a.spd),""],
-                           ["Luck: "+str(a.lck),""],
-                           ["Def: "+str(a.defen),""],
-                           ["Res: "+str(a.res),""]]
-            draw.rect(screen,BLUE,(610,20,580,60))
-            screen.blit(sans.render("PERSONAL DATA",True,WHITE),(610,30))
+##            draw.rect(screen,BLUE,(600,100,600,520)) #blits background for stats
+##            draw.rect(screen,BLUE,(610,20,580,60))
+##            screen.blit(sans.render("PERSONAL DATA",True,WHITE),(610,30))
+            screen.blit(statsBG,(0,0)) #blits stats background
+            displayList = [[str(a.stren),str(a.move)],
+                           [str(a.skl),str(a.con)],
+                           [str(a.spd),""],
+                           [str(a.lck),""],
+                           [str(a.defen),""],
+                           [str(a.res),""]]
             for i in range(len(displayList)):
                 #blits all the things in displayList
                 #all the items are lists representing a row
                 cell1,cell2 = displayList[i] #cell1 and cell2 in the row
-                screen.blit(sans.render(cell1,True,WHITE),(610,100+i*30))
-                screen.blit(sans.render(cell2,True,WHITE),(910,100+i*30))
-            draw.rect(screen,(230,240,233),(30,30,540,520)) #background for face
-            screen.blit(transform.scale(self.selected.face,(450,400)),(75,40))
-            screen.blit(sans.render(a.name,True,BLACK),(75,440)) #blits name of the selected unit
-            screen.blit(transform.scale(transBlack,(570,150)),(0,560))
-            screen.blit(sans.render(a.__class__.__name__,True,WHITE),(20,565))
-            screen.blit(sans.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(20,595))
-            screen.blit(sans.render("HP "+str(a.hp)+"/"+str(a.maxhp),True,WHITE),(20,625))
+                screen.blit(superScript40.render(cell1,True,WHITE),(640,130+i*72))
+                screen.blit(superScript40.render(cell2,True,WHITE),(980,130+i*72))
+##            draw.rect(screen,(230,240,233),(30,30,540,520)) #background for face
+            screen.blit(transform.scale(self.selected.face,(360,320)),(75,32))
+            screen.blit(superScript40.render(a.name,True,BLACK),(144,381)) #blits name of the selected unit
+##            screen.blit(transform.scale(transBlack,(570,150)),(0,560))
+            screen.blit(superScript40.render(a.__class__.__name__,True,WHITE),(15,485))
+            screen.blit(superScript40.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(15,555))
+            screen.blit(superScript40.render("HP "+str(a.hp)+"/"+str(a.maxhp),True,WHITE),(15,610))
         #--------------------HIGHLIGHTING A PERSON---------------#
         if self.mode == "freemove":
             for p in allies+enemies:
