@@ -139,6 +139,11 @@ arrowStraight = image.load("images/Arrow/arrowStraight.png")
 
 #TERRAIN IMAGES
 peakImg = image.load("images/terrain/peak.png")
+
+#BACKGROUND IMAGES
+plainsBackground = image.load("images/Maps/prologue.png")
+#battle background
+battlePlains = image.load("images/backgrounds/battlePlains.png")
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
@@ -229,9 +234,10 @@ chapterMaps = [chapter0,chapter1]
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
-                "Defeat all enemies",image.load("images/Maps/prologue.png")),
+                "Defeat all enemies",plainsBackground),
                ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
-                "Defeat all enemies",image.load("images/Maps/prologue.png"))]
+                "Defeat all enemies",plainsBackground)]
+chapterBattleBackgrounds = [battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
@@ -323,7 +329,7 @@ def attack(person,person2):
     else:
         ally = person2
         enemy = person
-    screen.fill(GREEN) #green screen
+    screen.blit(chapterBattleBackgrounds[chapter],(0,0))
     display.flip()
     time.wait(200)
     drawBattleInfo(screen,ally,enemy,chapterMaps[chapter])
