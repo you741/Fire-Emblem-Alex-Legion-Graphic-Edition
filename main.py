@@ -1297,6 +1297,7 @@ class Game():
  #               (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
 #                en.x,en.y = bestX,bestY
                 pass
+
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
             self.attacked.add(en)
