@@ -64,6 +64,7 @@ def greyScale(img):
             new_img.set_at((x,y),new_color)
     return new_img
 #ALLIES' ANIMATIONS
+#animations are stored (except for stand) in tuples: (list_of_surfaces_for_each_frame_of_the_animation,frame_enemy/ally_is_hit)
 playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
                           for i in range(16)],10)
 playerMageStandSprite = playerMageAnimaSprite[0][0]
@@ -100,14 +101,18 @@ garyAxeSprite = ([image.load("images/Gary/GaryAttackFrame"+str(i+1)+".png")
                   for i in range(18)],10)
 garyStandSprite = garyAxeSprite[0][0]
 garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"+str(i+1)+".png")
-                                          for i in range(12)] + garyAxeSprite[0][7:],15)
+                                          for i in range(12)] + garyAxeSprite[0][7:],16)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
 brigandStandSprite = brigandAxeSprite[0][0]
 brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
                      for i in range(2)] + brigandAxeSprite[0],11)
-
+mercenarySwordSprite = ([image.load("images/Mercenary/MercenaryAttackFrame"+str(i+1)+".png")
+                         for i in range(21)],12)
+mercenaryStandSprite = mercenarySwordSprite[0][0]
+mercenarySwordcritSprite = ([mercenaryStandSprite]+[image.load("images/Mercenary/MercenaryCritFrame"+str(i+1)+".png")
+                                                     for i in range(18)] + mercenarySwordSprite[0][6:],25)
 #MAGIC ANIMATIONS
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
               for i in range(17)]
@@ -118,7 +123,8 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
-enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                   "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
     allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
@@ -191,7 +197,7 @@ albert = Mage("Albert",0,0,
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
               [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
-              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces["Player"])#test person for chapter 1
+              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces["Albert"])#test person for chapter 1
 franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
@@ -208,14 +214,24 @@ gary = Fighter("Gary",0,0,
 
 allies = [] #allies
 #ENEMIES
+#--Brigands
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":8,"defen":4,"skl":3,"lck":0,
+                  {"lv":1,"stren":6,"defen":3,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+bandit1 = Brigand("Bandit",0,0,
+                  {"lv":3,"stren":8,"defen":4,"skl":4,"lck":1,
+                   "spd":4,"con":9,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":3,"stren":8,"defen":4,"skl":4,"lck":3,
                          "spd":4,"con":10,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70)
+#--Mercenaries
+merc1 = Mercenary("Mercenary",0,0,
+                {"lv":3,"stren":6,"defen":3,"skl":8,"lck":2,
+                "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},
+                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 enemies = []
 #----CHAPTERS----#
 #MAPS
@@ -232,7 +248,7 @@ def drawMap(maptodraw):
             if maptodraw[y][x].img != None:
                 screen.blit(maptodraw[y][x].img,(x*30,y*30))
 chapter0 = createMap(40,24)
-chapter1 = createMap(40,24,[(peak,[(7,10),(10,7),(11,11),(8,10),(7,11)])])
+chapter1 = createMap(40,24,[(peak,[(7,10),(10,7),(11,11),(8,10),(7,11),(8,11),(9,11),(10,11),(9,10),(10,10),(11,10),(10,9),(10,8)])])
 chapterMaps = [chapter0,chapter1]
 #CHAPTER DATA
 #Stored in tuples
@@ -240,7 +256,7 @@ chapterMaps = [chapter0,chapter1]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
                 "Defeat all enemies",plainsBackground),
-               ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit0],[3],[(7,7),(7,6),(8,3)]),
+               ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit1,merc1],[3,2],[(7,7),(7,6),(8,3),(7,8),(8,7)]),
                 "Defeat all enemies",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -1278,8 +1294,8 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
-                #(bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
-                #en.x,en.y = bestX,bestY
+ #               (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+#                en.x,en.y = bestX,bestY
                 pass
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
@@ -1289,6 +1305,7 @@ class Game():
         self.moved.clear()
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
+        event.clear()
         self.startTurn() #starts the turn      
     def gameOver(self):
         "draws game over screen"
