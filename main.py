@@ -234,6 +234,7 @@ merc1 = Mercenary("Mercenary",0,0,
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 enemies = []
 #----CHAPTERS----#
+numChaps = 2 #number of chapters - including prologue
 #MAPS
 def createMap(width,height,terrains=[]):
     "creates a map (2d list)"
@@ -242,14 +243,23 @@ def createMap(width,height,terrains=[]):
         for x,y in coords:
             newMap[y][x] = t
     return newMap
+terrDict = {".":plain,
+            "&":peak} #translates string into terrain
+def createMapFromFile(chapterNum):
+    "creates map from file"
+    newMap = []
+    mapFile = open("maps/chapter"+str(chapterNum)+".txt")
+    for line in mapFile.read().strip().split("\n"):
+        newMap.append([terrDict[c] for c in line])
+    return newMap
 def drawMap(maptodraw):
     for y in range(len(maptodraw)):
         for x in range(len(maptodraw[y])):
             if maptodraw[y][x].img != None:
                 screen.blit(maptodraw[y][x].img,(x*30,y*30))
-chapter0 = createMap(40,24)
-chapter1 = createMap(40,24,[(peak,[(7,10),(10,7),(11,11),(8,10),(7,11),(8,11),(9,11),(10,11),(9,10),(10,10),(11,10),(10,9),(10,8)])])
-chapterMaps = [chapter0,chapter1]
+#chapter0 = createMapFromFile(0)
+#chapter1 = createMap(40,24,[(peak,[(7,10),(10,7),(11,11),(8,10),(7,11),(8,11),(9,11),(10,11),(9,10),(10,10),(11,10),(10,9),(10,8)])])
+chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 #CHAPTER DATA
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
