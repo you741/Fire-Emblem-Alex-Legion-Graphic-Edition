@@ -73,11 +73,12 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
         place = node[-1][-1]
         if node[0] <= movesleft:
             if 0 <= place[0] < len(stage) and 0 <= place[1] < len(stage[0]) and (place not in visited or visited.get(place) < movesleft - node[0]):
-                if place not in allies+enemies:
-                    #the path is already the shortest
-                    moveable.append((place[0],place[1],movesleft-node[0],node[1]))
-                if place not in enemies:
-                    if person.canPass(stage[place[1]][place[0]]):
+            
+                if person.canPass(stage[place[1]][place[0]]):
+                    if place not in allies+enemies:
+                        #the path is already the shortest
+                        moveable.append((place[0],place[1],movesleft-node[0],node[1]))
+                    if place not in enemies:
                         #put  four directions in the queue
                         visited[place] = movesleft - node[0]
                         for k in [(0,1),(0,-1),(1,0),(-1,0)]:

@@ -79,7 +79,7 @@ class Person():
         "returns critical chance against enemy in percent"
         if self.equip == None:
             return 0
-        return min(100,max(0,self.skl-enemy.lck+self.equip.crit))
+        return min(100,max(0,self.skl//2-enemy.lck+self.equip.crit))
     def getHit(self,enemy,stage):
         "returns hit chance on enemy in percent"
         if self.equip == None:
@@ -231,9 +231,12 @@ class Cavalier(Person):
     "cavalier class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
-        self.mounted = True    
-
+        self.mounted = True
 class Fighter(Person):
     "fighter class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+class Mercenary(Person):
+    "mercenary class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
