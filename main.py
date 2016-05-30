@@ -29,6 +29,15 @@ __copyright__ = "Yttrium Z 2015-2016"
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
 display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+#loading screen
+loadingScreen = image.load("images/loading_screen.png")
+def LS(prog):
+    "displays loading screen based on prog"
+    screen.blit(loadingScreen,(0,0))
+    draw.rect(screen,(230,240,90),(219,532,prog,82))
+    event.pump()
+    display.flip()
+LS(1)
 #----GLOBAL VARIABLES----#
 #----COLORS----#
 BLACK = (0,0,0,255)
@@ -38,6 +47,7 @@ GREEN = (0,255,0,255)
 BLUE = (0,0,255,255)
 YELLOW = (255,255,0,255)
 GREY = (160,160,160,255)
+LS(55)
 #----FONTS----#
 timesnr = font.SysFont("Times New Roman",15)
 comicsans = font.SysFont("Comic Sans MS",25)
@@ -47,10 +57,12 @@ smallsans = font.SysFont("Comic Sans MS",15)
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
 superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
+LS(110)
 #----MUSIC----#
 bgMusic = mixer.Channel(0) #channel for background music
 sndEffs = mixer.Channel(1) #channel for sound effects
 #conquest = mixer.Sound("music/3-01-conquest.ogg")
+LS(220)
 #----IMAGE LOAD----#
 logo = image.load("images/logo.png")
 def greyScale(img):
@@ -76,7 +88,7 @@ playerKnightStandSprite = playerKnightLanceSprite[0][0]
 playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png")
                                 for i in range(8)] + playerKnightLanceSprite[0],13)
 
-
+LS(265)
 yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
                     for i in range(13)],5)
 yoyoStandSprite = yoyoSwordSprite[0][0]
@@ -87,7 +99,7 @@ yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
 albertStandSprite = playerMageStandSprite
 albertAnimacritSprite = playerMageAnimacritSprite
 albertAnimaSprite = playerMageAnimaSprite
-
+LS(310)
 frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".png")
                       for i in range(10)],5)
 frannyStandSprite = frannyLanceSprite[0][0]
@@ -102,6 +114,7 @@ garyAxeSprite = ([image.load("images/Gary/GaryAttackFrame"+str(i+1)+".png")
 garyStandSprite = garyAxeSprite[0][0]
 garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"+str(i+1)+".png")
                                           for i in range(12)] + garyAxeSprite[0][7:],16)
+LS(355)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
@@ -116,7 +129,7 @@ mercenarySwordcritSprite = ([mercenaryStandSprite]+[image.load("images/Mercenary
 #MAGIC ANIMATIONS
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
               for i in range(17)]
-
+LS(400)
 #MAP SPRITES
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
@@ -155,6 +168,7 @@ battlePlains = image.load("images/backgrounds/battlePlains.png")
 #UI Backgrounds
 menuBG = image.load("images/backgrounds/menuBackground.png")
 statsBG = image.load('images/backgrounds/statsMenu.png')
+LS(440)
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
@@ -179,6 +193,7 @@ transRed = Surface((30,30), SRCALPHA)
 transRed.fill((255,0,0,122))
 transBlack = Surface((1200,720), SRCALPHA)
 transBlack.fill((0,0,0,122))
+LS(550)
 #----PERSONS----#
 #ALLIES
 name = "" #name of player
@@ -233,6 +248,7 @@ merc1 = Mercenary("Mercenary",0,0,
                 "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 enemies = []
+LS(660)
 #----CHAPTERS----#
 numChaps = 2 #number of chapters - including prologue
 #MAPS
@@ -280,7 +296,8 @@ allAllies = [] #all allies that exist
 #miscellaneous
 chapter = 0 #changes when load new/old game, so stays global
 fpsLimiter = time.Clock()
-
+LS(766)
+screen.fill(BLACK)
 #----GLOBAL FUNCTIONS----#
 def addAlly(ally):
     "adds an ally to the allies list - updates allAllies too"
@@ -1317,7 +1334,7 @@ class Game():
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         event.clear()
-        self.startTurn() #starts the turn      
+        self.startTurn() #starts the turn
     def gameOver(self):
         "draws game over screen"
         for i in range(50):
@@ -1341,7 +1358,6 @@ class Game():
         if self.mode in ["freemove","move"]:
             self.selectx = min(39,max(0,self.selectx))
             self.selecty = min(23,max(0,self.selecty))
-
     def createOptionMenu(self):
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
@@ -1411,7 +1427,7 @@ class Game():
                     elif self.selectedAlly == -1:
                         self.selectedAlly = len(self.targetableAllies)-1
                 elif self.mode == "trade":
-                    #if we have a selected2 we move the item selector inste
+                    #if we have a selected2 we move the item selector instead
                     self.menu.moveSelect()
                 #---------Z--------#
                 if e.key == K_z:
@@ -1512,11 +1528,10 @@ class Game():
                                 #use option
                                 drawChangingBar(screen,self.selected.hp,self.selected.hp+self.selectedItem.hpGain,self.selected.maxhp,420,330,360,60,"Hp",False)
                                 if not self.selectedItem.use(self.selected):
-                                    #uses consumable
                                     #if it breaks we remove it
                                     self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                                 self.moved.add(self.selected)
-                                self.attacked.add(self.selected) #guy who used consumable can't move - treated like attack
+                                self.attacked.add(self.selected) #guy who used consumable can't move - treated like an attack
                                 self.mode = "freemove"
                             elif optselected.lower() == "equip":
                                 #equip option
@@ -1526,12 +1541,6 @@ class Game():
                                 self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                             self.selectedItem = None #resets self.selectedItem
                             self.menu.subMenu = None
-                            if self.selected.equip == None:
-                                #if we have no equipped item we remove the attack option from menu
-                                if "attack" in self.menu.items:
-                                    self.menu.items.remove("attack")
-                                #we also empty attackableSquares
-                                self.attackableSquares = []
                         if len(self.selected.items) == 0:
                             #if we have no items left, we go back to option menu
                             self.mode = "optionmenu"
@@ -1583,6 +1592,13 @@ class Game():
                         self.selected.x,self.selected.y = self.oldx,self.oldy
                         if self.moveableSquares == []:
                             self.mode = "freemove" #we go back to freemove mode if we have no moveablesquares
+                        else:
+                            #we reset attackable squares
+                            self.attackableSquares = getAttackableSquaresByMoving([(x,y) for x,y,m,ali in self.moveableSquares],self.selected)
+                            if self.attackableSquares:
+                                #we get all attackables squares that we cannot move to
+                                acoords = [(a.x,a.y) for a in allies]
+                                self.attackableSquares = [sq for sq in self.attackableSquares if sq not in [(x,y) for x,y,m,ali in self.moveableSquares] and sq not in acoords]                
                     elif self.mode == "itemattack":
                         self.mode = "optionmenu"
                         self.createOptionMenu() #creates the option menu and sets the menu to it
@@ -1590,7 +1606,6 @@ class Game():
                         if self.selectedItem != None:
                             #if we have a selected Item
                             #we have a submenu, so we close that instead
-                            self.mode = "item"
                             self.selectedItem = None
                             self.menu.subMenu = None
                         else:
@@ -1721,10 +1736,6 @@ class Game():
         #INFO MODE DISPLAY
         #displays character info screen
         if self.mode == "info":
-            a = self.selected #selected ally
-##            draw.rect(screen,BLUE,(600,100,600,520)) #blits background for stats
-##            draw.rect(screen,BLUE,(610,20,580,60))
-##            screen.blit(sans.render("PERSONAL DATA",True,WHITE),(610,30))
             screen.blit(statsBG,(0,0)) #blits stats background
             displayList = [[str(a.stren),str(a.move)],
                            [str(a.skl),str(a.con)],
@@ -1738,10 +1749,8 @@ class Game():
                 cell1,cell2 = displayList[i] #cell1 and cell2 in the row
                 screen.blit(superScript40.render(cell1,True,WHITE),(640,130+i*72))
                 screen.blit(superScript40.render(cell2,True,WHITE),(980,130+i*72))
-##            draw.rect(screen,(230,240,233),(30,30,540,520)) #background for face
             screen.blit(transform.scale(self.selected.face,(360,320)),(75,32))
             screen.blit(superScript40.render(a.name,True,BLACK),(144,381)) #blits name of the selected unit
-##            screen.blit(transform.scale(transBlack,(570,150)),(0,560))
             screen.blit(superScript40.render(a.__class__.__name__,True,WHITE),(15,485))
             screen.blit(superScript40.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(15,555))
             screen.blit(superScript40.render("HP "+str(a.hp)+"/"+str(a.maxhp),True,WHITE),(15,610))
