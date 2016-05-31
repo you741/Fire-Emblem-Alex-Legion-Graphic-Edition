@@ -96,9 +96,15 @@ yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
                   for i in range(43)],29)
 
 #change albert's later
-albertStandSprite = playerMageStandSprite
-albertAnimacritSprite = playerMageAnimacritSprite
-albertAnimaSprite = playerMageAnimaSprite
+albertLanceSprite = ([image.load("images/Albert/AlbertLanceFrame"+str(i+1)+".png")
+                      for i in range(24)],7)
+albertStandSprite = albertLanceSprite[0][0]
+albertLancecritSprite = (albertLanceSprite[0][:4] + [image.load("images/Albert/AlbertLancecritFrame"+str(i+1)+".png")
+                                                  for i in range(9)] + albertLanceSprite[0][5:],15)
+albertSwordSprite = ([image.load('images/Albert/AlbertSwordFrame'+str(i+1)+'.png')
+                      for i in range(18)],6)
+albertSwordcritSprite = (albertSwordSprite[0][:3] + [image.load('images/Albert/AlbertSwordcritFrame'+str(i+1)+'.png')
+                                                  for i in range(15)] + albertSwordSprite[0][3:],21)
 LS(310)
 frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".png")
                       for i in range(10)],5)
@@ -135,6 +141,7 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Paladin":[transform.scale(image.load('images/MapSprites/Ally/Paladin'+str(i+1)+'.png').convert_alpha(),(30,30)) for i in range(4)],
                   "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
@@ -206,13 +213,14 @@ yoyo = Lord("Yoyo",0,0,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
                {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite},faces["Yoyo"])
-albert = Mage("Albert",0,0,
-              {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
-                "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
-               {"stren":40,"defen":20,"skl":70,"lck":70,
-                "spd":40,"res":40,"maxhp":60},
-              [fire.getInstance(),vulnerary.getInstance()],{'Anima':200},
-              {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces["Albert"])#test person for chapter 1
+albert = Paladin("Albert",0,0,
+              {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
+                "spd":15,"con":10,"move":8,"res":6,"hp":38,"maxhp":38},
+               {"stren":25,"defen":20,"skl":35,"lck":35,
+                "spd":25,"res":10,"maxhp":40},
+              [silver_lance.getInstance(),steel_sword.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Sword':300,'Lance':500},
+              {'stand':albertStandSprite,'Lance':albertLanceSprite,'Lancecrit':albertLancecritSprite,
+               'Sword':albertSwordSprite,'Swordcrit':albertSwordcritSprite},faces["Albert"])#test person for chapter 1
 franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
@@ -268,7 +276,34 @@ def createMapFromFile(chapterNum):
     for line in mapFile.read().strip().split("\n"):
         newMap.append([terrDict[c] for c in line])
     return newMap
+def getEcoords(chapterNum):
+    "gets Enemy coordinates in a specific chapter"
+    coords = []
+    mapFile = open("maps/chapter"+str(chapterNum)+"C.txt")
+    map2D = mapFile.read().strip().split("\n")
+    for y in range(len(map2D)):
+        line = map2D[y]
+        for x in range(len(line)):
+            c = line[x]
+            if isInt(c):
+                coords.append((int(c),x,y))
+    coords.sort()
+    return [(x,y) for c,x,y in coords] #returns coordinates for enemies
+def getAcoords(chapterNum):
+    "gets ally coordinates in a specific chapter"
+    coords = []
+    mapFile = open("maps/chapter"+str(chapterNum)+"C.txt")
+    map2D = mapFile.read().strip().split("\n")
+    for y in range(len(map2D)):
+        line = map2D[y]
+        for x in range(len(line)):
+            c = line[x]
+            if c in "abcdefghijklmnopqrstuvwxyz":
+                coords.append((c,x,y))
+    coords.sort()
+    return [(x,y) for c,x,y in coords] #returns coordinates for enemies
 def drawMap(maptodraw):
+    "draws a map"
     for y in range(len(maptodraw)):
         for x in range(len(maptodraw[y])):
             if maptodraw[y][x].img != None:
@@ -280,7 +315,7 @@ chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 #Stored in tuples
 #(gainedAllies,allyCoordinates,Enemies,Goal,BackgroundImage)
 #chapter data, chapter is determined by index
-chapterData = [([yoyo],[(0,1),(0,0)],createEnemyList([bandit0,alexTheBandit],[3,1],[(3,3),(3,1),(4,2),(8,9)]),
+chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,1],getEcoords(0)),
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit1,merc1],[3,2],[(7,7),(7,6),(8,3),(7,8),(8,7)]),
                 "Defeat all enemies",plainsBackground)]
@@ -1270,6 +1305,7 @@ class Game():
         screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
         self.moved.clear() #empties moved and attacked
         self.attacked.clear()
+        self.drawPeople()
         display.flip() #updates screen
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
@@ -1299,8 +1335,9 @@ class Game():
                     return 0
             #DRAWS PEOPLE
             self.drawPeople()
+            draw.rect(screen,WHITE,(en.x*30,en.y*30,30,30),1)
             display.flip()
-            time.wait(500)
+            time.wait(200)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
             enemyMoves = getMoves(en,en.x,en.y,en.move,chapterMaps[chapter],encoords,acoords,{})+[(en.x,en.y,en.move,[(en.x,en.y)])] #enemy's moveableSquares
@@ -1321,9 +1358,8 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
- #               (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
-#                en.x,en.y = bestX,bestY
-                pass
+                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+                en.x,en.y = bestX,bestY
 
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
@@ -1334,6 +1370,11 @@ class Game():
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         event.clear()
+        if len(enemies) == 0:
+            #no more enemies means the player won
+            self.mode = "gameVictory"
+            self.gameVictory()
+            return 0
         self.startTurn() #starts the turn
     def gameOver(self):
         "draws game over screen"
@@ -1736,6 +1777,7 @@ class Game():
         #INFO MODE DISPLAY
         #displays character info screen
         if self.mode == "info":
+            a = self.selected
             screen.blit(statsBG,(0,0)) #blits stats background
             displayList = [[str(a.stren),str(a.move)],
                            [str(a.skl),str(a.con)],

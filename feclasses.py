@@ -49,6 +49,7 @@ class Person():
                      "lck":20,
                      "defen":20,
                      "res":20} #caps for stats
+        self.promoted = False
     def getAdv(self,enemy):
         "returns whether weapon is advantageous or disadvantageous"
         #0 is disadvantageous, 1 is advantageous, -1 is neutral
@@ -167,6 +168,10 @@ class Person():
                     break
     def gainExp(self,exp):
         "gains exp, returns whether should level up or not"
+        if self.promoted:
+            #if the unit is a promoted unit, gains only half exp
+            exp = exp//2
+            exp = max(1,exp)
         self.exp += exp
         if self.exp >= 100:
             return True #returns True if we should level up
@@ -201,7 +206,7 @@ class Person():
     def getInternalLevel(self):
         "returns internal level of person, not displayed level"
         internalLV = self.lv
-        if not issubclass(type(self),Person):
+        if self.promoted:
             #if the unit is a promoted unit, the internal LV is higher
             internalLV += 20
         return internalLV
@@ -232,6 +237,18 @@ class Cavalier(Person):
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
         self.mounted = True
+class Paladin(Cavalier):
+    "paladin class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Paladin,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+        self.caps = {"maxhp":60,
+                     "stren":27,
+                     "skl":29,
+                     "spd":29,
+                     "lck":30,
+                     "defen":25,
+                     "res":25} #caps for stats
+        self.promoted = True
 class Fighter(Person):
     "fighter class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
