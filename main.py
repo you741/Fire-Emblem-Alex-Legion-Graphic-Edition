@@ -120,6 +120,7 @@ garyAxeSprite = ([image.load("images/Gary/GaryAttackFrame"+str(i+1)+".png")
 garyStandSprite = garyAxeSprite[0][0]
 garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"+str(i+1)+".png")
                                           for i in range(12)] + garyAxeSprite[0][7:],16)
+henningStandSprite = image.load("images/Henning/HenningStand.png")
 LS(355)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
@@ -142,7 +143,8 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Paladin":[transform.scale(image.load('images/MapSprites/Ally/Paladin'+str(i+1)+'.png').convert_alpha(),(30,30)) for i in range(4)],
-                  "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
@@ -215,7 +217,7 @@ yoyo = Lord("Yoyo",0,0,
                {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite},faces["Yoyo"])
 albert = Paladin("Albert",0,0,
               {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
-                "spd":15,"con":10,"move":8,"res":6,"hp":38,"maxhp":38},
+                "spd":15,"con":10,"move":8,"res":8,"hp":38,"maxhp":38},
                {"stren":25,"defen":20,"skl":35,"lck":35,
                 "spd":25,"res":10,"maxhp":40},
               [silver_lance.getInstance(),steel_sword.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Sword':300,'Lance':500},
@@ -234,6 +236,12 @@ gary = Fighter("Gary",0,0,
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
                {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
+henning = Transporter("Henning",0,0,
+               {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
+                "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
+               {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
+               [],{},
+               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance()])
 
 allies = [] #allies
 #ENEMIES
@@ -243,12 +251,12 @@ bandit0 = Brigand("Bandit",0,0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 bandit1 = Brigand("Bandit",0,0,
-                  {"lv":3,"stren":8,"defen":4,"skl":4,"lck":1,
-                   "spd":4,"con":9,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
+                  {"lv":3,"stren":7,"defen":4,"skl":4,"lck":0,
+                   "spd":3,"con":9,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
-                        {"lv":3,"stren":8,"defen":4,"skl":4,"lck":3,
-                         "spd":4,"con":10,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
+                        {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
+                         "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70)
 #--Mercenaries
 merc1 = Mercenary("Mercenary",0,0,
@@ -317,7 +325,7 @@ chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,1],getEcoords(0)),
                 "Defeat all enemies",plainsBackground),
-               ([albert,franny,gary],[(0,1),(0,0),(1,1),(1,0),(2,0)],createEnemyList([bandit1,merc1],[3,2],[(7,7),(7,6),(8,3),(7,8),(8,7)]),
+               ([albert,franny,gary,henning],[(0,1),(0,0),(1,1),(1,0),(2,0),(2,1)],createEnemyList([bandit1,merc1],[3,2],[(7,7),(7,6),(8,3),(7,8),(8,7)]),
                 "Defeat all enemies",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -1419,6 +1427,10 @@ class Game():
         #TRADE OPTION
         if len(getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)) > 0:
             self.menu.items.append("trade") #we can only trade if we have targetable allies within range 1
+        #TRANSFER OPTION
+        if getDistance(self.selected.x,self.selected.y,henning.x,henning.y) <= 1:
+            #allows for access to supply with proximity to henning
+            self.menu.items.append("transfer")
         #WAIT OPTION
         self.menu.items.append("wait") #a person can always wait
     def run(self,screen):
@@ -1533,6 +1545,8 @@ class Game():
                             self.mode = "trade"
                             self.selectedAlly = 0
                             self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
+                        elif self.menu.getOption().lower() == "transfer":
+                            self.mode = "transfer"
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
@@ -1665,6 +1679,9 @@ class Game():
                     elif self.mode == "attack":
                         self.menu.selected = 0
                         self.mode = "itemattack"
+                    elif self.mode == "transfer":
+                        self.mode = "optionmenu"
+                        self.createOptionMenu()
                     elif self.mode == "info":
                         self.mode = "freemove"
                         self.selected = None

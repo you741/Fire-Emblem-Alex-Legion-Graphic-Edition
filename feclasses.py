@@ -257,3 +257,34 @@ class Mercenary(Person):
     "mercenary class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+class Transporter(Person):
+    "transporter class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,supply,gift=0,exp=0):
+        super(Transporter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+        self.mounted = True
+        self.promoted = True
+        self.caps = {"maxhp":60,
+                     "stren":25,
+                     "skl":30,
+                     "spd":30,
+                     "lck":30,
+                     "defen":25,
+                     "res":25} #caps for stats
+        self.supply = supply #supply for the transporter - holds up to 100 items
+    def addToSupply(self,item):
+        "adds an item to the supply"
+        if len(self.supply) >= 100:
+            return False #can't hold more than 100
+        else:
+            self.supply.append(item)
+            return True
+    def takeFromSupply(self,item):
+        "removes item from supply"
+        if item not in self.supply:
+            return False
+        else:
+            self.supply.remove(item)
+            return True
+    def getInstance(self):
+        "gets instance of person"
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp)")
