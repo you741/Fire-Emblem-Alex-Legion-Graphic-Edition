@@ -237,12 +237,16 @@ gary = Fighter("Gary",0,0,
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
                {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
+henningsShit = []
+for i in range(50):
+    henningsShit.append(steel_sword.getInstance())
+    henningsShit.append(iron_sword.getInstance())
 henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
                [],{},
-               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance()])
+               {"stand":henningStandSprite},faces["Henning"],henningsShit)
 
 allies = [] #allies
 #ENEMIES
