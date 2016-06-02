@@ -5,6 +5,7 @@ class Item():
         self.dur = dur if dur != None else maxdur
         self.name = name
         self.desc = desc
+        self.typ = ""
         self.intact=True
     def getInstance(self):
         "returns an intance of the item"
@@ -32,7 +33,7 @@ class Consumable(Item):
     def __init__(self,name,hpGain,maxdur,desc="",dur=None):
         super(Consumable,self).__init__(name,maxdur,desc,dur)
         self.hpGain = hpGain
-        
+        self.typ = "Consumable"
     def getInstance(self):
         "gets instance of Consumable"
         return Consumable(self.name,self.hpGain,self.maxdur,self.desc,self.dur)

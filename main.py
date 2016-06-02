@@ -177,6 +177,7 @@ battlePlains = image.load("images/backgrounds/battlePlains.png")
 #UI Backgrounds
 menuBG = image.load("images/backgrounds/menuBackground.png")
 statsBG = image.load('images/backgrounds/statsMenu.png')
+trnsferBG = image.load('images/backgrounds/transferscreen.png')
 LS(440)
 #----END OF IMAGE LOAD----#
 #TERRAIN
@@ -400,6 +401,12 @@ def drawItemMenu(person,x,y,menuselect):
             screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
             screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
+
+def drawItem(p,item,x,y,diff=240):
+    "draws one item (includes durability and color differences)"
+    col = GREY if not p.canEquip(item) and type(item) == Weapon else WHITE #color is Grey if it's a weapon user cannot equip - else it's white
+    screen.blit(sans.render(item.name,True,col),(x,y))
+    screen.blit(sans.render(str(item.dur)+"/"+str(item.maxdur),True,col),(x+diff,y)) #blits durability
 #----PERSON ACTIONS----#
 #ATTACK FUNCTIONS
 def checkDead(ally,enemy):
@@ -700,13 +707,120 @@ class TradeMenu(Menu):
                 if opt == None:
                     continue #we don't draw blanks
                 #draws the item
-                col = GREY if not people[p].canEquip(opt) and type(opt) == Weapon else WHITE #color is Grey if it's a weapon user cannot equip - else it's white
-                screen.blit(sans.render(opt.name,True,col),(self.x*30+p*(self.width+30),(self.y+i)*30))
-                screen.blit(sans.render(str(opt.dur)+"/"+str(opt.maxdur),True,col),((self.x+6)*30+p*(self.width+30),(self.y+i)*30)) #blits durability
+                drawItem(people[p],opt,self.x*30+p*(self.width+30),(self.y+i)*30)
         if self.firstSelection != None:
             draw.rect(screen,WHITE,(self.x*30+self.firstSelection[0]*(self.width+30),(self.y+self.firstSelection[1])*30,self.width,30),1) #draws a border around the first option
         draw.rect(screen,WHITE,(self.x*30+self.selectedPerson*(self.width+30),(self.y+self.selected)*30,self.width,30),1) #draws border around selected option
-
+categories = ["Sword","Lance","Axe","Bow","Staff","Anima","Light","Dark","Others"]
+class TransferScreen():
+    "screen where user transfers items from Henning"
+    def __init__(self,p):
+        self.p = p #the person selected
+        self.selAct = 0 #selected action (Give or Take)
+        self.selItem = 0 #index of selected item
+        self.selCat = 0 #selected category (swords,lances,axes,bows,staves,anima,light,dark,others)
+        self.shownItems = [i for i in henning.supply if i.typ == "Sword"] #shown items start off as non weapons
+        self.startPoint = 0 #starting point for items to display
+        self.mode = "select" #mode of transfer screen(select,give,take)
+    def changeCat(self,diff):
+        "changes category - also updates shownItems"
+        self.selCat += diff
+        #wraps around
+        if self.selCat >= 9:
+            self.selCat = 0
+        elif self.selCat < 0:
+            self.selCat = 8
+        self.shownItems = [i for i in henning.supply if i.typ == categories[self.selCat] or (categories[self.selCat] == "Others" and i.typ not in categories)]
+        self.startPoint = 0
+        self.selItem = 0
+    def moveSelItem(self,diff):
+        "changes the selected item (for take mode only)"
+        self.selItem += diff
+        self.selItem = min(max(self.selItem,0),len(self.shownItems)-1) #limits selected item
+        if self.selItem >= self.startPoint + 10:
+            self.startPoint += self.selItem - self.startPoint - 9 #moves startpoint if the selected item is too much bigger than the startpoint it goes up
+    def draw(self):
+        "draws the transfer screen"
+        screen.blit(trnsferBG,(0,0))
+        screen.blit(superScript40.render(str(len(henning.supply)),True,WHITE),(960,60))
+        draw.rect(screen,YELLOW,(632+61*self.selCat,120,60,60),2) #draws yellow around selected category
+        for i in range(len(self.p.items)):
+            #draws the item
+            item = self.p.items[i]
+            drawItem(self.p,item,80,330+60*i,350)
+        for i in range(self.startPoint,min(len(self.shownItems),self.startPoint+10)):
+            #draws all items in supply from startPoint to 10 more
+            drawItem(self.p,self.shownItems[i],640,190+(i-self.startPoint)*30)
+        if self.mode == "select":
+            draw.rect(screen,WHITE,(330,165+75*self.selAct,216,75),1)
+        if self.mode == "give":
+            draw.rect(screen,RED,(330,165,216,75),1)
+            if len(self.p.items) != 0:
+                draw.rect(screen,WHITE,(80,330+60*self.selItem,480,30),1)
+        if self.mode == "take":
+            draw.rect(screen,RED,(330,240,216,75),1)
+            if len(self.shownItems) != 0:
+                draw.rect(screen,WHITE,(640,190+(self.selItem-self.startPoint)*30,530,30),1)
+    def onZ(self):
+        "handles clicks"
+        if self.mode == "select":
+            opts = ["give","take"]
+            self.selItem = 0
+            self.mode = opts[self.selAct]
+        elif self.mode == "give":
+            if len(self.p.items) == 0:
+                return 0 #can't do anything if no person has no items
+            if len(henning.supply) >= 100:
+                return 0 #can't do anything if henning has too many items
+            item = self.p.items[self.selItem]
+            self.p.removeItem(item)
+            henning.supply.append(item)
+        elif self.mode == "take":
+            if len(self.shownItems) == 0:
+                return 0 #can't do anything if no shown items
+            if len(self.p.items) >= 5:
+                #perhaps add a MESSAGEDISPLAY saying "INVENTORY FULL"
+                return 0 #can't take anything if inventory full
+            item = self.shownItems[self.selItem]
+            self.p.addItem(item)
+            henning.supply.remove(item)
+        self.changeCat(0) #resets shown Items
+    def onX(self):
+        "handles back tracing"
+        if self.mode in ["give",'take']:
+            self.mode = "select"
+            return True
+        return False #returns false to exit transfer screen
+    def handleMove(self):
+        "handles keyboard moves"
+        kp = key.get_pressed()
+        if self.mode == "select":
+            if kp[K_UP]:
+                self.selAct -= 1
+            if kp[K_DOWN]:
+                self.selAct += 1
+            if self.selAct < 0:
+                self.selAct = 1
+            if self.selAct > 1:
+                self.selAct = 0
+        elif self.mode == "give":
+            if kp[K_UP]:
+                self.selItem -= 1
+            if kp[K_DOWN]:
+                self.selItem += 1
+            if self.selItem >= len(self.p.items):
+                self.selItem = 0
+            elif self.selItem < 0:
+                self.selItem = len(self.p.items)-1
+        elif self.mode == "take":
+            if kp[K_UP]:
+                self.moveSelItem(-1)
+            if kp[K_DOWN]:
+                self.moveSelItem(1)
+            if kp[K_RIGHT]:
+                self.changeCat(1)
+            if kp[K_LEFT]:
+                self.changeCat(-1)
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
@@ -1147,7 +1261,7 @@ class Game():
         self.framecounter = 0
         self.clickedFrame = 0 #the frame user clicked (pressed z)
         self.mode = "freemove" #mode Game is in
-        self.menu = Menu(0,0,0,0,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
+        self.menu = Menu(0,0,0,0,FilledSurface((1,1),BLUE),0,[]) #menu
         self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
         self.selected = None #selected ally
         self.selected2 = None #2nd selected ally - only for trading option
@@ -1158,6 +1272,7 @@ class Game():
         self.turn = 1 #turn that it is
         self.goal = ""
         self.stopped = False #we are not stopped
+        self.transferScreen = None
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
@@ -1482,6 +1597,9 @@ class Game():
                 elif self.mode == "trade":
                     #if we have a selected2 we move the item selector instead
                     self.menu.moveSelect()
+                #----TRANSFER MODE
+                elif self.mode == "transfer":
+                    self.transferScreen.handleMove()
                 #---------Z--------#
                 if e.key == K_z:
                     #if the user pressed z
@@ -1547,15 +1665,17 @@ class Game():
                             self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
                         elif self.menu.getOption().lower() == "transfer":
                             self.mode = "transfer"
+                            self.transferScreen = TransferScreen(self.selected)
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
                             self.attacked.add(self.selected)
                     #ATTACK CLICKS
                     elif self.mode == "itemattack":
-                        if self.menu.selected < len(self.selected.items):
-                            if type(self.selected.items[self.menu.selected]) == Weapon:
-                                if self.selected.canEquip(self.selected.items[self.menu.selected]) and getAttackableEnemies(self.selected,enemies,weapon=self.selected.items[self.menu.selected]):
+                        item = self.menu.getOption()
+                        if item in self.selected.items:
+                            if type(item) == Weapon:
+                                if self.selected.canEquip(item) and getAttackableEnemies(self.selected,enemies,weapon=item) != []:
                                     self.mode = "attack"
                                     self.selected.equipWeapon(self.selected.items[self.menu.selected])
                                     self.attackableEnemies = getAttackableEnemies(self.selected,enemies)
@@ -1631,7 +1751,9 @@ class Game():
                                 secondItemList = self.selected2.items + [None]*(5-len(self.selected2.items))
                                 self.menu = TradeMenu(8,9,360,150,items=[firstItemList,secondItemList]) #trade menu
                                 self.menu.firstSelection = None
-
+                    #TRANSFER MODE
+                    elif self.mode == "transfer":
+                        self.transferScreen.onZ()
                 #------X------#
                 if e.key == K_x:
                     #if the user pressed x
@@ -1680,8 +1802,9 @@ class Game():
                         self.menu.selected = 0
                         self.mode = "itemattack"
                     elif self.mode == "transfer":
-                        self.mode = "optionmenu"
-                        self.createOptionMenu()
+                        if not self.transferScreen.onX():
+                            self.mode = "optionmenu"
+                            self.createOptionMenu()
                     elif self.mode == "info":
                         self.mode = "freemove"
                         self.selected = None
@@ -1791,6 +1914,9 @@ class Game():
                 #this is based on which ally the selector is on
                 #which is determined by the first element of menuselect
                 self.menu.draw(self.selected,self.selected2)
+        #TRANSFER SCREEN
+        if self.mode == "transfer":
+            self.transferScreen.draw()
         #INFO MODE DISPLAY
         #displays character info screen
         if self.mode == "info":
