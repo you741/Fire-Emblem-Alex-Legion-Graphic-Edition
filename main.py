@@ -161,6 +161,8 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
         "Henning":image.load("images/faces/Henning.png"),
         "Bandit":image.load("images/faces/Bandit.png"),
         "Mercenary":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
+
+
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
 arrowBent = image.load("images/Arrow/arrowBent.png")
@@ -832,8 +834,12 @@ class StartMenu():
     def __init__(self):
         "sets button list of mode"
         self.stopped = False
-        self.buttons = [Button(500,420,200,50,FilledSurface((200,50),BLUE,"START",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"START",BLACK,monospace,(30,10)),
+        #BUTTON SPRITES
+        self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png"),(200,50))
+        self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png"),(200,50))
+        self.buttons = [Button(500,420,200,50,
+                               FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),GREEN,"START",BLACK,monospace,(30,10)),
                                ["changemode(LoadGame())"])] #START BUTTON
 
