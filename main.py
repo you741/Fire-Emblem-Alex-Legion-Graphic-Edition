@@ -173,6 +173,8 @@ peakImg = image.load("images/terrain/peak.png")
 
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
+armorySelect,armorySelect2,vendorSelect,vendorSelect2 = [image.load("images/backgrounds/"+imgName) for imgName in ["armorySelect","armorySelect2","vendorSelect",
+                                                                                                                   "vendorSelect2"]]
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
 
@@ -820,6 +822,16 @@ class TransferScreen():
                 self.changeCat(1)
             if kp[K_LEFT]:
                 self.changeCat(-1)
+class Shop():
+    "shop class"
+    def __init__(self,items,vendor=False):
+        self.items = items
+        if vendor:
+            self.typ = "vendor"
+        else:
+            self.typ = "armory"
+        self.mode = "select" #different modes - select, sell or take
+        
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
