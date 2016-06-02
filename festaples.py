@@ -390,7 +390,7 @@ def pathtoAlly(enemycord,stage,ally):
     #uses a priority direction, order of BFS goes in order with the direction the enemy needs to travel
     visited = [[0 for i in range (40)]for j in range (40)] #visited array the size of the map
     #(0,0) are placeholders, to allow [1] and [-1] to point at different values, also if the change is 0 then it doesn't move it, to no longer search
-    directions = [[(0,0),(1,0),(-1,0)],[(0,0),(0,1),(0,-1)]]
+    directions = [(1,0),(-1,0),(0,1),(0,-1)]
     q = Queue()
     q.put((enemycord,[enemycord]))
     while not q.empty():
@@ -402,30 +402,7 @@ def pathtoAlly(enemycord,stage,ally):
         if 0 <= spot[1] < len(stage) and 0 <= spot[0] < len(stage[0]) and not visited[spot[0]][spot[1]]:
             #deltas calculated by spot - target
             visited[spot[0]][spot[1]] = 1
-            deltax = spot[0] - ally.x
-            deltay = spot[1] - ally.y
-            direction = []
-            adx,ady = abs(deltax),abs(deltay)
-            if adx > ady:
-                if adx == 0:
-                    adx = 1
-                if ady == 0:
-                    ady = 1
-                direction.append(directions[0][-1*int(deltax/adx)])
-                direction.append(directions[1][-1*int(deltay/ady)])
-                direction.append(directions[1][int(deltay/ady)])
-                direction.append(directions[0][int(deltax/adx)])
-
-            else:
-                if adx == 0:
-                    adx = 1
-                if ady == 0:
-                    ady = 1
-                direction.append(directions[1][-1*int(deltay/ady)])
-                direction.append(directions[0][-1*int(deltax/adx)])
-                direction.append(directions[1][int(deltay/ady)])
-                direction.append(directions[0][int(deltax/adx)])
-            for d in direction:
+            for d in directions:
                 q.put(((spot[0]+d[0],spot[1]+d[1]),node[1] + [(spot[0] + d[0], spot[1] + d[1])]))
         
     return node[1]
