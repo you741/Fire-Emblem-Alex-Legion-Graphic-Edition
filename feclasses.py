@@ -288,3 +288,8 @@ class Transporter(Person):
     def getInstance(self):
         "gets instance of person"
         return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp)")
+
+class Poop(Person):
+    "poop class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Poop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
