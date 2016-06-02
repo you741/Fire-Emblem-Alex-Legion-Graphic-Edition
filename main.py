@@ -239,16 +239,12 @@ gary = Fighter("Gary",0,0,
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
                {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
-henningsShit = []
-for i in range(50):
-    henningsShit.append(steel_sword.getInstance())
-    henningsShit.append(iron_sword.getInstance())
 henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
                [],{},
-               {"stand":henningStandSprite},faces["Henning"],henningsShit)
+               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance()])
 
 allies = [] #allies
 #ENEMIES
@@ -745,6 +741,8 @@ class TransferScreen():
         self.selItem = min(max(self.selItem,0),len(self.shownItems)-1) #limits selected item
         if self.selItem >= self.startPoint + 10:
             self.startPoint += self.selItem - self.startPoint - 9 #moves startpoint if the selected item is too much bigger than the startpoint it goes up
+        if self.selItem < self.startPoint:
+            self.startPoint -= self.startPoint - self.selItem #moves startpoint up
     def draw(self):
         "draws the transfer screen"
         screen.blit(trnsferBG,(0,0))
@@ -1610,6 +1608,8 @@ class Game():
                 #----TRANSFER MODE
                 elif self.mode == "transfer":
                     self.transferScreen.handleMove()
+                    if 1 in kp:
+                        self.clickedFrame = self.framecounter
                 #---------Z--------#
                 if e.key == K_z:
                     #if the user pressed z
@@ -1857,6 +1857,8 @@ class Game():
             #if we held for 20 frames or more we move more
             #we only do it once every 6 frames or it'll be too fast
             self.moveSelect()
+        if self.framecounter - self.clickedFrame > 10 and self.mode == "transfer" and not self.framecounter%5:
+            self.transferScreen.handleMove()
         #---------------DIFFERENT MODE DISPLAYS------------------#
         #MOVE MODE DISPLAY
         if self.mode == "move":
