@@ -17,3 +17,12 @@ class Chest(Terrain):
         self.hind = hind
         self.img = img
         self.item = item
+class Village(Terrain):
+    "village class"
+    def __init__(self,name,adef,avo,hind,img=None,item=None):
+        self.name = name
+        self.adef = adef
+        self.avo = avo
+        self.hind = hind
+        self.img = img
+        self.item = item
