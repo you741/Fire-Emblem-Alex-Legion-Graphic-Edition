@@ -29,8 +29,12 @@ __copyright__ = "Yttrium Z 2015-2016"
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
 display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+
+
 #loading screen
 loadingScreen = image.load("images/loading_screen.png")
+
+#sets the progress bar - blits the progress as the images are loading
 def LS(prog):
     "displays loading screen based on prog"
     screen.blit(loadingScreen,(0,0))
@@ -38,6 +42,7 @@ def LS(prog):
     if handleEvents(event.get()):
         quit()
     display.flip()
+    
 LS(1)
 #----GLOBAL VARIABLES----#
 #----COLORS----#
@@ -884,6 +889,16 @@ class TransferScreen():
                 self.changeCat(1)
             if kp[K_LEFT]:
                 self.changeCat(-1)
+
+class VillageScreen():
+    "village screen class"
+    def __init__(self,visitor,items,story):
+        self.visitor = visitor
+        self.items = items
+        self.story = story
+    def draw(self):
+        "draws the dialogue"
+        pass
 class ShopScreen():
     "shop screen class"
     def __init__(self,p,items,vendor=False):
@@ -1486,7 +1501,10 @@ class Story():
             else:
                 #once we hit the limit we transition to the game mode
                 changemode(Game())
-        
+class VillageStory(Story):
+    def __init__(self,dialogue,background,music=None,end=False):
+        super(VillageStory,self).__init__(self,dialogue,background,music=None,end=False)
+    
 class Game():
     def __init__(self):
         "initializes game"
@@ -1788,6 +1806,9 @@ class Game():
         if getDistance(self.selected.x,self.selected.y,henning.x,henning.y) <= 1:
             #allows for access to supply with proximity to henning
             self.menu.items.append("transfer")
+        #VILLAGE OPTION
+        if 0 == 0:
+            pass
         #WAIT OPTION
         self.menu.items.append("wait") #a person can always wait
     def setMoveableSquares(self,p,isally):
@@ -1926,9 +1947,10 @@ class Game():
                         elif self.menu.getOption().lower() == "transfer":
                             self.mode = "transfer"
                             self.transferScreen = TransferScreen(self.selected)
-                        elif self.menu.getOption().lower() in ["vendor","armory"]:
+                        elif self.menu.getOption().lower() in ["vendor","armory","village"]:
                             self.mode = self.menu.getOption().lower()
                             isvendor = self.mode == "vendor" #is it a vendor?
+                            isvillage = self.mode == "village" #is it a village?
                             self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
