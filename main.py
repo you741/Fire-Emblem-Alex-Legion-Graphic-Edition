@@ -638,7 +638,8 @@ class Button():
             y = my
 #        return Rect(self.x,self.y,self.width,self.height).collidepoint(x,y) #returns boolean
         if Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
-            if self.background.get_at((x-self.x,y-self.y)) != (255,255,255):
+
+            if self.background.get_at((x-self.x,y-self.y)) != (0,0,0,255):
                 return True
         return False
     def draw(self,screen):
@@ -1059,8 +1060,8 @@ class StartMenu():
         "sets button list of mode"
         self.stopped = False
         #BUTTON SPRITES
-        self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png"),(200,50))
-        self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png"),(200,50))
+        self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png").convert_alpha(),(200,50))
+        self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
         self.buttons = [Button(500,420,200,50,
                                FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
@@ -1069,6 +1070,7 @@ class StartMenu():
 
     def draw(self,screen):
         "draws mode on screen"
+        
         screen.blit(logo,(300,50))
     def playMusic(self):
         "plays menu music"

@@ -1,0 +1,9 @@
+images/backgrounds/forest.jpg
+:The group arrive at the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex.
+CONDITION:Albert;
+Albert:Whaaaa.....!
+CONDITION:*End*
+Yoyo:What's going on!?!?!??!?!?
+CONDITION:Henry;
+Henry:Oh no, what do we do?
+CONDITION:*End*
