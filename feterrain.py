@@ -17,3 +17,25 @@ class Chest(Terrain):
         self.hind = hind
         self.img = img
         self.item = item
+class Vendor(Terrain):
+    "vendor class"
+    def __init__(self,name,adef,avo,hind,img=None,items=[]):
+        super(Vendor,self).__init__(name,adef,avo,hind,img)
+        self.items = items
+    def setItems(self,items):
+        "sets items and returns the vendor"
+        self.items = items
+        return self.getInstance()
+    def getInstance(self):
+        return Vendor(self.name,self.adef,self.avo,self.hind,self.img,self.items)
+class Armory(Terrain):
+    "armory class"
+    def __init__(self,name,adef,avo,hind,img=None,items=[]):
+        super(Armory,self).__init__(name,adef,avo,hind,img)
+        self.items = items
+    def setItems(self,items):
+        "sets items and returns the armory"
+        self.items = items
+        return self.getInstance()
+    def getInstance(self):
+        return Armory(self.name,self.adef,self.avo,self.hind,self.img,self.items)

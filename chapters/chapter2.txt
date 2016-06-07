@@ -1,0 +1,48 @@
+images/backgrounds/forest.jpg
+:You Zhou and his group of men now are heading towards the sacred isle. In order to get there, they must pass the heavily fortified Xela Region. Alex has set up great defenses to prevent anyone from passing to get the sacred isle.
+TITLE:Chapter 2 - Breaking Defenses
+Yoyo:We should be getting close now.
+CONDITION:Albert;
+Albert:I see a lot of troops up ahead.
+CONDITION:*End*
+CONDITION:;Albert
+Yoyo:Oh dang, it looks like a lot of enemies up ahead
+CONDITION:*End*
+*Player*:I can break through the defenses.
+Yoyo:Okay.
+:In the castle...
+Stefano:Yum, my lunch looks good
+:*Gets stolen*
+Stefano:HEY YOU! GIVE ME BACK MY FOOD!
+Brandon:Oh shoot, better run.
+:Few minutes later
+Brandon:I think I lost him!
+Yoyo:Hey Brandon!
+Brandon:Prince You! I have succesfully infiltrated this fortress by following a group of soldiers!
+Yoyo:Good! Did you learn anything?
+Brandon:Not really.
+Stefano:THERE YOU ARE! GIVE ME MY FOOD!
+Brandon:Oh snap.
+Yoyo:Brandon why did you steal food? You can always ask me.
+Brandon:I didn't think I would see you so soon.
+Yoyo:Oh. Hey archer there, I apologize for my spy stealing your food, but uh, can you accept an apology?
+Stefano:Hmph. I don't know, what do you have to offer?
+Yoyo:We'll give you some food and also what my spy stole.
+Stefano:WHOA! YOU HAVE NOODLES!? Okay, I owe you now.
+*Player*:Hey you can use bows right?
+Stefano:Um... yeah?
+*Player*:Fight for us and we'll keep giving you food.
+Stefano:That sounds like an okay deal. An archer like me is usually in the back lines anyway.
+Henry:There he is!
+Eric:Oh yay! We found him!
+Kevin:Finally...
+Yoyo:Henry! Eric! Kevin! Where have you guys been?
+Henry:We were out collecting shrooms when the castle was invaded. When we got back we saw the destruction and had no choice but to escape.
+Yoyo:I'm glad you guys are safe. Could you guys help us out a bit? We're going to have to defeat the fortress up ahead.
+Brandon:Be careful guys. The Xela Fortress is quite fortified.
+CONDITION:Gary;
+Gary:Dw bros, i carry. [HEY YOU THERE! YEAH YOU PLAYER! Breaking the fourth wall again *kek* - this is why you keep me alive. Anyway, Brandon is a thief, Stefano is an archer, Henry is a mercenary, Eric is a priest and Kevin is a shaman. Thieves, priests and shamans are very weak to physical attacks so keep them away from the front lines. Archers should also be kept away from the front lines...]
+Henry:Uh... okay?
+CONDITION:*End*
+*Player*:Okay guys... just do as I say and we should win.
+Yoyo:Alright guys! Let's go!

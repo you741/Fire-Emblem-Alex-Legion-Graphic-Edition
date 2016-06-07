@@ -37,6 +37,7 @@ class Person():
             exec("self."+key+"=stats[key]") #sets self.stat to be the stat
         self.flying = False
         self.mounted = False
+        self.movesLeft = self.move
         self.magical = False
         self.mountainous = False
         self.waterproof = False
@@ -144,8 +145,8 @@ class Person():
         return False
     def canEquip(self,weapon):
         "returns if person can equip weapon"
-        if weapon not in self.items or type(weapon) != Weapon:
-            return False #if we do not have the item we can't equip; if the weapon isn't a weapon we cannot equip either
+        if type(weapon) != Weapon:
+            return False
         if weapon.prf.lower() == self.name.lower():
             return True #if the weapon has a preference to self, we can equip
         if weapon.typ not in self.mast:
@@ -177,6 +178,16 @@ class Person():
             return True #returns True if we should level up
         else:
             return False
+    def gainWExp(self,exp,typ):
+        "gains exp for a weapon type"
+        if typ not in self.mast:
+            self.mast[typ] = 0
+        hundreds = self.mast[typ]//100 #hundreds digit of mastery
+        self.mast[typ] += exp #increases the exp
+        self.mast[typ] = min(600,self.mast[typ]) #can't exceed 600
+        if self.mast[typ]//100 > hundreds:
+            return True #returns true if we levelled up in weapon level
+        return False
     def levelUp(self):
         "levels up"
         if self.exp < 100:

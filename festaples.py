@@ -208,8 +208,9 @@ def drawLevelUp(screen,person):
     time.wait(300)
     for i,k in enumerate(statCoords):
         #draws a +1 next to every stat gained
-        if person.stats[k] != eval("person."+k):
-            event.pump() #pumps events so we don't get locked down
+        if person.stats[k] != eval("person."+k):                            
+            if handleEvents(event.get()):
+                quit()
             newStatValue = eval("person."+k)
             screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
             person.stats[k] = newStatValue
@@ -273,8 +274,9 @@ def drawBattleInfo(screen,ally,enemy,stage):
         
 def drawHealthLoss(screen,person,dam,enemy=True):
     "draws a depleting health bar lowering at 20 FPS"
-    for i in range(dam):
-        event.pump() #pumps events so we don't get locked down
+    for i in range(dam):      
+        if handleEvents(event.get()):
+            quit()
         #for every point of damage we loop and remove it
         if person.hp == 0:
             break
@@ -295,8 +297,9 @@ def drawHealthLoss(screen,person,dam,enemy=True):
 def drawFrames(screen,frames):
     "draws all frames with an FPS of 20"
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
-    for f in frames:
-        event.pump() #pumps events so we don't get locked down
+    for f in frames:      
+        if handleEvents(event.get()):
+            quit()
         screen.blit(filler,(0,0))
         screen.blit(f,(0,0)) #blits all frames
         fpsLimiter.tick(20)
@@ -374,8 +377,21 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
         screen.blit(sans.render(label,True,WHITE),(x,y-25)) #blits label
         screen.blit(sans.render(str(appAmount),True,WHITE),(x+2,y+5)) #writes amount
         display.flip()
-        time.wait(50)
-        event.pump()
+        time.wait(50)      
+        if handleEvents(event.get()):
+            quit()
+def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,centerY=False,fnt=sans):
+    "displays message temporarily"
+    img = fnt.render(msg,True,WHITE)
+    width = img.get_width()+10 if width == 0 else width
+    if centerX:
+        x = (1200 - width)//2
+    if centerY:
+        y = (720 - height)//2
+    draw.rect(screen,BLUE,(x-5,y,width,height))
+    screen.blit(img,(x,y))
+    display.flip()
+    time.wait(tim)
 #------ENEMY AI-------#
 def optimalValue(square,stage,allies):
     "returns how optimal the moving to that square is largest=good"
@@ -536,7 +552,6 @@ def tileBackground(background,tilenum):
     tiledbackground.blit(top,(0,0))
     tiledbackground.blit(middle,(0,int(tiledbackground.get_height()/3)))
     tiledbackground.blit(bottom,(0,int(tiledbackground.get_height()-background.get_height()/3)))
-
     return tiledbackground
 #----USEFUL FUNCTIONS----#
 def isInt(string):
@@ -546,3 +561,9 @@ def isInt(string):
         return True
     except ValueError:
         return False
+def handleEvents(events):
+    "handles events and checks for quit"
+    for e in events:
+        if e.type == QUIT:
+            return True #checks if user quits
+    return False
