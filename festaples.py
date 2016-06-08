@@ -399,11 +399,14 @@ def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,cente
     time.wait(tim)
 def drawInfoBox(screen,ix,y,opt):
     "draws an info box"
+    if opt == None:
+        return 0
     if type(opt) == Weapon:
         screen.blit(infoBox,(ix,y))
         typ,mt,rnge,hit,wt,crit = str(opt.typ),str(opt.mt),str(opt.rnge),str(opt.acc),str(opt.wt),str(opt.crit)
         if rnge != str(opt.maxrnge):
             rnge = rnge + "-" + str(opt.maxrnge)
+        typ += " " + ["F","E","D","C","B","A","S","Prf"][opt.mast//100]
         infos = [typ,mt,rnge,hit,wt,crit]
         coords = [(15,30),(45,60),(150,30),(150,60),(260,30),(260,60)]
         for i in range(6):

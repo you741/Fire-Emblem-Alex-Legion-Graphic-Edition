@@ -718,6 +718,7 @@ class Menu():
                 if self.info and self.selected == i:
                     ix = x+250
                     drawInfoBox(screen,ix,y,opt)
+        screen.blit(pointer,(x-30,(self.y+self.selected)*30,self.width,30))
         draw.rect(screen,WHITE,(x,(self.y+self.selected)*30,self.width,30),1)
         if self.subMenu != None:
             self.subMenu.draw(person)#draws the subMenu
@@ -790,14 +791,15 @@ class TradeMenu(Menu):
                     continue #we don't draw blanks
                 #draws the item
                 drawItem(people[p],opt,self.x*30+p*(self.width+30),(self.y+i)*30)
-                if self.info and self.selected == i and self.selectedPerson == p:
-                    ix = self.x*30+p*(self.width+30)+250
-                    y = (self.y+i)*30
-                    drawInfoBox(screen,ix,y,opt)
         if self.firstSelection != None:
             screen.blit(pointer,(self.x*30+self.firstSelection[0]*(self.width+30)-30,(self.y+self.firstSelection[1])*30))
             draw.rect(screen,WHITE,(self.x*30+self.firstSelection[0]*(self.width+30),(self.y+self.firstSelection[1])*30,self.width,30),1) #draws a border around the first option
+        screen.blit(pointer,(self.x*30+self.selectedPerson*(self.width+30)-30,(self.y+self.selected)*30))
         draw.rect(screen,WHITE,(self.x*30+self.selectedPerson*(self.width+30),(self.y+self.selected)*30,self.width,30),1) #draws border around selected option
+        if self.info:
+            ix = self.x*30+self.selectedPerson*(self.width+30)+250
+            y = (self.y+self.selected)*30
+            drawInfoBox(screen,ix,y,self.items[self.selectedPerson][self.selected])
 categories = ["Sword","Lance","Axe","Bow","Staff","Anima","Light","Dark","Others"]
 class TransferScreen():
     "screen where user transfers items from Henning"
@@ -844,10 +846,12 @@ class TransferScreen():
             #draws all items in supply from startPoint to 10 more
             drawItem(self.p,self.shownItems[i],640,190+(i-self.startPoint)*30)
         if self.mode == "select":
+            screen.blit(pointer,(300,165+75*self.selAct))
             draw.rect(screen,WHITE,(330,165+75*self.selAct,216,75),1)
         if self.mode == "give":
             draw.rect(screen,RED,(330,165,216,75),1)
             if len(self.p.items) != 0:
+                screen.blit(pointer,(50,330+60*self.selItem))
                 draw.rect(screen,WHITE,(80,330+60*self.selItem,480,30),1)
                 if self.info:
                     ix = 80
@@ -857,6 +861,7 @@ class TransferScreen():
         if self.mode == "take":
             draw.rect(screen,RED,(330,240,216,75),1)
             if len(self.shownItems) != 0:
+                screen.blit(pointer,(610,190+(self.selItem-self.startPoint)*30))
                 draw.rect(screen,WHITE,(640,190+(self.selItem-self.startPoint)*30,530,30),1)
                 if self.info:
                     opt = self.shownItems[self.selItem]
@@ -994,7 +999,10 @@ class ShopScreen():
             cst = cst//2 if self.mode == "sell" else cst
             screen.blit(superScript40.render(str(cst)+"G",True,WHITE),(840,330+60*i))
         if self.mode in ["buy","sell"]:
+            screen.blit(pointer,(260,330+60*self.selItem))
             draw.rect(screen,WHITE,(290,330+60*self.selItem,720,60),1)
+            if self.info and len(itms) > self.selItem:
+                drawInfoBox(screen,290,390+60*self.selItem,itms[self.selItem])
         screen.blit(superScript40.render(str(gold),True,WHITE),(885,230)) #blits gold
     def onZ(self):
         "handles z click"
@@ -2184,6 +2192,8 @@ class Game():
                         self.menu.onS()
                     elif self.mode == "transfer":
                         self.transferScreen.onS()
+                    elif self.mode in ["vendor","armory"]:
+                        self.shopScreen.onS()
                 #-------##temporary##-------#
                 #WIP(this symbol is used to represent all things to delete at the end)
                 if e.key == K_v:
