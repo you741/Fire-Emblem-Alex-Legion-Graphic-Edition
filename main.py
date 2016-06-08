@@ -368,7 +368,7 @@ chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,1],getEcoords(0)),
                 "Defeat all enemies",plainsBackground),
-               ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[3,2,1],getEcoords(1)),
+               ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -500,10 +500,17 @@ def attack(person,person2):
     isenemy = person in enemies #is person an enemy? (boolean)
     #Draws damage for attack 1
     screen.blit(actionFiller,(0,0)) #covers both persons
-    singleAttack(screen,person,person2,isenemy,chapterMaps[chapter])
+    equipped = ally.equip
+    broke = False
+    enBroke = False
+    if not singleAttack(screen,person,person2,isenemy,chapterMaps[chapter]):
+        if person == ally:
+            broke = True
+        else:
+            enBroke = True
     wexpGain = 0
     if person == ally:
-        wexpGain = ally.equip.wexp
+        wexpGain = equipped.wexp
     if handleEvents(event.get()):
         quit()
     if checkDead(ally,enemy):
@@ -516,9 +523,11 @@ def attack(person,person2):
                 #level up
                 ally.levelUp()
                 drawLevelUp(screen,ally)
-            if ally.equip != None:
-                if ally.gainWExp(wexpGain,ally.equip.typ):
-                    dispTempMsg(screen,ally.equip.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)
+            if equipped != None:
+                if ally.gainWExp(wexpGain,equipped.typ):
+                    dispTempMsg(screen,equipped.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)
+            if broke:
+                dispTempMsg(screen,equipped.name+" broke!",centerX=True,centerY=True)
         display.flip()
         time.wait(500)
         return False #ends the function if either ally or enemy is dead
@@ -527,10 +536,14 @@ def attack(person,person2):
     if canAttackTarget(person2,person.x,person.y):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter])
+        if not singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter]):
+            if person2 == ally:
+                broke = True
+            else:
+                enBroke = True
         person2hit = True
         if ally == person2:
-            wexpGain += ally.equip.wexp
+            wexpGain += equipped.wexp
     if handleEvents(event.get()):
         quit()
     if checkDead(ally,enemy):
@@ -543,20 +556,23 @@ def attack(person,person2):
                 #level up
                 ally.levelUp()
                 drawLevelUp(screen,ally)
-            if ally.gainWExp(wexpGain,ally.equip.typ):
-                dispTempMsg(screen,ally.equip.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)
+            if ally.gainWExp(wexpGain,equipped.typ):
+                dispTempMsg(screen,equipped.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)                    
+            if broke:
+                dispTempMsg(screen,equipped.name+" broke!",centerX=True,centerY=True)
         display.flip()
         time.wait(500)
         if handleEvents(event.get()):
             quit()
         return False
     #Draws damage for attack 3
-    if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y):
+    if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y) and not broke:
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,ally,enemy,False,chapterMaps[chapter])
+        if not singleAttack(screen,ally,enemy,False,chapterMaps[chapter]):
+            broke = True
         person2hit = ally == person2 #person2hit becomes true if ally was person2
-        wexpGain += ally.equip.wexp
-    if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y):
+        wexpGain += equipped.wexp
+    if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y) and not enBroke:
         screen.blit(actionFiller,(0,0)) #covers both persons
         singleAttack(screen,enemy,ally,True,chapterMaps[chapter])
     if handleEvents(event.get()):
@@ -579,9 +595,11 @@ def attack(person,person2):
         #level up
         ally.levelUp()
         drawLevelUp(screen,ally)
-    if ally.equip != None:
-        if ally.gainWExp(wexpGain,ally.equip.typ):
-            dispTempMsg(screen,ally.equip.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)
+    if equipped != None:
+        if ally.gainWExp(wexpGain,equipped.typ):
+            dispTempMsg(screen,equipped.typ.title() + " mastery level increased.",0,0,centerX=True,centerY=True)
+    if broke:
+        dispTempMsg(screen,equipped.name+" broke!",centerX=True,centerY=True)
     time.wait(1000)
     if handleEvents(event.get()):
         quit()

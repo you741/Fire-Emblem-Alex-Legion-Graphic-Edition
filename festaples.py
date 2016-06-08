@@ -353,7 +353,9 @@ def singleAttack(screen,person,person2,isenemy,stage):
         if person.equip.dur == 0:
             #the weapon broke!
             person.removeItem(person.equip) #removes the weapon
+            return False
     time.wait(300)
+    return True
 
 def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=True,col=BLUE):
     "draws a changing bar"
@@ -387,6 +389,7 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
             quit()
 def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,centerY=False,fnt=sans):
     "displays message temporarily"
+    buffer = screen.copy()
     img = fnt.render(msg,True,WHITE)
     width = img.get_width()+10 if width == 0 else width
     if centerX:
@@ -397,6 +400,7 @@ def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,cente
     screen.blit(img,(x,y))
     display.flip()
     time.wait(tim)
+    screen.blit(buffer,(0,0))
 def drawInfoBox(screen,ix,y,opt):
     "draws an info box"
     if opt == None:
@@ -486,8 +490,8 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     #returns a tuple (ally,x,y)
     
     bestdam = 0 #best damage
-    bestAlly = None
-    bestWeapon = None
+    bestAlly = attackableAllies[0]
+    bestWeapon = enemy.equip
     bestx,besty = 0,0
     #(percentage of health damage against ally,hit chance against ally,damage against enemy,hit chance of ally against enemy)
     for a in attackableAllies:
