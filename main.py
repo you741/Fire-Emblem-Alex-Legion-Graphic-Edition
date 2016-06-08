@@ -29,8 +29,12 @@ __copyright__ = "Yttrium Z 2015-2016"
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
 display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+
+
 #loading screen
 loadingScreen = image.load("images/loading_screen.png")
+
+#sets the progress bar - blits the progress as the images are loading
 def LS(prog):
     "displays loading screen based on prog"
     screen.blit(loadingScreen,(0,0))
@@ -38,6 +42,7 @@ def LS(prog):
     if handleEvents(event.get()):
         quit()
     display.flip()
+    
 LS(1)
 #----GLOBAL VARIABLES----#
 #----COLORS----#
@@ -57,6 +62,7 @@ monospace = font.SysFont("Monospace",30)
 smallsans = font.SysFont("Comic Sans MS",15)
 sans = font.SysFont("Comic Sans MS",20)
 papyrus = font.SysFont("Papyrus",20)
+superScript14 = font.Font("fonts/SUPERSCR.TTF",14)
 superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
 LS(110)
 #----MUSIC----#
@@ -172,27 +178,31 @@ arrowStraight = image.load("images/Arrow/arrowStraight.png")
 #TERRAIN IMAGES
 peakImg = image.load("images/terrain/peak.png")
 vendImg = image.load("images/terrain/vendor.png")
+armImg = image.load("images/terrain/armory.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
 
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
 
-#UI Backgrounds
+#UI Images
 menuBG = image.load("images/backgrounds/menuBackground.png")
 trnsferBG = image.load("images/backgrounds/transferscreen.png")
 statsBG = image.load('images/backgrounds/statsMenu.png')
 itemsInfoBG = image.load('images/backgrounds/itemMenu.png')
 mastBG = image.load("images/backgrounds/masteryMenu.png")
 armorySelect,armorySelect2,vendorSelect,vendorSelect2 = [image.load("images/backgrounds/"+imgName+".png") for imgName in ["armorySelect","armorySelect2","vendorSelect",
-                                                                                                                   "vendorSelect2"]]
+                                                                                                                          "vendorSelect2"]]
+pointer = image.load('images/pointer.png')
+infoBox = image.load('images/infoBox.png')
+infoBoxNW = image.load('images/infoBoxNW.png')
 LS(440)
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
 peak = Terrain("Peak",4,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
-armory = Armory("Armory",0,10,1,vendImg)
+armory = Armory("Armory",0,10,1,armImg)
 #WEAPONS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,485,0,2,46,False,[],2)
@@ -204,8 +214,10 @@ steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200,550)
 iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100,450)
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,485)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
-vulnerary = Consumable("Vulnerary",10,3,50,"Heals for 10 HP")
-
+vulnerary = Consumable("Vulnerary",10,3,300,"Heals for 10 HP")
+red_gem = Item("Red Gem",1,4000,"Sells for 2000G")
+blue_gem = Item("Blue Gem",1,10000,"Sells for 5000G")
+white_gem = Item("White Gem",1,20000,"Sells for 10000G")
 #TRANSLUCENT SQUARES
 transBlue = Surface((30,30), SRCALPHA)
 transBlue.fill((0,0,255,122))
@@ -217,7 +229,7 @@ LS(550)
 #----PERSONS----#
 #ALLIES
 name = "" #name of player
-usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex"] #names the player cannot use
+usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex","villager","kevin"] #names the player cannot use
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
@@ -251,8 +263,8 @@ henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
-               [],{},
-               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance()])
+               [red_gem.getInstance()],{},
+               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()])
 
 allies = [] #allies
 #ENEMIES
@@ -274,6 +286,10 @@ merc1 = Mercenary("Mercenary",0,0,
                 {"lv":3,"stren":6,"defen":3,"skl":8,"lck":2,
                 "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+alexTheMerc = Mercenary("Alex the Merc",0,0,
+                {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
+                "spd":9,"con":10,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
+                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],100)
 enemies = []
 LS(660)
 #----CHAPTERS----#
@@ -352,7 +368,7 @@ chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 #chapter data, chapter is determined by index
 chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,1],getEcoords(0)),
                 "Defeat all enemies",plainsBackground),
-               ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1],[3,2],getEcoords(1)),
+               ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[3,2,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -445,7 +461,6 @@ def drawItem(person,item,x,y,diff=180,fnt=sans):
             col = GREY
     screen.blit(fnt.render(item.name,True,col),(x,y))
     screen.blit(fnt.render(str(item.dur)+"/"+str(item.maxdur),True,col),(x+diff,y)) #blits durability
-
 #----PERSON ACTIONS----#
 #ATTACK FUNCTIONS
 def checkDead(ally,enemy):
@@ -665,6 +680,7 @@ class Menu():
         self.selected = selected #which item is being selected
         self.items = items #items in the menu (this will most likely be 2d with commands
         self.subMenu = None #allows for menus inside menus
+        self.info = False
     def moveSelect(self):
         "moves menu selector and returns new value"
         #moves self.selected up and down
@@ -690,14 +706,19 @@ class Menu():
         "draws a list of strings as a vertical menu at positions x and y"
         draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
         screen.blit(self.background,(self.x*30,self.y*30)) #blits the background
+        x = self.x*30
         for i in range(len(self.items)):
+            #draws the item
             opt = self.items[i] #option to draw
+            y = (self.y+i)*30
             if type(opt) == str:
-                screen.blit(sans.render(opt.title(),True,WHITE),(self.x*30,(self.y+i)*30))
+                screen.blit(sans.render(opt.title(),True,WHITE),(x,y))
             elif type(opt) == Item or issubclass(type(opt),Item):
-                #draws the item
-                drawItem(person,opt,self.x*30,(self.y+i)*30)
-        draw.rect(screen,WHITE,(self.x*30,(self.y+self.selected)*30,self.width,30),1) #draws a border around the selected option
+                drawItem(person,opt,x,y)
+                if self.info and self.selected == i:
+                    ix = x+250
+                    drawInfoBox(screen,ix,y,opt)
+        draw.rect(screen,WHITE,(x,(self.y+self.selected)*30,self.width,30),1)
         if self.subMenu != None:
             self.subMenu.draw(person)#draws the subMenu
     def getOption(self):
@@ -707,12 +728,14 @@ class Menu():
         else:
             #if we have a sub menu we instead get the option from that
             return self.subMenu.getOption()
-        
+    def onS(self):
+        "sets to info mode"
+        self.info = not self.info
 class TradeMenu(Menu):
     "Trade Menu class - allows for trade"
     def __init__(self, x=0,y=0,width=0,height=0,background=Surface((1,1)),selected=0,items=[]):
         "initialize trade menu"
-        super().__init__(x,y,width,height,background,selected,items)
+        super(TradeMenu,self).__init__(x,y,width,height,background,selected,items)
         self.selectedPerson = 0 #selected person
         self.firstSelection = None #first selection - player makes two to perform a trade
     def moveSelect(self):
@@ -767,7 +790,12 @@ class TradeMenu(Menu):
                     continue #we don't draw blanks
                 #draws the item
                 drawItem(people[p],opt,self.x*30+p*(self.width+30),(self.y+i)*30)
+                if self.info and self.selected == i and self.selectedPerson == p:
+                    ix = self.x*30+p*(self.width+30)+250
+                    y = (self.y+i)*30
+                    drawInfoBox(screen,ix,y,opt)
         if self.firstSelection != None:
+            screen.blit(pointer,(self.x*30+self.firstSelection[0]*(self.width+30)-30,(self.y+self.firstSelection[1])*30))
             draw.rect(screen,WHITE,(self.x*30+self.firstSelection[0]*(self.width+30),(self.y+self.firstSelection[1])*30,self.width,30),1) #draws a border around the first option
         draw.rect(screen,WHITE,(self.x*30+self.selectedPerson*(self.width+30),(self.y+self.selected)*30,self.width,30),1) #draws border around selected option
 categories = ["Sword","Lance","Axe","Bow","Staff","Anima","Light","Dark","Others"]
@@ -781,6 +809,7 @@ class TransferScreen():
         self.shownItems = [i for i in henning.supply if i.typ == "Sword"] #shown items start off as non weapons
         self.startPoint = 0 #starting point for items to display
         self.mode = "select" #mode of transfer screen(select,give,take)
+        self.info = False
     def changeCat(self,diff):
         "changes category - also updates shownItems"
         self.selCat += diff
@@ -820,10 +849,20 @@ class TransferScreen():
             draw.rect(screen,RED,(330,165,216,75),1)
             if len(self.p.items) != 0:
                 draw.rect(screen,WHITE,(80,330+60*self.selItem,480,30),1)
+                if self.info:
+                    ix = 80
+                    y = 330+60*self.selItem+60
+                    opt = self.p.items[self.selItem]
+                    drawInfoBox(screen,ix,y,opt)
         if self.mode == "take":
             draw.rect(screen,RED,(330,240,216,75),1)
             if len(self.shownItems) != 0:
                 draw.rect(screen,WHITE,(640,190+(self.selItem-self.startPoint)*30,530,30),1)
+                if self.info:
+                    opt = self.shownItems[self.selItem]
+                    ix = 640
+                    y = 190+(self.selItem-self.startPoint)*30+30
+                    drawInfoBox(screen,ix,y,opt)
     def onZ(self):
         "handles clicks"
         if self.mode == "select":
@@ -852,6 +891,7 @@ class TransferScreen():
         "handles back tracing"
         if self.mode in ["give",'take']:
             self.mode = "select"
+            self.info = False
             return True
         return False #returns false to exit transfer screen
     def handleMove(self):
@@ -884,6 +924,19 @@ class TransferScreen():
                 self.changeCat(1)
             if kp[K_LEFT]:
                 self.changeCat(-1)
+
+    def onS(self):
+        "handles s clicks"
+        self.info = not self.info #reverses self.info
+class VillageScreen():
+    "village screen class"
+    def __init__(self,visitor,items,story):
+        self.visitor = visitor
+        self.items = items
+        self.story = story
+    def draw(self):
+        "draws the dialogue"
+        pass
 class ShopScreen():
     "shop screen class"
     def __init__(self,p,items,vendor=False):
@@ -896,6 +949,7 @@ class ShopScreen():
         self.mode = "select" #different modes - select, sell or buy
         self.selAct = 0 #selected action (buy or sell)
         self.selItem = 0 #selected item
+        self.info = False
     def handleMove(self):
         "handles arrow keys"
         kp = key.get_pressed()
@@ -915,6 +969,9 @@ class ShopScreen():
             if kp[K_DOWN]:
                 self.selItem += 1
             self.selItem = min(limit-1,max(0,self.selItem))
+    def onS(self):
+        "handles s clicks"
+        self.info = not self.info #reverses self.info
     def draw(self):
         "draws the screen"
         bgs = [armorySelect,armorySelect2] if self.typ == "armory" else [vendorSelect,vendorSelect2] #backgrounds
@@ -972,7 +1029,9 @@ class ShopScreen():
             self.selItem = 0
             return True
         return False
-        
+    def onS(self):
+        "handles s clicks"
+        self.info = not self.info #reverses self.info
 class InfoScreen():
     "mode that displays information about a character"
     def __init__(self,p):
@@ -1341,6 +1400,8 @@ addAlly(player)
                         #if user enters a valid character (letter or number) we append it to name
                         name = name[:self.ipos] + e.unicode + name[self.ipos:]
                         self.ipos += 1
+                    if kp[K_RETURN] and len(name) > 0 and name.lower() in usedNames:
+                        dispTempMsg(screen,"Name is unavailable",centerX=True,centerY=True)
                     
         if self.selectingname:
             #draws submit button
@@ -1486,7 +1547,10 @@ class Story():
             else:
                 #once we hit the limit we transition to the game mode
                 changemode(Game())
-        
+class VillageStory(Story):
+    def __init__(self,dialogue,background,music=None,end=False):
+        super(VillageStory,self).__init__(self,dialogue,background,music=None,end=False)
+    
 class Game():
     def __init__(self):
         "initializes game"
@@ -1642,6 +1706,8 @@ class Game():
         allies += [a.getInstance() for a in newAllies] #adds all new allies to allies
         for i in range(len(allyCoords)):
             global player
+            if i >= len(allies):
+                break #we stop have too many coordinates
             allies[i].x,allies[i].y = allyCoords[i] #sets all ally coords
             if allies[i].name.lower() not in usedNames:
                 #player gets it's own variable, so it is special
@@ -1764,20 +1830,24 @@ class Game():
         "sets a menu's items to an option menu for selected person"
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
         #----Menu Creation
-        #ATTACK OPTION
-        if not (self.selected in self.attacked or self.selected.equip == None):
-            for w in [i for i in self.selected.items if type(i) == Weapon]:
-                #checks every weapon if one yields in an attack we equip it and add attack
-                if not self.selected.canEquip(w):
-                    continue
-                if len(getAttackableEnemies(self.selected,enemies,weapon=w)) > 0:
-                    self.selected.equipWeapon(w)
-                    self.menu.items.append("attack")
-                    break
-        #VENDOR/ARMORY OPTION
-        if self.selected.getTerrain(chapterMaps[chapter]).name.lower() in ["vendor","armory"]:
-            opt = "vendor" if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "vendor" else "armory"
-            self.menu.items.append(opt)
+        if self.selected not in self.attacked:
+            #ATTACK OPTION
+            if not (self.selected in self.attacked or self.selected.equip == None):
+                for w in [i for i in self.selected.items if type(i) == Weapon]:
+                    #checks every weapon if one yields in an attack we equip it and add attack
+                    if not self.selected.canEquip(w):
+                        continue
+                    if len(getAttackableEnemies(self.selected,enemies,weapon=w)) > 0:
+                        self.selected.equipWeapon(w)
+                        self.menu.items.append("attack")
+                        break
+            #VENDOR/ARMORY OPTION
+            if self.selected.getTerrain(chapterMaps[chapter]).name.lower() in ["vendor","armory"]:
+                opt = "vendor" if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "vendor" else "armory"
+                self.menu.items.append(opt)
+            #VILLAGE OPTION
+            if 0 == 0:
+                pass
         #ITEM OPTION
         if len(self.selected.items) > 0:
             self.menu.items.append("item")
@@ -1926,9 +1996,10 @@ class Game():
                         elif self.menu.getOption().lower() == "transfer":
                             self.mode = "transfer"
                             self.transferScreen = TransferScreen(self.selected)
-                        elif self.menu.getOption().lower() in ["vendor","armory"]:
+                        elif self.menu.getOption().lower() in ["vendor","armory","village"]:
                             self.mode = self.menu.getOption().lower()
                             isvendor = self.mode == "vendor" #is it a vendor?
+                            isvillage = self.mode == "village" #is it a village?
                             self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
@@ -1968,13 +2039,14 @@ class Game():
                                 if not self.selectedItem.use(self.selected):
                                     #if it breaks we remove it
                                     self.selected.removeItem(self.selectedItem) #removes selectedItem from items
-                                self.mode = "freemove"
+                                self.mode = "move"
                                 if not self.selected.mounted and self.selected.movesLeft > 0:
                                     self.moved.add(self.selected)
-                                    self.mode = "move"
+                                    self.mode = "freemove"
                                 self.attacked.add(self.selected) #guy who used consumable can't move - treated like an attack
                                 self.oldx,self.oldy = self.selected.x,self.selected.y
                                 self.oldM = self.selected.movesLeft
+                                self.setMoveableSquares(self.selected,True)
                             elif optselected.lower() == "equip":
                                 #equip option
                                 self.selected.equipWeapon(self.selectedItem) #tries to equip
@@ -2025,7 +2097,12 @@ class Game():
                                 self.oldM = self.selected.movesLeft
                     #TRANSFER MODE CLICK
                     elif self.mode == "transfer":
-                        self.transferScreen.onZ()
+                        self.transferScreen.onZ()                
+                        if not self.selected.mounted and self.selected.movesLeft > 0:
+                            self.moved.add(self.selected)
+                        self.attacked.add(self.selected)
+                        self.oldx,self.oldy = self.selected.x,self.selected.y
+                        self.oldM = self.selected.movesLeft
                     #SHOPSCREEN CLICK
                     elif self.mode in ["armory","vendor"]:
                         self.shopScreen.onZ()
@@ -2101,6 +2178,10 @@ class Game():
                                 self.mode = "info" #sets to info mode
                                 self.infoScreen = InfoScreen(self.selected)
                                 break
+                    elif self.mode in ["item","trade"]:
+                        self.menu.onS()
+                    elif self.mode == "transfer":
+                        self.transferScreen.onS()
                 #-------##temporary##-------#
                 #WIP(this symbol is used to represent all things to delete at the end)
                 if e.key == K_v:

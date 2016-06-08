@@ -42,10 +42,15 @@ class Armory(Terrain):
 
 class Village(Terrain):
     "village class"
-    def __init__(self,name,adef,avo,hind,img=None,item=None):
+    def __init__(self,name,adef,avo,hind,img=None,item=None,story=""):
         self.name = name
         self.adef = adef
         self.avo = avo
         self.hind = hind
         self.img = img
         self.item = item
+        self.story = story
+        if self.story != "":
+            pass #get file here
+    def getInstance(self):
+        return Village(self.name,self.adef,self.avo,self.hind,self.img,self.item,self.story)

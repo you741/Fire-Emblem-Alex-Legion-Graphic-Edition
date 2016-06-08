@@ -20,9 +20,14 @@ font.init()
 sans = font.SysFont("Comic Sans MS",20)
 smallsans = font.SysFont("Chomic Sans MS",15)
 papyrus = font.SysFont("Papyrus",20)
+superScript14 = font.Font("fonts/SUPERSCR.TTF",14)
+superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
 
 fpsLimiter = time.Clock() #fps Limiting clock
 
+#IMAGES                                                                            "vendorSelect2"]]
+infoBox = image.load('images/infoBox.png')
+infoBoxNW = image.load('images/infoBoxNW.png')
 #----Map Calculations----#
 ##def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
 ##    "gets all moveable squares for a person"
@@ -392,6 +397,23 @@ def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,cente
     screen.blit(img,(x,y))
     display.flip()
     time.wait(tim)
+def drawInfoBox(screen,ix,y,opt):
+    "draws an info box"
+    if type(opt) == Weapon:
+        screen.blit(infoBox,(ix,y))
+        typ,mt,rnge,hit,wt,crit = str(opt.typ),str(opt.mt),str(opt.rnge),str(opt.acc),str(opt.wt),str(opt.crit)
+        if rnge != str(opt.maxrnge):
+            rnge = rnge + "-" + str(opt.maxrnge)
+        infos = [typ,mt,rnge,hit,wt,crit]
+        coords = [(15,30),(45,60),(150,30),(150,60),(260,30),(260,60)]
+        for i in range(6):
+            screen.blit(superScript14.render(infos[i],True,BLACK),(coords[i][0]+ix,coords[i][1]+y))
+        if opt.desc != "":
+            draw.rect(screen,WHITE,(ix,y+100,334,20))
+            screen.blit(superScript14.render(opt.desc,True,BLACK),(ix+15,y+100))
+    else:
+        screen.blit(infoBoxNW,(ix,y))
+        screen.blit(superScript14.render(opt.desc,True,BLACK),(ix+15,y+30))
 #------ENEMY AI-------#
 def optimalValue(square,stage,allies):
     "returns how optimal the moving to that square is largest=good"
