@@ -924,7 +924,6 @@ class TransferScreen():
                 self.changeCat(1)
             if kp[K_LEFT]:
                 self.changeCat(-1)
-
     def onS(self):
         "handles s clicks"
         self.info = not self.info #reverses self.info
@@ -1858,6 +1857,9 @@ class Game():
         if getDistance(self.selected.x,self.selected.y,henning.x,henning.y) <= 1:
             #allows for access to supply with proximity to henning
             self.menu.items.append("transfer")
+        #VILLAGE OPTION
+        if 0 == 0:
+            pass
         #WAIT OPTION
         self.menu.items.append("wait") #a person can always wait
     def setMoveableSquares(self,p,isally):
