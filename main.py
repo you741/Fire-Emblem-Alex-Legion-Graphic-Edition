@@ -167,7 +167,8 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
         "Gary":image.load("images/faces/Gary.png"),
         "Henning":image.load("images/faces/Henning.png"),
         "Bandit":image.load("images/faces/Bandit.png"),
-        "Mercenary":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
+        "Mercenary":image.load("images/faces/Bandit.png"),
+         "Villager":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
 
 
 #ARROW SPRITES
@@ -960,13 +961,13 @@ class TransferScreen():
         self.info = not self.info #reverses self.info
 class VillageScreen():
     "village screen class"
-    def __init__(self,visitor,items,dialogue):
+    def __init__(self,visitor,village):
         "dialogue is a string telling where to search for the story"
         self.visitor = visitor
-        self.items = items
-        self.dialogue = open(dialogue).read().replace("*Visitor*",self.visitor.name).split("\n")[1:]
+        self.item = village.item
+        self.dialogue = open(village.story).read().replace("*Visitor*",self.visitor.name).split("\n")[1:]
         self.limit = len(self.dialogue)
-        self.background = image.load(open(dialogue).readline().strip())
+        self.background = image.load(open(village.story).readline().strip())
         self.currDial = 0
         self.cond = False
     def draw(self):
@@ -979,7 +980,6 @@ class VillageScreen():
         while visiting:
             screen.blit(self.background,(0,0))
             func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
-            print(func,sentence)
             kp = key.get_pressed()
             
             if func == "CONDITION":
@@ -1053,6 +1053,7 @@ class VillageScreen():
                 fpsLimiter.tick(60) #limits to 60 FPS
                 
             if self.currDial >= self.limit-1 or cM:
+                dispTempMsg(screen,"Received "+self.item.name,centerX=True,centerY=True)
                 break
 
 class ShopScreen():
@@ -2128,8 +2129,16 @@ class Game():
                                 self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
                             else:
                                 #wip
-                                VillageScreen(self.selected,self.selected.getTerrain(chapterMaps[chapter]).item,self.selected.getTerrain(chapterMaps[chapter]).story).run(screen)
-                                self.selected = 
+                                villageScreen = VillageScreen(self.selected,self.selected.getTerrain(chapterMaps[chapter]))
+                                villageScreen.run(screen)
+                                self.mode = "move"
+                                self.attacked.add(self.selected)
+                                self.oldX,self.oldY = self.selected.x,self.selected.y
+                                self.oldM = self.selected.movesLeft
+                                if not self.selected.mounted or self.selected.movesLeft == 0:
+                                    self.moved.add(self.selected)
+                                    self.mode = "freemove"
+                                self.setMoveableSquares(self.selected,True)
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
