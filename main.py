@@ -1306,7 +1306,7 @@ class StartMenu():
                                FilledSurface((300,50),self.buttonnormalstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",WHITE,monospace,(30,10)),
-                               ["changemode(InstructionScreen())"])]
+                               ["changemode(InstructionScreen())"])] #Start button and Instruction button
 
     def draw(self,screen):
         "draws mode on screen"
@@ -1333,6 +1333,10 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2242de3dae73fad8b95639d1a98eed9edfb1a991
 class InstructionScreen():
     "instruction screen"
     def __init__(self):
