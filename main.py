@@ -28,7 +28,7 @@ __copyright__ = "Yttrium Z 2015-2016"
 #----SETUP----#
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
-display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+display.set_caption("YTTRIUM Z AND AZHAN PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
 
 
 #loading screen
@@ -1243,12 +1243,21 @@ class StartMenu():
         self.stopped = False
         #BUTTON SPRITES
         self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png").convert_alpha(),(200,50))
+        self.buttonnormalstretch = transform.smoothscale(self.buttonnormal,(300,50))
         self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
+        self.buttonhlstretch = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
+        self.buttonhlstretch = transform.smoothscale(self.buttonhl,(300,50))
         self.buttons = [Button(500,420,200,50,
                                FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"START",BLACK,monospace,(30,10)),
-                               ["changemode(LoadGame())"])] #START BUTTON
+                               FilledSurface((200,50),self.buttonhl,"START",WHITE,monospace,(30,10)),
+                               ["changemode(LoadGame())"]),
+                        Button(450,490,300,50,
+                               FilledSurface((300,50),self.buttonnormalstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
+                               FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
+                               FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",WHITE,monospace,(30,10)),
+                               ["changemode(InstructionScreen())"])] #Start button and Instruction button
+        
 
     def draw(self,screen):
         "draws mode on screen"
@@ -1275,6 +1284,43 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
+
+class InstructionScreen():
+    "instruction screen"
+    def __init__(self):
+        self.stopped = False
+        #buttons are NEXT
+        #the func will be changing currmode.background
+        #running loop will continuously blit background
+        self.buttons = [Button(500,420,200,50,
+                               FilledSurface((200,50),RED,"BACK",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"BACK",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"BACK",BLACK,monospace,(30,10)),
+                               ["changemode(StartMenu())"])]
+        
+        pass
+    def draw(self,screen):
+        "draws the initial screen"
+        pass
+    def playMusic(self):
+        "plays instruction music"
+        pass
+    def run(self,screen):
+        "runs the mode as if it were in the running loop"
+        global running
+        for e in event.get():
+            if e.type == QUIT:
+                running = False #quits
+            if e.type == MOUSEBUTTONDOWN:
+                #checks if user clicked any buttons
+                for b in self.buttons:
+                    if b.istouch():
+                        b.click()
+        if self.stopped:
+                return 0 #stops the method once stopped
+        for b in self.buttons:
+            b.draw(screen)
+
 class SaveGame():
     "Screen mode for saving the game"
     def __init__(self):
