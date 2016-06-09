@@ -168,7 +168,7 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
         "Henning":image.load("images/faces/Henning.png"),
         "Bandit":image.load("images/faces/Bandit.png"),
         "Mercenary":image.load("images/faces/Bandit.png"),
-         "Villager":image.load("images/faces/Bandit.png")} #dictionary of all faces of characters
+         "Villager":image.load("images/faces/Villager.png")} #dictionary of all faces of characters
 
 
 #ARROW SPRITES
@@ -180,6 +180,7 @@ arrowStraight = image.load("images/Arrow/arrowStraight.png")
 peakImg = image.load("images/terrain/peak.png")
 vendImg = image.load("images/terrain/vendor.png")
 armImg = image.load("images/terrain/armory.png")
+vilImg = image.load("images/terrain/village.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
 
@@ -204,7 +205,7 @@ plain = Terrain("Plain",0,0,1)
 peak = Terrain("Peak",4,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
 armory = Armory("Armory",0,10,1,armImg)
-village = Village("Village",0,10,1,armImg) #need to fix sprite
+village = Village("Village",0,10,1,vilImg) #need to fix sprite
 #WEAPONS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,485,0,2,46,False,[],2)
@@ -1840,6 +1841,10 @@ class Game():
         self.moved.clear()
         self.attacked.clear()
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
+        for y in range(len(chapterMaps[chapter])):
+            for x in range(len(chapterMaps[chapter])):
+                if type(chapterMaps[chapter][y][x]) == Village:
+                    chapterMaps[chapter][y][x].visited = False
         drawMap(chapterMaps[chapter])#draws all terrain
         drawGrid(screen)
         self.startTurn()
@@ -1969,7 +1974,8 @@ class Game():
                 self.menu.items.append(opt)
             #VILLAGE OPTION
             if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "village":
-                self.menu.items.append("visit")
+                if not self.selected.getTerrain(chapterMaps[chapter]).visited:
+                    self.menu.items.append("visit")
         #ITEM OPTION
         if len(self.selected.items) > 0:
             self.menu.items.append("item")
@@ -2128,8 +2134,9 @@ class Game():
                             if not isvillage:
                                 self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
                             else:
-                                #wip
-                                villageScreen = VillageScreen(self.selected,self.selected.getTerrain(chapterMaps[chapter]))
+                                village = self.selected.getTerrain(chapterMaps[chapter])
+                                village.visited = True
+                                villageScreen = VillageScreen(self.selected,village)
                                 villageScreen.run(screen)
                                 self.mode = "move"
                                 self.attacked.add(self.selected)

@@ -50,6 +50,7 @@ class Village(Terrain):
         self.img = img
         self.item = item
         self.story = story
+        self.visited = False
         if self.story != "":
             pass #get file here
     def setItems(self,item,story):
