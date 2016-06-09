@@ -203,6 +203,7 @@ plain = Terrain("Plain",0,0,1)
 peak = Terrain("Peak",4,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
 armory = Armory("Armory",0,10,1,armImg)
+village = Village("Village",0,10,1,armImg) #need to fix sprite
 #WEAPONS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,485,0,2,46,False,[],2)
@@ -300,6 +301,8 @@ chapterShops = [[],
                                   iron_lance.getInstance(),
                                   iron_axe.getInstance(),
                                   iron_bow.getInstance()])]]
+chapterVillages = [[],
+                   [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")]]
 #MAPS
 def createMap(width,height,terrains=[]):
     "creates a map (2d list)"
@@ -311,12 +314,14 @@ def createMap(width,height,terrains=[]):
 terrDict = {".":plain,
             "&":peak,
             "s":vendor,
-            "r":armory} #translates string into terrain
+            "r":armory,
+            "v":village} #translates string into terrain
 def createMapFromFile(chapterNum):
     "creates map from file"
     newMap = []
     mapFile = open("maps/chapter"+str(chapterNum)+".txt")
     shopNum = 0
+    villageNum = 0
     for line in mapFile.read().strip().split("\n"):
         newLine = []
         for c in line:
@@ -324,6 +329,9 @@ def createMapFromFile(chapterNum):
             if c in ["s","r"]:
                 terr = chapterShops[chapterNum][shopNum]
                 shopNum += 1
+            if c == "v":
+                terr = chapterVillages[chapterNum][villageNum]
+                villageNum += 1
             newLine.append(terr)
         newMap.append(newLine)
     return newMap
@@ -952,13 +960,101 @@ class TransferScreen():
         self.info = not self.info #reverses self.info
 class VillageScreen():
     "village screen class"
-    def __init__(self,visitor,items,story):
+    def __init__(self,visitor,items,dialogue):
+        "dialogue is a string telling where to search for the story"
         self.visitor = visitor
         self.items = items
-        self.story = story
+        self.dialogue = open(dialogue).read().replace("*Visitor*",self.visitor.name).split("\n")[1:]
+        self.limit = len(self.dialogue)
+        self.background = image.load(open(dialogue).readline().strip())
+        self.currDial = 0
+        self.cond = False
     def draw(self):
         "draws the dialogue"
         pass
+    def run(self,screen):
+        "runs the story dialogue"
+        global running
+        visiting = True
+        while visiting:
+            screen.blit(self.background,(0,0))
+            func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
+            print(func,sentence)
+            kp = key.get_pressed()
+            
+            if func == "CONDITION":
+                if sentence == "*End*":
+                    self.cond = False
+                else:
+                    alive,dead = sentence.split(";")
+                    alive = alive.lower().split(",")
+                    dead = dead.lower().split(",")
+                    names = [a.name.lower() for a in allAllies]
+                    if alive != ['']:
+                        if len([n for n in alive if n in names]) == len(alive):
+                            self.cond = False
+                        else:
+                            self.cond = True
+                    if dead != ['']:
+                        if len([n for n in dead if n not in names]) == len(dead):
+                            self.cond = False
+                        else:
+                            self.cond = True
+                self.currDial += 1
+            elif self.cond:
+                #self.cond == True indicates we did not meet the condition, so we skip over
+                self.currDial += 1
+            else:
+                if func == "":
+                    #displays narration
+                    if not writeDialogue(screen,sentence):
+                        #writes narration
+                        return 0 #if it returns false it means the user quit, so we quit as well
+                elif func == "TITLE":
+                    #display the title
+                    screen.fill(BLACK)
+                    draw.rect(screen,BLUE,(0,330,1200,60))
+                    img = sans.render(sentence,True,WHITE) #img of string to blit
+                    screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
+                else:
+                    #displays a character talking (func = name of character in this case)
+                    allynames = [a.name.lower() for a in allAllies] #names of all allies
+                    x=0
+                    if func.lower() not in allynames:
+                        x = 900 #changes the x to other side of the screen if it's not an ally
+                    if func.lower() == player.name.lower():
+                        img = faces["Player"] #player's face
+                    else:
+                        img = faces[func] #anyone else's face
+                    if not writeDialogue(screen,sentence,x,530,func,img):
+                        #writes dialogue
+                        return 0 #if it returns false it means the user quit, so we quit as well
+                    
+            breakLoop = False if func != "CONDITION" and not self.cond else True
+            cM = False #boolean: to break or not
+
+            ##blitting the text across the screen 1 by 1
+            while not breakLoop:
+                #loops until user hits z or x to move on
+                for e in event.get():
+                    if e.type == QUIT:
+                        running = False
+                        breakLoop = True
+                    if e.type == KEYDOWN:
+                        if e.key == K_z:
+                            self.currDial += 1
+                            breakLoop = True
+                        if e.key == K_RETURN or e.key == K_x:
+                            #enter or x skips entirely
+                            cM = True
+                            breakLoop = True
+                        
+                display.flip()
+                fpsLimiter.tick(60) #limits to 60 FPS
+                
+            if self.currDial >= self.limit-1 or cM:
+                break
+
 class ShopScreen():
     "shop screen class"
     def __init__(self,p,items,vendor=False):
@@ -1871,8 +1967,8 @@ class Game():
                 opt = "vendor" if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "vendor" else "armory"
                 self.menu.items.append(opt)
             #VILLAGE OPTION
-            if 0 == 0:
-                pass
+            if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "village":
+                self.menu.items.append("visit")
         #ITEM OPTION
         if len(self.selected.items) > 0:
             self.menu.items.append("item")
@@ -2024,11 +2120,16 @@ class Game():
                         elif self.menu.getOption().lower() == "transfer":
                             self.mode = "transfer"
                             self.transferScreen = TransferScreen(self.selected)
-                        elif self.menu.getOption().lower() in ["vendor","armory","village"]:
+                        elif self.menu.getOption().lower() in ["vendor","armory","visit"]:
                             self.mode = self.menu.getOption().lower()
                             isvendor = self.mode == "vendor" #is it a vendor?
-                            isvillage = self.mode == "village" #is it a village?
-                            self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
+                            isvillage = self.mode == "visit" #is it a village?
+                            if not isvillage:
+                                self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
+                            else:
+                                #wip
+                                VillageScreen(self.selected,self.selected.getTerrain(chapterMaps[chapter]).item,self.selected.getTerrain(chapterMaps[chapter]).story).run(screen)
+                                self.selected = 
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)

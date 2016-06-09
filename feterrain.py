@@ -52,5 +52,9 @@ class Village(Terrain):
         self.story = story
         if self.story != "":
             pass #get file here
+    def setItems(self,item,story):
+        self.item = item
+        self.story = story
+        return self.getInstance()
     def getInstance(self):
         return Village(self.name,self.adef,self.avo,self.hind,self.img,self.item,self.story)
