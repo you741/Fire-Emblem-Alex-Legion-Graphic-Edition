@@ -1,3 +1,5 @@
-images/backgrounds/forest.jpg
+images/backgrounds/village.png
 *Visitor*:Oh, what is this?
-Franny:stfu
+Villager:It's our lil' village, Hypobrit!
+*Visitor*:That's cool.
+Villager:Are y'all fightin' against Alex? If so, then take this Vulnerary!
