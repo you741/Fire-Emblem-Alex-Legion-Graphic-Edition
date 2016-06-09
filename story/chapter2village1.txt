@@ -1,0 +1,5 @@
+images/backgrounds/village.png
+*Visitor*:Hmmm... A village?
+Villager:What do you want?
+*Visitor*:Nothing really... we're just trying to get past the Xela fortress.
+Villager:So you're against Alex eh? We support you. Alex claims to fight for the people but his rule brings us nothing but poverty. Take this silver lance and wreak some havoc.

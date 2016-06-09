@@ -1,0 +1,3 @@
+images/backgrounds/village.png
+*Visitor*:Wow. A village.
+Villager:I don't know what you want, but take this and leave! It's worth a lot of gold! Leave us alone now...

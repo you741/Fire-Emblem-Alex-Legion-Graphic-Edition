@@ -1,0 +1,5 @@
+images/backgrounds/village.png
+*Visitor*:A village eh?
+Villager:Hey you! Are you with Alex?
+*Visitor*:No.
+Villager:Okay then... here. Take this. Don't tell anyone I gave you it.

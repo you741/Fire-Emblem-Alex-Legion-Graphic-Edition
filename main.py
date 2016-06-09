@@ -20,7 +20,7 @@ init()
 mixer.init()
 font.init()
 #----METADATA----#
-__author__ = "Yttrium Z (You Zhou)"
+__author__ = "Yttrium Z (You Zhou) & AZhan (Albert Zhan)"
 __date__ = "Incomplete"
 __purpose__ = "Game for Grade 11 final project"
 __name__ = "Fire Emblem Alex Legion"
@@ -28,7 +28,7 @@ __copyright__ = "Yttrium Z 2015-2016"
 #----SETUP----#
 os.environ['SDL_VIDEO_WINDOW_POS'] = '25,25'
 screen = display.set_mode((1200,720))
-display.set_caption("YTTRIUM Z PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
+display.set_caption("YTTRIUM Z AND AZHAN PRESENTS ~~~~~~~FIRE EMBLEM ALEX LEGION~~~~~~~","Fire Emblem Alex Legion")
 
 
 #loading screen
@@ -84,6 +84,7 @@ def greyScale(img):
     return new_img
 #ALLIES' ANIMATIONS
 #animations are stored (except for stand) in tuples: (list_of_surfaces_for_each_frame_of_the_animation,frame_enemy/ally_is_hit)
+#LOADING PLAYER
 playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+1)+".png")
                           for i in range(16)],10)
 playerMageStandSprite = playerMageAnimaSprite[0][0]
@@ -95,14 +96,15 @@ playerKnightStandSprite = playerKnightLanceSprite[0][0]
 playerKnightLancecritSprite = ([image.load("images/Player/Knight/KnightCritFrame"+str(i+1)+".png")
                                 for i in range(8)] + playerKnightLanceSprite[0],13)
 
-LS(265)
+LS(255)
+#LOADING YOYO
 yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
                     for i in range(13)],5)
 yoyoStandSprite = yoyoSwordSprite[0][0]
 yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
                   for i in range(43)],29)
 
-#change albert's later
+#LOADING ALBERT
 albertLanceSprite = ([image.load("images/Albert/AlbertLanceFrame"+str(i+1)+".png")
                       for i in range(24)],7)
 albertStandSprite = albertLanceSprite[0][0]
@@ -112,7 +114,8 @@ albertSwordSprite = ([image.load('images/Albert/AlbertSwordFrame'+str(i+1)+'.png
                       for i in range(18)],6)
 albertSwordcritSprite = (albertSwordSprite[0][:3] + [image.load('images/Albert/AlbertSwordcritFrame'+str(i+1)+'.png')
                                                   for i in range(15)] + albertSwordSprite[0][3:],21)
-LS(310)
+LS(300)
+#LOADING FRANNY
 frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".png")
                       for i in range(10)],5)
 frannyStandSprite = frannyLanceSprite[0][0]
@@ -122,13 +125,22 @@ frannySwordSprite = ([image.load("images/Franny/FrannySwordFrame"+str(i+1)+".png
                       for i in range(11)],4)
 frannySwordcritSprite = ([frannySwordSprite[0][0]] + [image.load("images/Franny/FrannySwordcritFrame"+str(i+1)+".png")
                                                     for i in range(16)] + frannySwordSprite[0][1:],20)
+#LOADING GARY
 garyAxeSprite = ([image.load("images/Gary/GaryAttackFrame"+str(i+1)+".png")
                   for i in range(18)],10)
 garyStandSprite = garyAxeSprite[0][0]
 garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"+str(i+1)+".png")
                                           for i in range(12)] + garyAxeSprite[0][7:],16)
+#LOADING HENNING
 henningStandSprite = image.load("images/Henning/HenningStand.png")
-LS(355)
+LS(345)
+#LOADING HENRY
+henrySwordSprite = ([image.load("images/Henry/HenryAttackFrame"+str(i+1)+".png")
+                     for i in range(17)],10)
+henryStandSprite = henrySwordSprite[0][0]
+henrySwordcritSprite = ([henryStandSprite] + [image.load("images/Henry/HenryCritFrame"+str(i+1)+".png")
+                                              for i in list(range(2)) + list(range(12))] + henrySwordSprite[0][8:],17)
+LS(385)
 #ENEMIES' ANIMATIONS
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
@@ -151,6 +163,7 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Cavalier":[transform.scale(image.load("images/MapSprites/Ally/Cavalier"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Paladin":[transform.scale(image.load('images/MapSprites/Ally/Paladin'+str(i+1)+'.png').convert_alpha(),(30,30)) for i in range(4)],
                   "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Mercenary":[transform.scale(image.load("images/MapSprites/Ally/Mercenary"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
@@ -166,10 +179,14 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
         "Albert":image.load("images/faces/Albert.png"),
         "Gary":image.load("images/faces/Gary.png"),
         "Henning":image.load("images/faces/Henning.png"),
+         "Henry":image.load("images/faces/Henry.png"),
+         "Brandon":image.load("images/faces/Brandon.png"),
+         "Stefano":image.load("images/faces/Stefano.png"),
+         "Eric":image.load('images/faces/Eric.png'),
+         "Kevin":image.load('images/faces/Kevin.png'),
         "Bandit":image.load("images/faces/Bandit.png"),
         "Mercenary":image.load("images/faces/Bandit.png"),
          "Villager":image.load("images/faces/Villager.png")} #dictionary of all faces of characters
-
 
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
@@ -206,16 +223,20 @@ peak = Terrain("Peak",4,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
 armory = Armory("Armory",0,10,1,armImg)
 village = Village("Village",0,10,1,vilImg) #need to fix sprite
-#WEAPONS
+#ITEMS
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,485,0,2,46,False,[],2)
+steel_bow = Weapon("Steel Bow",8,9,30,75,"Bow",200,615,0,2,30,False,[],2)
 iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,450)
+steel_lance = Weapon("Steel Lance",10,10,30,70,"Lance",200,600)
 silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",500,1200)
 fire = Weapon("Fire",5,4,40,95,"Anima",100,450,0,1,40,True,maxrnge=2,anims=fireSprite)
 slim_sword = Weapon("Slim Sword",3,2,35,100,"Sword",200,350,5)
 steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200,550)
 iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100,450)
+killing_edge = Weapon("Killing Edge",8,7,20,85,"Sword",300,900,30)
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,485)
+steel_axe = Weapon("Steel Axe",12,15,30,65,"Axe",200,615)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,300,"Heals for 10 HP")
 red_gem = Item("Red Gem",1,4000,"Sells for 2000G")
@@ -236,7 +257,7 @@ usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brando
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
-                "spd":5,"con":5,"move":5,"res":4,"hp":18,"maxhp":18},
+                "spd":5,"con":5,"move":5,"res":4,"hp":21,"maxhp":21},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
@@ -268,17 +289,23 @@ henning = Transporter("Henning",0,0,
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
                [red_gem.getInstance()],{},
                {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()])
+henry = Mercenary("Henry",0,0,
+               {"lv":5,"stren":9,"defen":5,"skl":11,"lck":9,
+                "spd":11,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
+               {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":70},
+               [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
+               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"])
 
 allies = [] #allies
 #ENEMIES
 #--Brigands
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":6,"defen":3,"skl":3,"lck":0,
+                  {"lv":1,"stren":5,"defen":3,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 bandit1 = Brigand("Bandit",0,0,
-                  {"lv":3,"stren":7,"defen":4,"skl":4,"lck":0,
-                   "spd":3,"con":9,"move":5,"res":0,"hp":24,"maxhp":24},{},[iron_axe.getInstance()],{"Axe":200},
+                  {"lv":3,"stren":7,"defen":3,"skl":4,"lck":0,
+                   "spd":3,"con":9,"move":5,"res":0,"hp":22,"maxhp":22},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
@@ -296,15 +323,23 @@ alexTheMerc = Mercenary("Alex the Merc",0,0,
 enemies = []
 LS(660)
 #----CHAPTERS----#
-numChaps = 2 #number of chapters - including prologue
+numChaps = 3 #number of chapters - including prologue
 chapterShops = [[],
                 [vendor.setItems([vulnerary.getInstance()]),
                  armory.setItems([iron_sword.getInstance(),
                                   iron_lance.getInstance(),
                                   iron_axe.getInstance(),
-                                  iron_bow.getInstance()])]]
+                                  iron_bow.getInstance()])],
+                [armory.setItems([steel_sword.getInstance(),
+                                  steel_lance.getInstance(),
+                                  steel_axe.getInstance(),
+                                  steel_bow.getInstance()]),
+                 vendor.setItems([vulnerary.getInstance()])]]
 chapterVillages = [[],
-                   [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")]]
+                   [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")],
+                   [village.setItems(silver_lance.getInstance(),"story/chapter2village1.txt"),
+                    village.setItems(vulnerary.getInstance(),"story/chapter2village2.txt"),
+                    village.setItems(white_gem.getInstance(),"story/chapter2village3.txt")]]
 #MAPS
 def createMap(width,height,terrains=[]):
     "creates a map (2d list)"
@@ -379,8 +414,10 @@ chapterMaps = [createMapFromFile(i) for i in range(numChaps)]
 chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,1],getEcoords(0)),
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
+                "Defeat all enemies",plainsBackground),
+               ([henry],getAcoords(2),createEnemyList([bandit1,merc1],[6,6],getEcoords(2)),
                 "Defeat all enemies",plainsBackground)]
-chapterBattleBackgrounds = [battlePlains,battlePlains]
+chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
@@ -873,9 +910,11 @@ class TransferScreen():
         for i in range(self.startPoint,min(len(self.shownItems),self.startPoint+10)):
             #draws all items in supply from startPoint to 10 more
             drawItem(self.p,self.shownItems[i],640,190+(i-self.startPoint)*30)
+        drawTransRect(screen,BLACK,0,680,1200,40)
         if self.mode == "select":
             screen.blit(pointer,(300,165+75*self.selAct))
             draw.rect(screen,WHITE,(330,165+75*self.selAct,216,75),1)
+            screen.blit(sans.render("Z to select an option; X to cancel; Arrow keys to change option",True,WHITE),(0,680))
         if self.mode == "give":
             draw.rect(screen,RED,(330,165,216,75),1)
             if len(self.p.items) != 0:
@@ -886,6 +925,7 @@ class TransferScreen():
                     y = 330+60*self.selItem+60
                     opt = self.p.items[self.selItem]
                     drawInfoBox(screen,ix,y,opt)
+            screen.blit(sans.render("Z to give an item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
         if self.mode == "take":
             draw.rect(screen,RED,(330,240,216,75),1)
             if len(self.shownItems) != 0:
@@ -896,6 +936,8 @@ class TransferScreen():
                     ix = 640
                     y = 190+(self.selItem-self.startPoint)*30+30
                     drawInfoBox(screen,ix,y,opt)
+            screen.blit(sans.render("Z to take an item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
+        
     def onZ(self):
         "handles clicks"
         if self.mode == "select":
@@ -1053,7 +1095,7 @@ class VillageScreen():
                 display.flip()
                 fpsLimiter.tick(60) #limits to 60 FPS
                 
-            if self.currDial >= self.limit-1 or cM:
+            if self.currDial >= self.limit or cM:
                 dispTempMsg(screen,"Received "+self.item.name,centerX=True,centerY=True)
                 break
 
@@ -1102,7 +1144,7 @@ class ShopScreen():
                 screen.blit(bgs[1],(0,0))
             else:
                 #buy mode
-                screen.blit(bgs[0],(0,0))
+                screen.blit(bgs[0],(0,0))        
         if self.mode == "buy":
             screen.blit(bgs[0],(0,0))
             itms = self.items
@@ -1120,6 +1162,13 @@ class ShopScreen():
             if self.info and len(itms) > self.selItem:
                 drawInfoBox(screen,290,390+60*self.selItem,itms[self.selItem])
         screen.blit(superScript40.render(str(gold),True,WHITE),(885,230)) #blits gold
+        drawTransRect(screen,BLACK,0,680,1200,40)
+        if self.mode == "select":
+            screen.blit(sans.render("Z to select an option; X to cancel; Arrow keys to change option",True,WHITE),(0,680))
+        elif self.mode == "buy":
+            screen.blit(sans.render("Z to buy item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
+        elif self.mode == "sell":
+            screen.blit(sans.render("Z to sell item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
     def onZ(self):
         "handles z click"
         global gold
@@ -1234,6 +1283,8 @@ class InfoScreen():
         screen.blit(superScript40.render(a.__class__.__name__,True,WHITE),(15,485))
         screen.blit(superScript40.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(15,555))
         screen.blit(superScript40.render("HP "+str(a.hp)+"/"+str(a.maxhp),True,WHITE),(15,610))
+        drawTransRect(screen,BLACK,0,680,1200,40)
+        screen.blit(sans.render("Side arrow keys to change page; Up and down arrow key to change character; X to return",True,WHITE),(0,680))
 #----MODE CLASSES----#
 #these classes are the different modes for the scren - must be in the main
 class StartMenu():
@@ -1243,12 +1294,19 @@ class StartMenu():
         self.stopped = False
         #BUTTON SPRITES
         self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png").convert_alpha(),(200,50))
+        self.buttonnormalstretch = transform.smoothscale(self.buttonnormal,(300,50))
         self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
+        self.buttonhlstretch = transform.smoothscale(self.buttonhl,(300,50))
         self.buttons = [Button(500,420,200,50,
                                FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"START",BLACK,monospace,(30,10)),
-                               ["changemode(LoadGame())"])] #START BUTTON
+                               FilledSurface((200,50),self.buttonhl,"START",WHITE,monospace,(30,10)),
+                               ["changemode(LoadGame())"]),
+                        Button(450,490,300,50,
+                               FilledSurface((300,50),self.buttonnormalstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
+                               FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
+                               FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",WHITE,monospace,(30,10)),
+                               ["changemode(InstructionScreen())"])]
 
     def draw(self,screen):
         "draws mode on screen"
@@ -1275,6 +1333,42 @@ class StartMenu():
         #draws buttons
         for b in self.buttons:
             b.draw(screen)
+class InstructionScreen():
+    "instruction screen"
+    def __init__(self):
+        self.stopped = False
+        #buttons are NEXT
+        #the func will be changing currmode.background
+        #running loop will continuously blit background
+        self.buttons = [Button(500,420,200,50,
+                               FilledSurface((200,50),RED,"BACK",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"BACK",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"BACK",BLACK,monospace,(30,10)),
+                               ["changemode(StartMenu())"])]
+        
+        pass
+    def draw(self,screen):
+        "draws the initial screen"
+        pass
+    def playMusic(self):
+        "plays instruction music"
+        pass
+    def run(self,screen):
+        "runs the mode as if it were in the running loop"
+        global running
+        for e in event.get():
+            if e.type == QUIT:
+                running = False #quits
+            if e.type == MOUSEBUTTONDOWN:
+                #checks if user clicked any buttons
+                for b in self.buttons:
+                    if b.istouch():
+                        b.click()
+        if self.stopped:
+                return 0 #stops the method once stopped
+        for b in self.buttons:
+            b.draw(screen)
+
 class SaveGame():
     "Screen mode for saving the game"
     def __init__(self):
@@ -1451,7 +1545,7 @@ addAlly(player)
                                 FilledSurface((200,50),YELLOW,"KNIGHT",BLACK,monospace,(40,10)),
                                 FilledSurface((200,50),GREEN,"KNIGHT",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Knight(name,0,0,{"lv":1,"hp":25,"maxhp":25,"stren":7,"defen":7,"spd":4,"res":0,"skl":5,"lck":4,"con":5,"move":4},
+                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":4,"res":0,"skl":6,"lck":4,"con":5,"move":4},
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
@@ -1699,27 +1793,36 @@ class Game():
         "draws game on screen - also starts game"
         self.start()
         self.filler = screen.copy() #filler
-    def getPath(self):
+    def getPath(self,ms,endx,endy):
         "Gets path"
-        coords = [(x,y) for x,y,m,ali in self.moveableSquares]
+        coords = [(x,y) for x,y,m,ali in ms]
         spot = -1
         for i in range(len(coords)):
-            if coords[i] == (self.selectx,self.selecty):
+            if coords[i] == (endx,endy):
                 spot = i
         if spot == -1:
-            return [(self.selected.x,self.selected.y)] #return the spot the character is on
-        steps = [ali for x,y,m,ali in self.moveableSquares][spot] #steps = the coords to get to the steps
+            return [] #return nothing
+        steps = [ali for x,y,m,ali in ms][spot] #steps = the coords to get to the steps
+        if len(steps) == 1:
+            return [] #returns nothing for own spot
         return steps
-    def animWalk(self):
-        "uses self.selected.x,y and self.selectx,y"
+    def animWalk(self,p,ms,x,y):
+        "uses ms for moveablesquares and x and y for end point"
         #WIP!!!
  #       draw.rect(screen,GREEN,(self.selected.x*30,self.selected.y*30,30,30)) #coverup to cover the character when animated
+        screen.blit(self.filler,(0,0))
+        self.drawPeople([a for a in allies if a != p],[e for e in enemies if e != p])
         snap = screen.copy()
-        for cord in self.getPath():
+        num = 0 #number of frame to show
+        for cord in self.getPath(ms,x,y):
             screen.blit(snap,(0,0))
-            draw.rect(screen,BLACK,(cord[0]*30,cord[1]*30,30,30))##need sprite?
+            if p in allies:
+                screen.blit(allyMapSprites[p.__class__.__name__][num%4],(cord[0]*30,cord[1]*30))
+            else:
+                screen.blit(enemyMapSprites[p.__class__.__name__][num%4],(cord[0]*30,cord[1]*30)) 
             display.flip()
-            time.wait(100)                
+            time.wait(100)
+            num += 1
         if handleEvents(event.get()):
             quit()
     def getArrow(self,coord,coord1,coord2,head=False):
@@ -1770,15 +1873,17 @@ class Game():
                 #vertical
                 return transform.rotate(arrowStraight,90)
         return 1
-    def drawArrow(self):
+    def drawArrow(self,ms,x,y):
         "draws an arrow from self.selected.x,y to self.selectx,y"
         #WIP - find smart way to figure out which one to draw using indices of 2x2 array
-        steps = [(self.selected.x,self.selected.y)]+self.getPath()
+        steps = [(self.selected.x,self.selected.y)]+self.getPath(ms,x,y)
+        if len(steps) == 1:
+            return 0
 
         #steps includes the self character x&y
         
         #loop through each, check the next one and previous one to see which one of the three to draw
-        for i in range (1,len(steps)-1):
+        for i in range (2,len(steps)-1):
             coord1 = steps[i-1] #previous coord
             coord = steps[i] #current coord
             coord2 = steps[i+1] #subsequent coord
@@ -1847,25 +1952,27 @@ class Game():
                     chapterMaps[chapter][y][x].visited = False
         drawMap(chapterMaps[chapter])#draws all terrain
         drawGrid(screen)
+        self.selectx,self.selecty = yoyo.x,yoyo.y
         self.startTurn()
     def startTurn(self):
         "starts the turn"
         global allies,enemies
         screenBuff = screen.copy() #sets the screenBuffer to cover up the text
+        self.moved.clear() #empties moved and attacked
+        self.attacked.clear()
+        self.drawPeople()
         screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
         screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
         for a in allies:
             a.movesLeft = a.move
         for e in enemies:
             e.movesLeft = e.move
-        self.moved.clear() #empties moved and attacked
-        self.attacked.clear()
-        self.drawPeople()
         display.flip() #updates screen
         time.wait(1000)
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
-        event.clear()#clears events so that it doesnt allow events to occur as soon as this ends
+        if handleEvents(event.get()):
+            quit()
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
         "ends the turn, starts the enemy turn"
@@ -1902,6 +2009,7 @@ class Game():
                 attackableSquares = getAttackableSquaresByMoving(enMoves,en) #attackableSquares by moving
                 attackableAllies = [a for a in allies if (a.x,a.y) in attackableSquares]
                 bestAlly,bestX,bestY = getOptimalAlly(en,chapterMaps[chapter],attackableAllies,enMoves)
+                self.animWalk(en,enemyMoves,bestX,bestY)
                 en.x,en.y = bestX,bestY
                 screen.blit(self.filler,(0,0)) #fills the screen
                 #DRAWS PEOPLE
@@ -1913,8 +2021,8 @@ class Game():
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
                 (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
+                self.animWalk(en,enemyMoves,bestX,bestY)
                 en.x,en.y = bestX,bestY
-
             self.turn += 1 #increases turn by 1
             self.moved.add(en)
             self.attacked.add(en)
@@ -2097,7 +2205,7 @@ class Game():
                     elif self.mode == "move":
                         #moves the unit if it is an ally and within the moveable squares or it's own square
                         if (self.selectx,self.selecty) in [(x,y) for x,y,m,ali in self.moveableSquares] and self.selected in allies:
-                            self.animWalk()
+                            self.animWalk(self.selected,self.moveableSquares,self.selectx,self.selecty)
                             self.selected.x,self.selected.y = self.selectx,self.selecty
                             if self.selected.mounted:
                                 self.selected.movesLeft = [m for x,y,m,ali in self.moveableSquares if (x,y) == (self.selected.x,self.selected.y)][0]
@@ -2362,6 +2470,8 @@ class Game():
         if self.framecounter - self.clickedFrame > 10 and self.mode == "transfer" and not self.framecounter%5:
             self.transferScreen.handleMove()
         #---------------DIFFERENT MODE DISPLAYS------------------#
+        #DRAWS PEOPLE
+        self.drawPeople()
         #MOVE MODE DISPLAY
         if self.mode == "move":
             #fills moveable and attackable squares
@@ -2369,15 +2479,18 @@ class Game():
             if self.attackableSquares and self.selected.equip != None:
                 fillSquares(screen,self.attackableSquares,transRed)
             if self.selected in allies:
-                self.drawArrow()
-        #DRAWS PEOPLE
-        self.drawPeople()
+                self.drawArrow(self.moveableSquares,self.selectx,self.selecty)
+            y = 0 if self.selected.y > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Click Z on a blue square to move there (you can click on character to stay put); Click X to go back; Arrow keys to move cursor",True,WHITE),(0,y))
         #MAIN MENU MODE DISPLAY
         if self.mode == "mainmenu":
             #if it is menu mode we draw the menu
             self.menu.x,self.menu.y = 18,4
             self.menu.width,self.menu.height = 120,480
             self.menu.draw()
+            drawTransRect(screen,BLACK,0,680,1200,40)
+            screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,680))
  #          drawMenu(self.menu,menux,menuy,120,480,self.menu.selected) #draws the main menu
         #OPTION MENU MODE DISPLAY
         if self.mode == "optionmenu":
@@ -2387,11 +2500,17 @@ class Game():
             self.menu.width=270
             self.menu.height=30*len(self.menu.items)
             self.menu.draw()
+            y = 0 if self.selected.y > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,y))
 #            drawMenu(self.menu,menux,menuy,120,len(self.menu.items)*30,self.menu.selected)
         #ATTACK MODE DISPLAY
         if self.mode == "itemattack":
             #displays item selection menu for attack
             self.menu.draw(self.selected)
+            y = 0 if self.selected.y > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Z to select item to attack; X to cancel; Arrow keys to change selected weapon",True,WHITE),(0,y))
         if self.mode == "attack":
             #highlights all attackable squares
             fillSquares(screen,getAttackableSquares(self.selected.equip.rnge,self.selected.equip.maxrnge,self.selected.x,self.selected.y),transRed)
@@ -2407,7 +2526,10 @@ class Game():
             drawMenu(battleStatsMenu,x,y,210,210,-20) #draws battle stats menu for ally
             #battle stats from enemy's POV
             battleStatsMenu = getBattleStats(enemy,self.selected,chapterMaps[chapter])
-            drawMenu(battleStatsMenu,x+7,y,210,210,-20,RED) #draws battle stats menu for enemy
+            drawMenu(battleStatsMenu,x+7,y,210,210,-20,RED) #draws battle stats menu for enemy            
+            y = 0 if self.selected.y > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Z to attack selected enemy; X to cancel; Arrow keys to change enemy",True,WHITE),(0,y))
         #ITEM MODE DISPLAY
         if self.mode == "item":
             screen.blit(transBlack,(0,0))
@@ -2415,19 +2537,34 @@ class Game():
             self.menu.width = 240
             self.menu.height = 150
             self.menu.draw(self.selected)
+            drawTransRect(screen,BLACK,0,680,1200,40)
+            if self.menu.subMenu == None:
+                screen.blit(sans.render("Z to select an item; X to cancel; Arrow keys to change item selected; S to toggle info mode",True,WHITE),(0,680))
+            else:
+                screen.blit(sans.render("Z to select option; X to cancel; Arrow keys to change option selected",True,WHITE),(0,680))
         #TRADE MODE DISPLAY
         if self.mode == "trade":
             if self.selected2 == None:
                 #if we have no 2nd selected ally, we draw the selector around the 2nd selected ally
                 highlightedAlly = self.targetableAllies[self.selectedAlly] #highlighted ally
-                draw.rect(screen,WHITE,(highlightedAlly.x*30,highlightedAlly.y*30,30,30),1) #draws selector around highlighted ally
+                draw.rect(screen,WHITE,(highlightedAlly.x*30,highlightedAlly.y*30,30,30),1) #draws selector around highlighted ally            
+                y = 0 if self.selected.y > 18 else 680
+                drawTransRect(screen,BLACK,0,y,1200,40)
+                screen.blit(sans.render("Z to trade with selected ally; X to cancel; Arrow keys to change ally",True,WHITE),(0,y))
             else:
                 screen.blit(menuBG,(0,0)) #blits menu background
                 #draws item menu for both allies
                 #first we set which item selected out of the two menus
                 #this is based on which ally the selector is on
                 #which is determined by the first element of menuselect
+                screen.blit(self.selected.face,(240,190))
+                screen.blit(self.selected2.face,(630,190))
                 self.menu.draw(self.selected,self.selected2)
+                drawTransRect(screen,BLACK,0,680,1200,40)
+                if self.menu.firstSelection == None:
+                    screen.blit(sans.render("Z to select an item; X to cancel; Arrow keys to change item; S to toggle info mode",True,WHITE),(0,680))
+                else:
+                    screen.blit(sans.render("Z to trade selected item with current item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
         #TRANSFER MODE DISPLAY
         if self.mode == "transfer":
             self.transferScreen.draw()
@@ -2443,19 +2580,23 @@ class Game():
             for p in allies+enemies:
                 if self.selectx == p.x and self.selecty == p.y:
                     #DRAWS PERSON MINI DATA BOX
-                    pdbx,pdby = 0,0 #person data box x and y
+                    pdbx,pdby = 0,40 #person data box x and y
                     if self.selectx < 20 and self.selecty <= 12:
-                        pdby = 630
+                        pdby = 590
                     draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
                     screen.blit(sans.render(p.name,True,WHITE),(pdbx+15,pdby+3)) #person's name
                     screen.blit(smallsans.render("HP: "+str(p.hp)+"/"+str(p.maxhp),True,WHITE),(pdbx+15,pdby+33)) #health
                     draw.line(screen,(80,60,30),(pdbx+90,pdby+48),(pdbx+270,pdby+48),30) #health bar
                     draw.line(screen,YELLOW,(pdbx+90,pdby+48),(pdbx+90+(p.hp/p.maxhp)*180,pdby+48),30)
                     break
+            y = 0 if self.selecty > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Click Z on a character to select; S to view profile; Arrow keys to move cursor",True,WHITE),(0,y))
+
         #---------------INFO DISPLAY BOXES----------------------#
         #TERRAIN DATA BOX
         if self.mode == "freemove":
-            tbx,tby = 1020,630 #terrain box x and y
+            tbx,tby = 1020,590 #terrain box x and y
             stage = chapterMaps[chapter]
             if self.selectx >= 20:
                 tbx = 0

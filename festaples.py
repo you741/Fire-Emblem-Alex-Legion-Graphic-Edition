@@ -187,6 +187,10 @@ def createEnemyList(enemies,amounts,coords):
     return enemyList
 
 #----Drawing Functions----#
+def drawTransRect(screen,color,x,y,width,height):
+    surf = Surface((width,height),SRCALPHA)
+    surf.fill((color[0],color[1],color[2],140))
+    screen.blit(surf,(x,y))
 def drawGrid(screen,width=1200,height=720):
     "draws a grid on the screen"
     for x in range(0,width,30):

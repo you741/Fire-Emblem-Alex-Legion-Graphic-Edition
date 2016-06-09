@@ -1,0 +1,12 @@
+images/backgrounds/forest.jpg
+*Player*:Looks like we got through...
+Yoyo:Let's go on.
+CONDITION:Gary,Franny;
+Gary:Aww yeah things are gettin' exciting.
+CONDITION:*End*
+CONDITION:Gary;Franny
+Gary:I wish Fran Fran were here with us...
+CONDITION:*End*
+CONDITION:Albert;
+Albert:We must secure the 8 divine forgeries!
+CONDITION:*End*
