@@ -119,7 +119,13 @@ def getAttackableSquaresByMoving(moveablesquares,person):
         for ax,ay in getAttackableSquares(person.getMinRange(),person.getMaxRange(),x,y):
             attackableSquares.add((ax,ay))
     return attackableSquares
-
+def getUnitsWithinRange(x,y,rnge,maxrnge,persons):
+    "gets all units in persons within the range"
+    units = []
+    for p in persons:
+        if rnge <= getDistance(x,y,p.x,p.y) <= maxrnge:
+            units.append(p)
+    return units
 #----Other Calculations----#
 def canAttackTarget(person,ex,ey,x=None,y=None,weapon=None):
     "returns whether person can attack square (ex,ey)"
@@ -188,6 +194,7 @@ def createEnemyList(enemies,amounts,coords):
 
 #----Drawing Functions----#
 def drawTransRect(screen,color,x,y,width,height):
+    "draws a transparent rectangle"
     surf = Surface((width,height),SRCALPHA)
     surf.fill((color[0],color[1],color[2],140))
     screen.blit(surf,(x,y))
@@ -405,6 +412,7 @@ def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,cente
     display.flip()
     time.wait(tim)
     screen.blit(buffer,(0,0))
+    event.clear()
 def drawInfoBox(screen,ix,y,opt):
     "draws an info box"
     if opt == None:

@@ -268,6 +268,10 @@ class Mercenary(Person):
     "mercenary class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
         super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+class Thief(Person):
+    "thief class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+        super(Thief,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
 class Transporter(Person):
     "transporter class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,supply,gift=0,exp=0):

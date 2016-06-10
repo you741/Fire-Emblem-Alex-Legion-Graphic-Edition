@@ -140,23 +140,32 @@ henrySwordSprite = ([image.load("images/Henry/HenryAttackFrame"+str(i+1)+".png")
 henryStandSprite = henrySwordSprite[0][0]
 henrySwordcritSprite = ([henryStandSprite] + [image.load("images/Henry/HenryCritFrame"+str(i+1)+".png")
                                               for i in list(range(2)) + list(range(12))] + henrySwordSprite[0][8:],17)
+#LOADING BRANDON
+brandonSwordSprite = ([image.load("images/Brandon/BrandonAttackFrame"+str(i+1)+".png")
+                       for i in range(15)],5)
+brandonStandSprite = brandonSwordSprite[0][0]
+brandonSwordcritSprite = (brandonSwordSprite[0][:11] + brandonSwordSprite[0][3:],13)
 LS(385)
 #ENEMIES' ANIMATIONS
+#BRIGAND
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
                        for i in range(14)],9)
 brigandStandSprite = brigandAxeSprite[0][0]
 brigandAxecritSprite = ([image.load("images/Brigand/BrigandCritFrame"+str(i+1)+".png")
                      for i in range(2)] + brigandAxeSprite[0],11)
+#MERCENARY
 mercenarySwordSprite = ([image.load("images/Mercenary/MercenaryAttackFrame"+str(i+1)+".png")
                          for i in range(21)],12)
 mercenaryStandSprite = mercenarySwordSprite[0][0]
 mercenarySwordcritSprite = ([mercenaryStandSprite]+[image.load("images/Mercenary/MercenaryCritFrame"+str(i+1)+".png")
                                                      for i in range(18)] + mercenarySwordSprite[0][6:],25)
 #MAGIC ANIMATIONS
+#--FIRE
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
               for i in range(17)]
 LS(400)
 #MAP SPRITES
+#--allies
 allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Lord":[transform.scale(image.load("images/MapSprites/Ally/Lord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Knight":[transform.scale(image.load("images/MapSprites/Ally/Knight"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
@@ -164,7 +173,9 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Paladin":[transform.scale(image.load('images/MapSprites/Ally/Paladin'+str(i+1)+'.png').convert_alpha(),(30,30)) for i in range(4)],
                   "Fighter":[transform.scale(image.load("images/MapSprites/Ally/Fighter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Mercenary":[transform.scale(image.load("images/MapSprites/Ally/Mercenary"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
-                  "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Thief":[transform.scale(image.load("images/MapSprites/Ally/Thief"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+#--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
@@ -194,6 +205,8 @@ arrowBent = image.load("images/Arrow/arrowBent.png")
 arrowStraight = image.load("images/Arrow/arrowStraight.png")
 
 #TERRAIN IMAGES
+forestImg = image.load('images/terrain/forest.png')
+mountainImg = image.load('images/terrain/mountain.png')
 peakImg = image.load("images/terrain/peak.png")
 vendImg = image.load("images/terrain/vendor.png")
 armImg = image.load("images/terrain/armory.png")
@@ -219,6 +232,8 @@ LS(440)
 #----END OF IMAGE LOAD----#
 #TERRAIN
 plain = Terrain("Plain",0,0,1)
+forest = Terrain("Forest",2,20,2,forestImg)
+mountain = Terrain("Mountain",3,30,3,mountainImg)
 peak = Terrain("Peak",4,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
 armory = Armory("Armory",0,10,1,armImg)
@@ -239,6 +254,7 @@ iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,485)
 steel_axe = Weapon("Steel Axe",12,15,30,65,"Axe",200,615)
 rapier = Weapon("Rapier",7,5,40,90,"Sword",700,700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 vulnerary = Consumable("Vulnerary",10,3,300,"Heals for 10 HP")
+lock_pick = Item("Lock Pick",45,500,"Opens doors and chests")
 red_gem = Item("Red Gem",1,4000,"Sells for 2000G")
 blue_gem = Item("Blue Gem",1,10000,"Sells for 5000G")
 white_gem = Item("White Gem",1,20000,"Sells for 10000G")
@@ -290,31 +306,48 @@ henning = Transporter("Henning",0,0,
                [red_gem.getInstance()],{},
                {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()])
 henry = Mercenary("Henry",0,0,
-               {"lv":5,"stren":9,"defen":5,"skl":11,"lck":9,
-                "spd":11,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
+               {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
+                "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
                {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":70},
                [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
                {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"])
-
+brandon = Thief("Brandon",0,0,
+                {"lv":4,"stren":5,"defen":3,"skl":7,"lck":5,
+                "spd":13,"con":5,"move":6,"res":3,"hp":22,"maxhp":22},
+               {"stren":25,"defen":20,"skl":45,"spd":70,"lck":30,"res":15,"maxhp":60},
+               [iron_sword.getInstance(),blue_gem.getInstance(),lock_pick.getInstance(),vulnerary.getInstance()],{"Sword":100},
+               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"])
 allies = [] #allies
 #ENEMIES
 #--Brigands
 bandit0 = Brigand("Bandit",0,0,
-                  {"lv":1,"stren":5,"defen":3,"skl":3,"lck":0,
+                  {"lv":1,"stren":5,"defen":2,"skl":3,"lck":0,
                    "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 bandit1 = Brigand("Bandit",0,0,
-                  {"lv":3,"stren":7,"defen":3,"skl":4,"lck":0,
+                  {"lv":3,"stren":6,"defen":3,"skl":4,"lck":0,
                    "spd":3,"con":9,"move":5,"res":0,"hp":22,"maxhp":22},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
                          "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70)
+bandit2 = Brigand("Bandit",0,0,
+                {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
+                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance()],{"Axe":300},
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+bandit2_v = Brigand("Bandit",0,0,
+                {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
+                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 #--Mercenaries
 merc1 = Mercenary("Mercenary",0,0,
-                {"lv":3,"stren":6,"defen":3,"skl":8,"lck":2,
+                {"lv":3,"stren":5,"defen":2,"skl":8,"lck":2,
                 "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},
+                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+merc2 = Mercenary("Mercenary",0,0,
+                {"lv":5,"stren":6,"defen":3,"skl":9,"lck":2,
+                "spd":9,"con":6,"move":5,"res":0,"hp":19,"maxhp":19},{},[iron_sword.getInstance()],{"Sword":200},
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
@@ -349,6 +382,8 @@ def createMap(width,height,terrains=[]):
             newMap[y][x] = t
     return newMap
 terrDict = {".":plain,
+            "|":forest,
+            "^":mountain,
             "&":peak,
             "s":vendor,
             "r":armory,
@@ -415,7 +450,7 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground),
-               ([henry],getAcoords(2),createEnemyList([bandit1,merc1],[6,6],getEcoords(2)),
+               ([henry,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
                 "Defeat all enemies",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -650,6 +685,68 @@ def attack(person,person2):
     time.wait(1000)
     if handleEvents(event.get()):
         quit()
+#-------ITEM OVERFLOW---------#
+#This is so items don't overflow - we can send to henning if he has space, otherwise we delete
+def itemOverflow(p,item):
+    "handles item overflow"
+    global running
+    buffer = screen.copy()
+    selecting = True
+    selItem = 0 #selected item
+    draw.rect(screen,BLUE,(200,200,600,360))
+    for i in range(len(p.items)):
+        drawItem(p,p.items[i],200,200+60*i,460,superScript40) #draws all items
+    drawItem(p,item,200,500,460,superScript40)
+    draw.rect(screen,BLUE,(0,0,1200,60))
+    if len(henning.supply) < 100:
+        #henning has space
+        screen.blit(superScript40.render("Select an item to send to Henning",True,WHITE),(0,0))
+        henningSpace = True
+    else:
+        #henning has no space
+        screen.blit(superScript40.render("Select an item to send to discard",True,WHITE),(0,0))
+        henningSpace = False
+    allItems = p.items + [item]
+    filler = screen.copy()
+    framecounter = 0
+    clickedFrame = -1
+    while selecting:
+        screen.blit(filler,(0,0))
+        for e in event.get():
+            if e.type == QUIT:
+                running = False
+                return 0
+            if e.type == KEYDOWN:
+                if e.key == K_DOWN:
+                    selItem += 1
+                if e.key == K_UP:
+                    selItem -= 1
+                if e.key == K_z:
+                    msg = "Sent to Henning" if henningSpace else "Discarded"
+                    dispTempMsg(screen,allItems[selItem].name + " " + msg,centerX=True,centerY=True)
+                    if selItem != 6:
+                        if henningSpace:
+                            henning.supply.append(p.items[selItem])
+                        p.removeItem(p.items[selItem])
+                        p.addItem(item)
+                    selecting = False
+                selItem = min(5,max(selItem,0))
+                clickedFrame = framecounter
+            if e.type == KEYUP:
+                clickedFrame = -1
+        if framecounter - clickedFrame > 20 and framecounter%6 and clickedFrame > 0:
+            kp = key.get_pressed()
+            if kp[K_UP]:
+                selItem -= 1
+            if kp[K_DOWN]:
+                selItem += 1
+            selItem = min(5,max(selItem,0))
+        draw.rect(screen,WHITE,(200,200+60*selItem,600,60),1)
+        screen.blit(pointer,(150,200+60*selItem)) #blits pointer of selected item
+        display.flip()
+        framecounter += 1
+        fpsLimiter.tick(60) #LIMITS TO 60 FPS
+    screen.blit(buffer,(0,0))
 #-------MANAGEMENT FUNCTIONS--------#
 #this is to help me manage image saving
 def stringifyImages(ally):
@@ -1008,7 +1105,7 @@ class VillageScreen():
         "dialogue is a string telling where to search for the story"
         self.visitor = visitor
         self.item = village.item
-        self.dialogue = open(village.story).read().replace("*Visitor*",self.visitor.name).split("\n")[1:]
+        self.dialogue = open(village.story).read().strip().replace("*Visitor*",self.visitor.name).split("\n")[1:]
         self.limit = len(self.dialogue)
         self.background = image.load(open(village.story).readline().strip())
         self.currDial = 0
@@ -1096,7 +1193,13 @@ class VillageScreen():
                 fpsLimiter.tick(60) #limits to 60 FPS
                 
             if self.currDial >= self.limit or cM:
-                dispTempMsg(screen,"Received "+self.item.name,centerX=True,centerY=True)
+                visiting = False
+                preposition = "a " if self.item.name[0].lower() not in "aeiou" else "an "
+                dispTempMsg(screen,"Received "+preposition+self.item.name,centerX=True,centerY=True)
+                if len(self.visitor.items) < 5:
+                    self.visitor.addItem(self.item)
+                else:
+                    itemOverflow(self.visitor,self.item) #handles the overflow
                 break
 
 class ShopScreen():
@@ -1178,15 +1281,15 @@ class ShopScreen():
                 self.onX()
                 dispTempMsg(screen,"No items to sell",centerX=True,centerY=True,fnt=superScript40)
         elif self.mode == "buy":
-            if len(self.p.items) >= 5:
-                dispTempMsg(screen,"Can't buy - no space",centerX=True,centerY=True,fnt=superScript40)
-                return False
             if gold >= self.items[self.selItem].getCost():
                 #can buy
-                self.p.addItem(self.items[self.selItem])
+                if len(self.p.items) < 5:
+                    self.p.addItem(self.items[self.selItem])
                 gold -= self.items[self.selItem].getCost()
             else:
                 dispTempMsg(screen,"Can't buy - no money",centerX=True,centerY=True,fnt=superScript40)
+            if len(self.p.items) >= 5:
+                itemOverflow(self.p,self.items[self.selItem]) #handles the overflow
         elif self.mode == "sell":
             gold += self.p.items[self.selItem].getCost()//2
             self.p.removeItem(self.p.items[self.selItem]) #removes the item
@@ -1773,7 +1876,7 @@ class Game():
         "initializes game"
         self.selectx,self.selecty = 0,0 #select cursor starting point
         self.framecounter = 0
-        self.clickedFrame = 0 #the frame user clicked (pressed z)
+        self.clickedFrame = -1 #the frame user clicked (pressed z)
         self.mode = "freemove" #mode Game is in
         self.menu = Menu(0,0,0,0,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
         self.selectedEnemy,self.selectedItem = 0,None #selected Enemy and selected Item
@@ -2076,6 +2179,13 @@ class Game():
                         self.selected.equipWeapon(w)
                         self.menu.items.append("attack")
                         break
+            #STEAL OPTION
+            if type(self.selected) == Thief and len(self.selected.items) < 5:
+                units = getUnitsWithinRange(self.selected.x,self.selected.y,1,1,enemies)
+                for u in units:
+                    if u.spd < self.selected.spd and len([i for i in u.items if type(i) != Weapon]) > 0:
+                        self.menu.items.append("steal")
+                        break
             #VENDOR/ARMORY OPTION
             if self.selected.getTerrain(chapterMaps[chapter]).name.lower() in ["vendor","armory"]:
                 opt = "vendor" if self.selected.getTerrain(chapterMaps[chapter]).name.lower() == "vendor" else "armory"
@@ -2165,6 +2275,19 @@ class Game():
                 elif self.mode == "trade":
                     #if we have a selected2 we move the item selector instead
                     self.menu.moveSelect()
+                #----STEAL MODE
+                elif self.mode == "steal1":
+                    if kp[K_UP] or kp[K_LEFT]:
+                        self.selectedEnemy -= 1
+                    if kp[K_RIGHT] or kp[K_DOWN]:
+                        self.selectedEnemy += 1
+                    if self.selectedEnemy >= len(self.targetableEnemies):
+                        self.selectedEnemy = 0
+                    if self.selectedEnemy < 0:
+                        self.selectedEnemy = len(self.targetableEnemies)-1
+                    self.selectx,self.selecty = self.targetableEnemies[self.selectedEnemy].x,self.targetableEnemies[self.selectedEnemy].y
+                elif self.mode == "steal2":
+                    self.menu.moveSelect()
                 #----TRANSFER MODE
                 elif self.mode == "transfer":
                     self.transferScreen.handleMove()
@@ -2228,6 +2351,7 @@ class Game():
                             self.mode = "item"
                             self.menu.selected = 0
                             self.menu.items = self.selected.items
+                            self.selectedItem = None
                         elif self.menu.getOption().lower() == "trade":
                             self.mode = "trade"
                             self.selectedAlly = 0
@@ -2254,6 +2378,11 @@ class Game():
                                     self.moved.add(self.selected)
                                     self.mode = "freemove"
                                 self.setMoveableSquares(self.selected,True)
+                        elif self.menu.getOption().lower() == "steal":
+                            self.mode = "steal1"
+                            self.targetableEnemies = [u for u in getUnitsWithinRange(self.selected.x,self.selected.y,1,1,enemies) if u.spd < self.selected.spd]
+                            self.targetableEnemies = [u for u in self.targetableEnemies if len([i for i in u.items if type(i) != Weapon]) > 0]
+                            self.selectedEnemy = 0
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
                             self.moved.add(self.selected)
@@ -2345,15 +2474,30 @@ class Game():
                                 self.menu.firstSelection = None
                                 if not self.selected.mounted and self.selected.movesLeft > 0:
                                     self.moved.add(self.selected)
-                                self.attacked.add(self.selected)
                                 self.oldx,self.oldy = self.selected.x,self.selected.y
                                 self.oldM = self.selected.movesLeft
+                    #STEAL MODE CLICKS
+                    elif "steal" in self.mode:
+                        if self.mode == "steal1":
+                            self.mode = "steal2"
+                            self.menu = Menu(3,3,500,150,items=self.targetableEnemies[self.selectedEnemy].items)
+                            self.selectedItem = 0
+                        elif self.mode == "steal2":
+                            item = self.menu.getOption()
+                            if type(item) != Weapon:
+                                self.selected.addItem(item)
+                                self.targetableEnemies[self.selectedEnemy].removeItem(item)
+                                self.mode = "freemove"
+                                self.attacked.add(self.selected)
+                                self.moved.add(self.selected)
+                                dispTempMsg(screen,("A " if item.name[0].lower() not in "aeiou" else "An ")+item.name+" was stolen!",centerX=True,centerY=True)
+                            else:
+                                dispTempMsg(screen,"Weapons cannot be stolen",centerX=True,centerY=True)
                     #TRANSFER MODE CLICK
                     elif self.mode == "transfer":
                         self.transferScreen.onZ()                
                         if not self.selected.mounted and self.selected.movesLeft > 0:
                             self.moved.add(self.selected)
-                        self.attacked.add(self.selected)
                         self.oldx,self.oldy = self.selected.x,self.selected.y
                         self.oldM = self.selected.movesLeft
                     #SHOPSCREEN CLICK
@@ -2361,7 +2505,6 @@ class Game():
                         self.shopScreen.onZ()
                         if not self.selected.mounted and self.selected.movesLeft > 0:
                             self.moved.add(self.selected)
-                        self.attacked.add(self.selected)
                         self.oldx,self.oldy = self.selectx,self.selecty
                         self.oldM = self.selected.movesLeft
                 #------X------#
@@ -2413,6 +2556,10 @@ class Game():
                         if not self.transferScreen.onX():
                             self.mode = "optionmenu"
                             self.createOptionMenu()
+                    elif self.mode == "steal1":
+                        self.mode = "freemove"
+                    elif self.mode == "steal2":
+                        self.mode = "steal1"
                     elif self.mode in ["vendor","armory"]:
                         if not self.shopScreen.onX():
                             self.mode = "optionmenu"
@@ -2463,11 +2610,11 @@ class Game():
         screen.blit(self.filler,(0,0)) #blits the filler
         kp = key.get_pressed()
         #HANDLES HOLDING ARROW KEYS
-        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%5:
+        if self.framecounter - self.clickedFrame > 20 and self.mode in ["freemove","move"] and not self.framecounter%5 and self.clickedFrame > 0:
             #if we held for 20 frames or more we move more
-            #we only do it once every 6 frames or it'll be too fast
+            #we only do it once every 5 frames or it'll be too fast
             self.moveSelect()
-        if self.framecounter - self.clickedFrame > 10 and self.mode == "transfer" and not self.framecounter%5:
+        if self.framecounter - self.clickedFrame > 10 and self.mode == "transfer" and not self.framecounter%2 and self.clickedFrame > 0:
             self.transferScreen.handleMove()
         #---------------DIFFERENT MODE DISPLAYS------------------#
         #DRAWS PEOPLE
@@ -2565,6 +2712,19 @@ class Game():
                     screen.blit(sans.render("Z to select an item; X to cancel; Arrow keys to change item; S to toggle info mode",True,WHITE),(0,680))
                 else:
                     screen.blit(sans.render("Z to trade selected item with current item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
+        #STEAL MODE DISPLAY
+        if self.mode == "steal1":
+            fillSquares(screen,[(u.x,u.y) for u in self.targetableEnemies],transRed)
+            draw.rect(screen,WHITE,(self.selectx*30,self.selecty*30,30,30),1)
+            y = 0 if self.selected.y > 18 else 680
+            drawTransRect(screen,BLACK,0,y,1200,40)
+            screen.blit(sans.render("Z to select an enemy to steal from; X to cancel; Arrow keys to change selected enemy",True,WHITE),(0,y))
+        if self.mode == "steal2":
+            self.menu.draw(self.targetableEnemies[self.selectedEnemy])
+            draw.rect(screen,BLUE,(700,0,500,30))
+            screen.blit(sans.render("Choose an item to steal",True,WHITE),(700,0))
+            drawTransRect(screen,BLACK,0,680,1200,40)
+            screen.blit(sans.render("Z to steal item; X to cancel; Arrow keys to change selected item",True,WHITE),(0,680))
         #TRANSFER MODE DISPLAY
         if self.mode == "transfer":
             self.transferScreen.draw()
