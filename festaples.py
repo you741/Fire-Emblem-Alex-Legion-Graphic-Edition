@@ -77,7 +77,7 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
         node = q.get()
         place = node[-1][-1]
         if node[0] <= movesleft:
-            if 0 <= place[0] < len(stage) and 0 <= place[1] < len(stage[0]) and (place not in visited or visited.get(place) < movesleft - node[0]):
+            if 0 <= place[0] < len(stage[0]) and 0 <= place[1] < len(stage) and (place not in visited or visited.get(place) < movesleft - node[0]):
             
                 if person.canPass(stage[place[1]][place[0]]):
                     if place not in allies+enemies:
@@ -491,10 +491,14 @@ def getOptimalSquare(enemy,stage,allies,moveableSquares):
 
 def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
+    if enemy.throne:
+        moveableSquares = [(enemy.x,enemy.y)] #throne guard can't move
     attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
     attackableAllies = [(a.x,a.y) for a in allies if (a.x,a.y) in attackableSquares]
     if len(attackableAllies) > 0:
         return "attack" #enemy attacks if enemy can
+    elif enemy.guard or enemy.throne:
+        return "stay"
     return "move" #if enemy can't attack they just move
 
 def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):

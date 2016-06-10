@@ -14,7 +14,7 @@ weaponTriangle = {"Sword":"Axe",
 #in the format advantageous:disadvantageous
 class Person():
     "person class - root of all classes"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
         "initializes person"
         #takes in stats and growth - dictionaries
         self.name = name
@@ -51,6 +51,8 @@ class Person():
                      "defen":20,
                      "res":20} #caps for stats
         self.promoted = False
+        self.guard = guard #regular guard? (won't move unless in range of someone)
+        self.throne = throne #throne guard? (won't move at all)
     def getAdv(self,enemy):
         "returns whether weapon is advantageous or disadvantageous"
         #0 is disadvantageous, 1 is advantageous, -1 is neutral
@@ -117,13 +119,16 @@ class Person():
         if terrain.name.lower() == "wall":
             return False #nothing can pass walls
         if self.flying:
-            return True #there ain't nothing flying dudes can't pass
+            return True #there ain't nothing flying dudes can't pass (except what's above)
         if terrain.name.lower() == "peak":
             #only mountainous dudes can pass this
             return True if self.mountainous else False
         if terrain.name.lower() == "water":
             #only waterproof dudes can pass this
             return True if self.waterproof else False
+        if terrain.name.lower() == "mountain":
+            #everyone but mounted units can pass this
+            return True if not self.mounted else False
         return True #it's always true otherwise
     def addItem(self,item):
         "adds an item to person"
@@ -223,11 +228,11 @@ class Person():
         return internalLV
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,self.gift,self.exp)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,self.gift,self.exp,self.guard,self.throne)")
 class Mage(Person):
     "mage class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
         self.magical = True
 class Knight(Person):
     "knight class"
@@ -240,18 +245,18 @@ class Lord(Person):
     pass
 class Brigand(Person):
     "brigand class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
         self.mountainous = True
 class Cavalier(Person):
     "cavalier class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
         self.mounted = True
 class Paladin(Cavalier):
     "paladin class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Paladin,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Paladin,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
         self.caps = {"maxhp":60,
                      "stren":27,
                      "skl":29,
@@ -262,20 +267,20 @@ class Paladin(Cavalier):
         self.promoted = True
 class Fighter(Person):
     "fighter class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
 class Mercenary(Person):
     "mercenary class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
 class Thief(Person):
     "thief class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Thief,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Thief,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
 class Transporter(Person):
     "transporter class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,supply,gift=0,exp=0):
-        super(Transporter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,supply,gift=0,exp=0,guard=False,throne=False):
+        super(Transporter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
         self.mounted = True
         self.promoted = True
         self.caps = {"maxhp":60,
@@ -302,9 +307,9 @@ class Transporter(Person):
             return True
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp,self.guard,self.throne)")
 
 class Poop(Person):
     "poop class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0):
-        super(Poop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp)
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Poop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
