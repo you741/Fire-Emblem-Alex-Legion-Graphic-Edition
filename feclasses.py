@@ -148,9 +148,18 @@ class Person():
             self.items[0],self.items[wepindx] = weapon,self.items[0] #makes equipped weapon first
             return True
         return False
+    def getHeal(self,stf):
+        "returns amount of heal this unit can give with staff stf"
+        return self.stren + stf.heal
     def canEquip(self,weapon):
         "returns if person can equip weapon"
-        if type(weapon) != Weapon:
+        if type(weapon) not in [Weapon,Staff]:
+            return False
+        if type(weapon) == Staff:
+            if weapon.typ not in self.mast:
+                return False
+            if weapon.mast <= self.mast[weapon.typ]:
+                return True
             return False
         if weapon.prf.lower() == self.name.lower():
             return True #if the weapon has a preference to self, we can equip
@@ -308,7 +317,10 @@ class Transporter(Person):
     def getInstance(self):
         "gets instance of person"
         return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp,self.guard,self.throne)")
-
+class Priest(Person):
+    "priest class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Priest,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
 class Poop(Person):
     "poop class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
