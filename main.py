@@ -2382,6 +2382,7 @@ class Game():
                             self.mode = "steal1"
                             self.targetableEnemies = [u for u in getUnitsWithinRange(self.selected.x,self.selected.y,1,1,enemies) if u.spd < self.selected.spd]
                             self.targetableEnemies = [u for u in self.targetableEnemies if len([i for i in u.items if type(i) != Weapon]) > 0]
+                            self.selectx,self.selecty = self.targetableEnemies[0].x,self.targetableEnemies[0].y
                             self.selectedEnemy = 0
                         elif self.menu.getOption().lower() == "wait":
                             self.mode = "freemove"
