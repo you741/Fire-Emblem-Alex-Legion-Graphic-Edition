@@ -964,8 +964,8 @@ class Menu():
         pass
     def draw(self,person=None):
         "draws a list of strings as a vertical menu at positions x and y"
-        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
-        screen.blit(self.background,(self.x*30,self.y*30)) #blits the background
+        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
+        screen.blit(self.background,(self.x*30,self.y*30)) #blits the background (nothing atm)
         x = self.x*30
         for i in range(len(self.items)):
             #draws the item
@@ -1574,17 +1574,31 @@ class InstructionScreen():
         #running loop will continuously blit background
  #       self.backgrounds = [image.load("instructions/backgrounds/instructionscreen"+str(i)+".png")for i in range (2)]
         self.buttons = [Button(500,420,200,50,
-                               FilledSurface((200,50),RED,"BACK",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"BACK",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"BACK",BLACK,monospace,(30,10)),
-                               ["changemode(StartMenu())"])]
-        #
+                               FilledSurface((200,50),RED,"Menu",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"Menu",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"Menu",BLACK,monospace,(30,10)),
+                               ["changemode(StartMenu())"]),
+                        Button(710,420,200,50,
+                               FilledSurface((200,50),RED,"Skip",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"Skip",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"Skip",BLACK,monospace,(30,10)),
+                               ["currmode.currDial += 1"]),
+                        Button(920,420,200,50,
+                               FilledSurface((200,50),RED,"Back",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),YELLOW,"Back",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),GREEN,"Back",BLACK,monospace,(30,10)),
+                               ["currmode.currDial -= 1"])
+                               ]
+        #dialogue is in form of either:
+        #image (the background)
+        #:text to display
         self.dialogue = open("instructions/instructiontext.txt").read().strip().split("\n")
         self.limit = len(self.dialogue)
         
         pass
     def draw(self,screen):
         "draws the initial screen"
+        #pass since display and dialogue format handles this
         pass
     def playMusic(self):
         "plays instruction music"

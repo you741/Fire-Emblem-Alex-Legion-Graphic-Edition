@@ -2,3 +2,11 @@ instructions/backgrounds/instructionscreen0.png
 :Welcome to Fire Emblem, The Alex Legion
 instructions/backgrounds/instructionscreen1.png
 :In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion
+instructions/backgrounds/instructionscreen2.png
+:Units are all unique. They have different stats, and do different things. You can check on a unit's abilities by selecting them and clicking "s".
+instructions/backgrounds/instructionscreen3.png
+:Each unit has a different Mastery Level. Units can wield weapons based on their mastery level for that weapon.
+instructions/backgrounds/instructionscreen4.png
+:The other item types are consumables. These are used for their effects to help gameplay.
+
+
