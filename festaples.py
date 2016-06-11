@@ -622,9 +622,14 @@ def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None,fnt=sans):
         for e in event.get():
             if e.type == QUIT:
                 return 0
+            
+            #blitting all the text if they choose to skip
             if e.type == KEYDOWN:
                 if e.key == K_z or e.key == K_x or e.key == K_RETURN:
                     character = len(sentence)
+            elif e.type == MOUSEBUTTONDOWN:
+                character = len(sentence)
+                
         if name != None:
             screen.blit(face,(x,y-120)) #blits face of character speaking
             draw.rect(screen,YELLOW,(x,y-40,300,30)) #draws background box for name
