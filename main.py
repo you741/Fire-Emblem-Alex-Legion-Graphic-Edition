@@ -2075,7 +2075,7 @@ class Game():
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
         ##whatever animation/dialogue that needs to happen
-        allAllies = [a for a in allAllies if a.name not in [al.name for al in allies]] #removes all of allies from allAllies
+        allAllies = [a for a in allAllies if a.name not in [al.name for al in oldAllies+chapterData[chapter][0]]] #removes all allies supposed to be alive from allAllies
         allAllies += allies #adds allies to allAllies
         if henning not in allAllies and chapter > 0:
             allAllies.append(henning)
@@ -2214,7 +2214,7 @@ class Game():
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         event.clear()
-        if len(enemies) == 0:
+        if len(enemies) == 0 and self.goal.lower() == "defeat all enemies":
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()
@@ -2917,7 +2917,7 @@ class Game():
             draw.rect(screen,(50,50,180),(goalx,goaly,180,90))
             screen.blit(smallsans.render(self.goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
-        if self.mode in ["freemove","move","attack","heal","trade","steal"]:
+        if self.mode in ["freemove","move","attack","heal","trade","steal1"]:
             draw.rect(screen,YELLOW,(self.selectx*30,self.selecty*30,30,30),2) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
