@@ -400,7 +400,7 @@ chapterShops = [[],
                                   steel_lance.getInstance(),
                                   steel_axe.getInstance(),
                                   steel_bow.getInstance()]),
-                 vendor.setItems([vulnerary.getInstance(),fire.getInstance()])]]
+                 vendor.setItems([vulnerary.getInstance(),fire.getInstance(),heal.getInstance(),lightning.getInstance()])]]
 chapterVillages = [[],
                    [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")],
                    [village.setItems(silver_lance.getInstance(),"story/chapter2village1.txt"),
