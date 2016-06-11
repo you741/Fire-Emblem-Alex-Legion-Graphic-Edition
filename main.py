@@ -1618,13 +1618,20 @@ class InstructionScreen():
                             #enter or x skips entirely
                             cM = True
                             breakLoop = True
+                    if e.type == MOUSEBUTTONDOWN:
+                        #checks if user clicked any buttons
+                        for b in self.buttons:
+                            if b.istouch():
+                                b.click()
+                                return 0
                             
                 #tiny instructions with flashing arrow
                 draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
                 botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
                 screen.blit(botinstruct,(0,690))
                 arrowflashcounter += 0.15
-                
+                for b in self.buttons:
+                    b.draw(screen)
                 display.flip()
                 fpsLimiter.tick(60) #limits to 60 FPS
         if self.currDial >= self.limit or cM:
