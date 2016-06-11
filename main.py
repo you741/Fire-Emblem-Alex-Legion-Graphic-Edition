@@ -1612,7 +1612,7 @@ class StartMenu():
 
     def draw(self,screen):
         "draws mode on screen"
-        
+        screen.blit(transform.smoothscale(image.load("images/backgrounds/StartMenu.jpeg"),(1200,720)),(0,0))
         screen.blit(logo,(300,50))
     def playMusic(self):
         "plays menu music"
