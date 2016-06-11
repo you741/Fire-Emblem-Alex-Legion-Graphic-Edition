@@ -597,7 +597,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
 
 
 #----STORY FUNCTIONS----#
-def drawSentence(screen,sentence,x=10,y=530):
+def drawSentence(screen,sentence,x=10,y=530,fnt=sans):
     "draws the sentence as a dialogue box"
     draw.rect(screen,BLUE,(0,520,1200,200))
     words = sentence.split()
@@ -606,7 +606,7 @@ def drawSentence(screen,sentence,x=10,y=530):
         nextWord = None
         if i < len(words)-1:
             nextWord = words[i+1]
-        img = sans.render(word+" ",True,WHITE) #img of blitted word
+        img = fnt.render(word+" ",True,WHITE) #img of blitted word
         width = img.get_width()
         if width + x > 1200:
             x = 10
@@ -614,15 +614,13 @@ def drawSentence(screen,sentence,x=10,y=530):
         screen.blit(img,(x,y))
         x += width
 
-def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None):
+def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None,fnt=sans):
     "writes the sentence on the screen character by character, char by char"
-    global running
     character = 1 #up to which character we display
     while character <= len(sentence):
         #loops to draw all the characters one by one
         for e in event.get():
             if e.type == QUIT:
-                running = False
                 return 0
             if e.type == KEYDOWN:
                 if e.key == K_z or e.key == K_x or e.key == K_RETURN:
@@ -632,7 +630,7 @@ def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None):
             draw.rect(screen,YELLOW,(x,y-40,300,30)) #draws background box for name
             draw.rect(screen,BLUE,(x+2,y-38,294,26))
             screen.blit(sans.render(name,True,WHITE),(x+2,y-38))
-        drawSentence(screen,sentence[:character],10,y) #draws the sentence up to character
+        drawSentence(screen,sentence[:character],10,y,fnt) #draws the sentence up to character
         character += 1 #prepares to draw one more character
         display.flip()
         fpsLimiter.tick(30) #limits it to 30 FPS

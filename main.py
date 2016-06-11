@@ -324,7 +324,7 @@ yoyo = Lord("Yoyo",0,0,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),lightning.getInstance(),vulnerary.getInstance()],{"Sword":200,"Light":100},
                {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite,
-                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"])
+                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"],deathQuote="Sorry everyone... I'm nothing but a failure...")
 albert = Paladin("Albert",0,0,
               {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
                 "spd":15,"con":10,"move":8,"res":8,"hp":38,"maxhp":38},
@@ -332,56 +332,65 @@ albert = Paladin("Albert",0,0,
                 "spd":25,"res":10,"maxhp":40},
               [silver_lance.getInstance(),steel_sword.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Sword':300,'Lance':500},
               {'stand':albertStandSprite,'Lance':albertLanceSprite,'Lancecrit':albertLancecritSprite,
-               'Sword':albertSwordSprite,'Swordcrit':albertSwordcritSprite},faces["Albert"])#test person for chapter 1
+               'Sword':albertSwordSprite,'Swordcrit':albertSwordcritSprite},faces["Albert"],
+                 deathQuote="Sigh... I don't even understand how I died... I'm OP. If someone were controlling me I'd call them a n00b...")
 franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
                   {"stren":35,"defen":25,"skl":50,"spd":55,"lck":45,"res":15,"maxhp":70},
                   [iron_lance.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Lance':200,'Sword':200},
                   {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
-                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"])
+                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"],
+                  deathQuote="Lo siento amigos mío... Señor Albert... protegéis Señor You Zhou...")
 gary = Fighter("Gary",0,0,
                {"lv":3,"stren":9,"defen":6,"skl":6,"lck":4,
                 "spd":6,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
-               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
+               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"],
+               deathQuote="Rip... Welp. It's 'bout time I got shut down... *kek*... GG... WP...")
 henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
                [red_gem.getInstance()],{},
-               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()])
+               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()],
+                deathQuote="lel I'm ded. jk m8. I'll be back next chapter, but like, i gotta scram or our stuff will get stolen.")
 henry = Mercenary("Henry",0,0,
                {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
                 "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
                {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":75},
                [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
-               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"])
+               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"],
+                deathQuote="I've been bested. So be it...")
 eric = Priest("Eric",0,0,
                {"lv":5,"stren":6,"defen":2,"skl":8,"lck":8,
                 "spd":10,"con":6,"move":5,"res":8,"hp":24,"maxhp":24},
                {"stren":35,"defen":10,"skl":50,"spd":50,"lck":45,"res":35,"maxhp":60},
                [heal.getInstance(),vulnerary.getInstance()],{"Staff":200},
-               {"stand":ericStandSprite,"Staff":ericStaffSprite},faces["Eric"])
+               {"stand":ericStandSprite,"Staff":ericStaffSprite},faces["Eric"],
+              deathQuote="...Why... Why now? Please fight on everyone!")
 brandon = Thief("Brandon",0,0,
                 {"lv":4,"stren":5,"defen":3,"skl":7,"lck":5,
                 "spd":13,"con":5,"move":6,"res":3,"hp":22,"maxhp":22},
                {"stren":25,"defen":20,"skl":45,"spd":70,"lck":30,"res":15,"maxhp":60},
                [iron_sword.getInstance(),blue_gem.getInstance(),lock_pick.getInstance(),vulnerary.getInstance()],{"Sword":100},
-               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"])
+               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"],
+                deathQuote="Ouch! That really... hurt...........")
 stefano = Archer("Stefano",0,0,
                 {"lv":4,"stren":7,"defen":5,"skl":9,"lck":7,
                 "spd":9,"con":5,"move":5,"res":3,"hp":25,"maxhp":25},
                {"stren":40,"defen":25,"skl":50,"spd":45,"lck":35,"res":10,"maxhp":65},
                [iron_bow.getInstance(),white_gem.getInstance(),vulnerary.getInstance()],{"Bow":200},
-               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"])
+               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"],
+                 deathQuote="$!@#! I KNEW I shouldn't have joined this group. I swear I'm going to $@!# whoever let me die like a $!@# piece of !@#$!!!")
 kevin = Shaman("Kevin",0,0,
                {"lv":5,"stren":9,"defen":4,"skl":10,"lck":3,
                 "spd":8,"con":6,"move":5,"res":7,"hp":26,"maxhp":26},
                {"stren":55,"defen":15,"skl":45,"spd":40,"lck":20,"res":50,"maxhp":70},
                [flux.getInstance(),vulnerary.getInstance()],{"Dark":200},
-               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"]) 
+               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"],
+               deathQuote="我觉得谁控制我是哑巴。Dang it pygame no support my chinese...") 
 allies = [] #allies
 #ENEMIES
 #--Brigands
@@ -396,7 +405,9 @@ bandit1 = Brigand("Bandit",0,0,
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
                          "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70,guard=True)
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70,guard=True,
+                fightQuote="How dare you kill all my friends! You're seriously going to pay!",
+                deathQuote="Ugh... how could I die to a pampered lordling... and some hobo...")
 bandit2 = Brigand("Bandit",0,0,
                 {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
                 "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance()],{"Axe":300},
@@ -417,7 +428,9 @@ merc2 = Mercenary("Mercenary",0,0,
 alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
                 "spd":9,"con":10,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
-                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],100,guard=True)
+                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],100,guard=True,
+                fightQuote="You think you can stand up to LEX REAPER!? Ha! Try me",
+                deathQuote="Watch out King Alex... these men are strong... After all, they even bested me!")
 enemies = []
 LS(660)
 #----CHAPTERS----#
@@ -615,20 +628,78 @@ def checkDead(ally,enemy):
     "checks if an ally or an enemy is dead; also removes ally or enemy from list"
     if ally.hp == 0:
         allies.remove(ally)
+        if ally.deathQuote == "":
+            return True
+        if not writeDialogue(screen,ally.deathQuote,name=ally.name,face=ally.face):
+            quit()
+        waiting = True #waiting for user to press a key in order to move on
+        arrowflashcounter = 0
+        while waiting:
+            for e in event.get():
+                if e.type == QUIT:
+                    quit()
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key in [K_z,K_x,K_RETURN]:
+                        waiting = False
+            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
+            screen.blit(botinstruct,(0,690))
+            arrowflashcounter += 0.15
+            display.flip()
         return True
     if enemy.hp == 0:
         enemies.remove(enemy)
+        if enemy.deathQuote == "":
+            return True
+        if not writeDialogue(screen,enemy.deathQuote,900,name=enemy.name,face=enemy.face):
+            quit()
+        waiting = True #waiting for user to press a key in order to move on
+        arrowflashcounter = 0
+        while waiting:
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key in [K_z,K_x,K_RETURN]:
+                        waiting = False
+            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
+            screen.blit(botinstruct,(0,690))
+            arrowflashcounter += 0.15
+            display.flip()
         return True
     return False
 def attack(person,person2):
     "attack animation of person to person2"
     #sets who is the ally and who is the enemy
+    global running
     if person in allies:
         ally = person
         enemy = person2
     else:
         ally = person2
         enemy = person
+    if enemy.fightQuote != "" and not enemy.fought:
+        if not writeDialogue(screen,enemy.fightQuote,900,530,enemy.name,enemy.face):
+            quit()
+        enemy.fought = True #only enemy has a fightquote
+        waiting = True #waiting for user to press a key in order to move on
+        arrowflashcounter = 0
+        while waiting:
+            for e in event.get():
+                if e.type == QUIT:
+                    running = False
+                    return 0
+                if e.type == KEYDOWN:
+                    if e.key in [K_z,K_x,K_RETURN]:
+                        waiting = False
+            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
+            screen.blit(botinstruct,(0,690))
+            arrowflashcounter += 0.15
+            display.flip()
     screen.blit(chapterBattleBackgrounds[chapter],(0,0))
     display.flip()
     time.wait(200)
@@ -1823,7 +1894,7 @@ class NewGame():
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
-{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'])
+{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
 addAlly(player)
 """,
                                 "changemode(getStory(chapter))"]),
@@ -1837,7 +1908,7 @@ addAlly(player)
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
-{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'])
+{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
 addAlly(player)
 """,
                                  "changemode(getStory(chapter))"])]
