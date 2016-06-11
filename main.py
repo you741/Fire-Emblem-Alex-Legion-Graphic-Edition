@@ -413,6 +413,7 @@ chapterShops = [[],
                                   steel_lance.getInstance(),
                                   steel_axe.getInstance(),
                                   steel_bow.getInstance()]),
+
                  vendor.setItems([vulnerary.getInstance(),fire.getInstance(),heal.getInstance(),lightning.getInstance()])]]
 chapterVillages = [[],
                    [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")],
@@ -1548,14 +1549,19 @@ class InstructionScreen():
     "instruction screen"
     def __init__(self):
         self.stopped = False
-        #buttons are NEXT
+        self.currDial = 0
+        #buttons are BACK, SKIP, MENU
         #the func will be changing currmode.background
         #running loop will continuously blit background
+ #       self.backgrounds = [image.load("instructions/backgrounds/instructionscreen"+str(i)+".png")for i in range (2)]
         self.buttons = [Button(500,420,200,50,
                                FilledSurface((200,50),RED,"BACK",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),YELLOW,"BACK",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),GREEN,"BACK",BLACK,monospace,(30,10)),
                                ["changemode(StartMenu())"])]
+        #
+        self.dialogue = open("instructions/instructiontext.txt").read().strip().split("\n")
+        self.limit = len(self.dialogue)
         
         pass
     def draw(self,screen):
@@ -1575,10 +1581,55 @@ class InstructionScreen():
                 for b in self.buttons:
                     if b.istouch():
                         b.click()
+        if self.currDial <=  len(self.dialogue):
+            self.display(screen)
         if self.stopped:
                 return 0 #stops the method once stopped
         for b in self.buttons:
             b.draw(screen)
+
+    def display(self,screen):
+        "displays the instructions, based on which line the self.currdial is on"
+        global running
+        sentence = self.dialogue[self.currDial] #sentence to display
+        cM = False #boolean: change mode?
+        if sentence[0] != ":":
+            screen.blit(image.load(sentence),(0,0))
+            self.currDial += 1
+        if sentence[0] == ":":
+            sentence = sentence[1:]
+            breakLoop = False
+            #checking if the user is skipping through text
+            kp = key.get_pressed()
+            if not writeDialogue(screen,sentence):
+                return 0
+            arrowflashcounter = 0
+            while not breakLoop:
+                #loops until user hits z or x to move on
+                for e in event.get():
+                    if e.type == QUIT:
+                        running = False
+                        breakLoop = True
+                    if e.type == KEYDOWN:
+                        if e.key == K_z:
+                            self.currDial += 1
+                            breakLoop = True
+                        if e.key == K_RETURN or e.key == K_x:
+                            #enter or x skips entirely
+                            cM = True
+                            breakLoop = True
+                            
+                #tiny instructions with flashing arrow
+                draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+                botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
+                screen.blit(botinstruct,(0,690))
+                arrowflashcounter += 0.15
+                
+                display.flip()
+                fpsLimiter.tick(60) #limits to 60 FPS
+        if self.currDial >= self.limit or cM:
+            changemode(StartMenu())
+            
 
 class SaveGame():
     "Screen mode for saving the game"
@@ -1934,6 +1985,7 @@ class Story():
                     return 0 #if it returns false it means the user quit, so we quit as well
         breakLoop = False if func != "CONDITION" and not self.cond else True
         cM = False #boolean: change mode?
+        arrowflashcounter = 0
         while not breakLoop:
             #loops until user hits z or x to move on
             for e in event.get():
@@ -1948,7 +2000,13 @@ class Story():
                         #enter or x skips entirely
                         cM = True
                         breakLoop = True
-            screen.blit(sans.render("Z to continue, X or Enter to Skip",True,WHITE),(0,690))
+                        
+            #tiny instructions with flashing arrow
+            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
+            screen.blit(botinstruct,(0,690))
+            arrowflashcounter += 0.15
+            
             display.flip()
             fpsLimiter.tick(60) #limits to 60 FPS
         if self.currDial >= self.limit or cM:
@@ -2095,7 +2153,7 @@ class Game():
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
         ##whatever animation/dialogue that needs to happen
-        allAllies = [a for a in allAllies if a.name not in [al.name for al in oldAllies+chapterData[chapter][0]]] #removes all allies supposed to be alive from allAllies
+        allAllies = [a for a in allAllies if a.name not in [al.name for al in allies]] #removes all of allies from allAllies
         allAllies += allies #adds allies to allAllies
         if henning not in allAllies and chapter > 0:
             allAllies.append(henning)
@@ -2242,7 +2300,7 @@ class Game():
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         event.clear()
-        if len(enemies) == 0 and self.goal.lower() == "defeat all enemies":
+        if len(enemies) == 0:
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()
@@ -2496,9 +2554,9 @@ class Game():
                             else:
                                 village = self.selected.getTerrain(chapterMaps[chapter])
                                 village.visited = True
-                                villageScreen = VillageScreen(self.selected,village)
-                                villageScreen.run(screen)
-                                self.mode = "move"
+                                villageScreen = VillageScreen(self.selected,village) #creates the dialogue
+                                villageScreen.run(screen) #runs the dialogue
+                                self.mode = "move" #resets everything
                                 self.attacked.add(self.selected)
                                 self.oldX,self.oldY = self.selected.x,self.selected.y
                                 self.oldM = self.selected.movesLeft
@@ -2946,6 +3004,7 @@ class Game():
             draw.rect(screen,(50,50,180),(goalx,goaly,180,90))
             screen.blit(smallsans.render(self.goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
+
         if self.mode in ["freemove","move","attack","heal","trade","steal1"]:
             if self.mode == "trade" and self.selected2 != None:
                 pass

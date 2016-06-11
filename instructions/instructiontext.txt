@@ -1,0 +1,4 @@
+instructions/backgrounds/instructionscreen0.png
+:Welcome to Fire Emblem, The Alex Legion
+instructions/backgrounds/instructionscreen1.png
+:In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion
