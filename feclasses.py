@@ -58,6 +58,8 @@ class Person():
         #0 is disadvantageous, 1 is advantageous, -1 is neutral
         if self.equip == None or enemy.equip == None:
             return -1 #no advantage for armless units
+        if self.equip.typ not in weaponTriangle or enemy.equip.typ not in weaponTriangle:
+            return -1 #neutral since not in weapon triangle
         if weaponTriangle[self.equip.typ] == enemy.equip.typ:
             return 1 #we are advantageous
         if weaponTriangle[enemy.equip.typ] == self.equip.typ:
@@ -321,6 +323,10 @@ class Priest(Person):
     "priest class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
         super(Priest,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
+class Archer(Person):
+    "archer class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):
+        super(Archer,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,guard,throne)
 class Poop(Person):
     "poop class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,guard=False,throne=False):

@@ -150,6 +150,12 @@ brandonSwordSprite = ([image.load("images/Brandon/BrandonAttackFrame"+str(i+1)+"
                        for i in range(15)],5)
 brandonStandSprite = brandonSwordSprite[0][0]
 brandonSwordcritSprite = (brandonSwordSprite[0][:11] + brandonSwordSprite[0][3:],13)
+#LOADING STEFANO
+stefanoBowSprite = ([image.load("images/Stefano/StefanoBowFrame"+str(i+1)+".png")
+                     for i in range(16)],14)
+stefanoStandSprite = stefanoBowSprite[0][0]
+stefanoBowcritSprite = ([stefanoStandSprite] + [image.load("images/Stefano/StefanoBowcritFrame"+str(i+1)+".png")
+                                                for i in range(11)] + stefanoBowSprite[0][9:],18)
 LS(385)
 #ENEMIES' ANIMATIONS
 #BRIGAND
@@ -186,7 +192,8 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Mercenary":[transform.scale(image.load("images/MapSprites/Ally/Mercenary"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Thief":[transform.scale(image.load("images/MapSprites/Ally/Thief"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
-                  "Priest":[transform.scale(image.load("images/MapSprites/Ally/Priest"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Priest":[transform.scale(image.load("images/MapSprites/Ally/Priest"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Archer":[transform.scale(image.load("images/MapSprites/Ally/Archer"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 #--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
@@ -350,6 +357,12 @@ brandon = Thief("Brandon",0,0,
                {"stren":25,"defen":20,"skl":45,"spd":70,"lck":30,"res":15,"maxhp":60},
                [iron_sword.getInstance(),blue_gem.getInstance(),lock_pick.getInstance(),vulnerary.getInstance()],{"Sword":100},
                {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"])
+stefano = Archer("Stefano",0,0,
+                {"lv":4,"stren":7,"defen":5,"skl":9,"lck":7,
+                "spd":9,"con":5,"move":5,"res":3,"hp":25,"maxhp":25},
+               {"stren":40,"defen":25,"skl":50,"spd":45,"lck":35,"res":10,"maxhp":65},
+               [iron_bow.getInstance(),white_gem.getInstance(),vulnerary.getInstance()],{"Bow":200},
+               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"])
 allies = [] #allies
 #ENEMIES
 #--Brigands
@@ -483,8 +496,8 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground),
-               ([henry,eric,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
-                "Defeat all enemies",plainsBackground)]
+               ([henry,eric,brandon,stefano],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
+                "Seize gate",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
@@ -2207,9 +2220,17 @@ class Game():
                 if yoyo.hp == 0 or player.hp == 0:
                     return 0 #if yoyo or the player dies we leave the function, bounces to gameOver
             elif action == "move":
-                (bestX,bestY) = getOptimalSquare(en,chapterMaps[chapter],allies,enemyMoves)
-                self.animWalk(en,enemyMoves,bestX,bestY)
-                en.x,en.y = bestX,bestY
+                bestPath = pathtoAlly(en,chapterMaps[chapter],allies,enemies)
+                if bestPath != -1:
+                    bestSquare = enMoves[0]
+                    for i in range(len(bestPath)-1,-1,-1):
+                        x,y = bestPath[i]
+                        if (x,y) in enMoves:
+                            bestSquare = (x,y)
+                            break #go as far along the path as we are able to, in order to get best spot
+                    (bestX,bestY) = bestSquare
+                    self.animWalk(en,enemyMoves,bestX,bestY)
+                    en.x,en.y = bestX,bestY
             elif action == "stay":
                 pass
             display.flip()
@@ -2462,6 +2483,7 @@ class Game():
                             self.mode = "trade"
                             self.selectedAlly = 0
                             self.targetableAllies = getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)
+                            self.selectx,self.selecty = self.targetableAllies[self.selectedAlly].x,self.targetableAllies[self.selectedAlly].y
                         elif self.menu.getOption().lower() == "transfer":
                             self.mode = "transfer"
                             self.transferScreen = TransferScreen(self.selected)
@@ -2741,7 +2763,7 @@ class Game():
             #if all allies have moved and attacked, we end the turn by default
             self.mode = "enemyphase"
             self.endTurn() #ends turn
-        if len(enemies) == 0:
+        if len(enemies) == 0 and self.goal.lower() == "defeat all enemies":
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()

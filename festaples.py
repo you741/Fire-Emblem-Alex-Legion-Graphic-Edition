@@ -487,54 +487,64 @@ def optimalValue(square,stage,allies):
 #    getOptimalAlly(enemy,stage,allies,moveableSquares)
     return 10
 
-def pathtoAlly(enemycord,stage,ally):
-    "returns list of paths to an ally"
-    #hypot does not work as it does not take into consideration of terrain
+def pathtoAlly(enemy,stage,allies,enemies):
+    "returns list of shortest path to an ally"
+    #hypot does not work as it does not take into consideration of terrain (we need taxi-cab distance)
     #uses a priority direction, order of BFS goes in order with the direction the enemy needs to travel
-    visited = [[0 for i in range (40)]for j in range (40)] #visited array the size of the map
+    #simple Djikstra in a priorityQueue in order to get path to closest ally
+    visited = [[0 for i in range (40)]for j in range (24)] #visited array the size of the map
     #(0,0) are placeholders, to allow [1] and [-1] to point at different values, also if the change is 0 then it doesn't move it, to no longer search
+    acoords = [(a.x,a.y) for a in allies] #ally coordinates
+    ecoords = [(e.x,e.y) for e in enemies] #enemy coordinates
     directions = [(1,0),(-1,0),(0,1),(0,-1)]
-    q = Queue()
-    q.put((enemycord,[enemycord]))
+    q = PriorityQueue()
+    enemycord = (enemy.x,enemy.y)
+    q.put((stage[enemy.y][enemy.x].hind,enemycord,[enemycord]))
     while not q.empty():
         node = q.get()
-        spot = node[0]
-            
-        if spot == (ally.x,ally.y):
-            break
-        if 0 <= spot[1] < len(stage) and 0 <= spot[0] < len(stage[0]) and not visited[spot[0]][spot[1]]:
+        cost = node[0]
+        spot = node[1]
+        x,y = spot
+        terr = stage[y][x]
+        if spot in ecoords:
+            cost += 2 #increases cost for walking through enemies
+        if spot in acoords:
+            return node[2] #stop when we find an ally - always closest due to PriorityQueue
+        if 0 <= y < len(stage) and 0 <= x < len(stage[0]) and not visited[y][x] and enemy.canPass(terr):
             #deltas calculated by spot - target
-            visited[spot[0]][spot[1]] = 1
+            visited[y][x] = 1
             for d in directions:
-                q.put(((spot[0]+d[0],spot[1]+d[1]),node[1] + [(spot[0] + d[0], spot[1] + d[1])]))
+                if 0 <= y+d[1] < len(stage) and 0 <= x+d[0] < len(stage[0]):
+                    nterr = stage[y+d[1]][x+d[0]] #terrain
+                    q.put((cost+nterr.hind,(x+d[0],y+d[1]),node[2] + [(x + d[0], y + d[1])]))
         if handleEvents(event.get()):
             quit()
-    return node[1]
+    return -1
 
-def distAlly(enemycord,stage,allies):
-    "returns the length of the path to the nearest ally"
-    smallest = 1000000
-    for a in allies:
-        tmp = len(pathtoAlly(enemycord,stage,a))
-        if tmp < smallest:
-            smallest = tmp
-    return smallest
-
-def getOptimalSquare(enemy,stage,allies,moveableSquares):
-    "returns optimal square to move to, assuming enemy can't attack"
-    best = -9999
-    point = (enemy.x,enemy.y)
-    for i in moveableSquares:
-        ##optimize such that the square that is moved to is the one where the next move will hit the best ally
-        #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
-        #optimal value is maximum damage with multiplier?
-        #i is in form x,y,m,ali
-        tmp = optimalValue((i[0],i[1]),stage,allies) + i[2]*2 - distAlly((i[0],i[1]),stage,allies)*3
-        if tmp > best:
-            point = (i[0],i[1])
-            best = tmp
-    #returns best coord to move to
-    return point
+##def distAlly(enemycord,stage,allies):
+##    "returns the length of the path to the nearest ally"
+##    smallest = 1000000
+##    for a in allies:
+##        tmp = len(pathtoAlly(enemycord,stage,a))
+##        if tmp < smallest:
+##            smallest = tmp
+##    return smallest
+##
+##def getOptimalSquare(enemy,stage,allies,moveableSquares):
+##    "returns optimal square to move to, assuming enemy can't attack"
+##    best = -9999
+##    point = (enemy.x,enemy.y)
+##    for i in moveableSquares:
+##        ##optimize such that the square that is moved to is the one where the next move will hit the best ally
+##        #weight will be optimal value - movesleft (to go furthest possible) + distance to closest ally (to close distance)
+##        #optimal value is maximum damage with multiplier?
+##        #i is in form x,y,m,ali
+##        tmp = optimalValue((i[0],i[1]),stage,allies) + i[2]*2 - distAlly((i[0],i[1]),stage,allies)*3
+##        if tmp > best:
+##            point = (i[0],i[1])
+##            best = tmp
+##    #returns best coord to move to
+##    return point
 
 def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
