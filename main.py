@@ -103,7 +103,8 @@ yoyoSwordSprite = ([image.load("images/Yoyo/YoyoAttackFrame"+str(i+1)+".png")
 yoyoStandSprite = yoyoSwordSprite[0][0]
 yoyoSwordcritSprite = ([image.load("images/Yoyo/YoyoCritFrame"+str(i+1)+".png")
                   for i in range(43)],29)
-
+yoyoLightSprite = (yoyoSwordcritSprite[0][:6] + yoyoSwordcritSprite[0][:6][::-1],6)
+yoyoLightcritSprite = (yoyoSwordcritSprite[0][:12] + yoyoSwordcritSprite[0][:6][::-1],12)
 #LOADING ALBERT
 albertLanceSprite = ([image.load("images/Albert/AlbertLanceFrame"+str(i+1)+".png")
                       for i in range(24)],7)
@@ -167,6 +168,9 @@ mercenarySwordcritSprite = ([mercenaryStandSprite]+[image.load("images/Mercenary
 #--FIRE
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
               for i in range(17)]
+#--LIGHTNING
+lightningSprite = [image.load('images/Magic/Lightning/Lightning'+str(i+1)+'.png')
+                   for i in range(6)]
 #--HEAL
 healSprite = [image.load("images/Magic/Heal/HealFrame"+str(i+1)+".png").convert_alpha()
               for i in range(2)]*7
@@ -257,7 +261,9 @@ iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,450)
 steel_lance = Weapon("Steel Lance",10,10,30,70,"Lance",200,600)
 silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",500,1200)
 #Anima Magic
-fire = Weapon("Fire",5,4,40,95,"Anima",100,450,0,1,40,True,maxrnge=2,anims=fireSprite)
+fire = Weapon("Fire",5,5,40,95,"Anima",100,450,0,1,40,True,maxrnge=2,anims=fireSprite)
+#Light Magic
+lightning = Weapon("Lightning",4,4,35,100,"Light",100,500,5,1,35,True,maxrnge=2,anims=lightningSprite)
 #Staves
 heal = Staff("Heal",30,100,600,10,"Heals an injured ally",anims=healSprite)
 #Swords
@@ -293,11 +299,12 @@ usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brando
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
-                "spd":5,"con":5,"move":5,"res":4,"hp":21,"maxhp":21},
+                "spd":6,"con":5,"move":5,"res":4,"hp":21,"maxhp":21},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
-               [rapier.getInstance(),vulnerary.getInstance()],{"Sword":200},
-               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite},faces["Yoyo"])
+               [rapier.getInstance(),lightning.getInstance(),vulnerary.getInstance()],{"Sword":200,"Light":100},
+               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite,
+                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"])
 albert = Paladin("Albert",0,0,
               {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
                 "spd":15,"con":10,"move":8,"res":8,"hp":38,"maxhp":38},
@@ -314,8 +321,8 @@ franny = Cavalier("Franny",0,0,
                   {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
                    'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"])
 gary = Fighter("Gary",0,0,
-               {"lv":3,"stren":9,"defen":5,"skl":6,"lck":4,
-                "spd":5,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
+               {"lv":3,"stren":9,"defen":6,"skl":6,"lck":4,
+                "spd":6,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
                {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
@@ -1736,7 +1743,7 @@ addAlly(player)
                                 FilledSurface((200,50),YELLOW,"KNIGHT",BLACK,monospace,(40,10)),
                                 FilledSurface((200,50),GREEN,"KNIGHT",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":4,"res":0,"skl":6,"lck":4,"con":5,"move":4},
+                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":5,"res":0,"skl":6,"lck":4,"con":5,"move":4},
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
@@ -2918,7 +2925,10 @@ class Game():
             screen.blit(smallsans.render(self.goal,True,WHITE),(goalx+15,goaly+35))
         #---------------SELECTED SQUARE BOX----------------#
         if self.mode in ["freemove","move","attack","heal","trade","steal1"]:
-            draw.rect(screen,YELLOW,(self.selectx*30,self.selecty*30,30,30),2) #draws select box
+            if self.mode == "trade" and self.selected2 != None:
+                pass
+            else:
+                draw.rect(screen,YELLOW,(self.selectx*30,self.selecty*30,30,30),2) #draws select box
         #----------------ENDING THE LOOP-------------------#
         display.flip()
         self.framecounter += 1 #increases frame counter
