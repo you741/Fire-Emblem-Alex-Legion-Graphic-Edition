@@ -115,7 +115,7 @@ albertSwordSprite = ([image.load('images/Albert/AlbertSwordFrame'+str(i+1)+'.png
                       for i in range(18)],6)
 albertSwordcritSprite = (albertSwordSprite[0][:3] + [image.load('images/Albert/AlbertSwordcritFrame'+str(i+1)+'.png')
                                                   for i in range(15)] + albertSwordSprite[0][3:],21)
-LS(300)
+LS(280)
 #LOADING FRANNY
 frannyLanceSprite = ([image.load("images/Franny/FrannyAttackFrame"+str(i+1)+".png")
                       for i in range(10)],5)
@@ -134,7 +134,7 @@ garyAxecritSprite = ([garyStandSprite] + [image.load("images/Gary/GaryCritFrame"
                                           for i in range(12)] + garyAxeSprite[0][7:],16)
 #LOADING HENNING
 henningStandSprite = image.load("images/Henning/HenningStand.png")
-LS(345)
+LS(315)
 #LOADING HENRY
 henrySwordSprite = ([image.load("images/Henry/HenryAttackFrame"+str(i+1)+".png")
                      for i in range(17)],10)
@@ -150,13 +150,20 @@ brandonSwordSprite = ([image.load("images/Brandon/BrandonAttackFrame"+str(i+1)+"
                        for i in range(15)],5)
 brandonStandSprite = brandonSwordSprite[0][0]
 brandonSwordcritSprite = (brandonSwordSprite[0][:11] + brandonSwordSprite[0][3:],13)
+LS(350)
 #LOADING STEFANO
 stefanoBowSprite = ([image.load("images/Stefano/StefanoBowFrame"+str(i+1)+".png")
                      for i in range(16)],14)
 stefanoStandSprite = stefanoBowSprite[0][0]
 stefanoBowcritSprite = ([stefanoStandSprite] + [image.load("images/Stefano/StefanoBowcritFrame"+str(i+1)+".png")
                                                 for i in range(11)] + stefanoBowSprite[0][9:],18)
-LS(385)
+#LOADING KEVIN
+kevinDarkSprite = ([image.load('images/Kevin/KevinAttackFrame'+str(i+1)+'.png')
+                    for i in range(27)],24)
+kevinStandSprite = kevinDarkSprite[0][0]
+kevinDarkcritSprite = ([kevinStandSprite] + [image.load('images/Kevin/KevinCritFrame'+str(i+1)+'.png')
+                                             for i in range(14)] + kevinDarkSprite[0][22:],18)
+LS(375)
 #ENEMIES' ANIMATIONS
 #BRIGAND
 brigandAxeSprite = ([image.load("images/Brigand/BrigandAttackFrame"+str(i+1)+".png")
@@ -177,6 +184,9 @@ fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha
 #--LIGHTNING
 lightningSprite = [image.load('images/Magic/Lightning/Lightning'+str(i+1)+'.png')
                    for i in range(6)]
+#--FLUX
+fluxSprite = [image.load("images/Magic/Flux/Flux"+str(i+1)+".png")
+              for i in range(14)]
 #--HEAL
 healSprite = [image.load("images/Magic/Heal/HealFrame"+str(i+1)+".png").convert_alpha()
               for i in range(2)]*7
@@ -193,7 +203,8 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Transporter":[transform.scale(image.load("images/MapSprites/Ally/Transporter"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Thief":[transform.scale(image.load("images/MapSprites/Ally/Thief"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Priest":[transform.scale(image.load("images/MapSprites/Ally/Priest"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
-                  "Archer":[transform.scale(image.load("images/MapSprites/Ally/Archer"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
+                  "Archer":[transform.scale(image.load("images/MapSprites/Ally/Archer"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Shaman":[transform.scale(image.load("images/MapSprites/Ally/Shaman"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 #--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
@@ -261,27 +272,29 @@ village = Village("Village",0,10,1,vilImg) #need to fix sprite
 #Troll weapons
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 #Bows
-iron_bow = Weapon("Iron Bow",6,6,46,80,"Bow",100,485,0,2,46,False,[],2)
-steel_bow = Weapon("Steel Bow",8,9,30,75,"Bow",200,615,0,2,30,False,[],2)
+iron_bow = Weapon("Iron Bow",6,5,45,85,"Bow",100,540,0,2,46,False,[],2)
+steel_bow = Weapon("Steel Bow",9,9,30,70,"Bow",200,720,0,2,30,False,[],2)
 #Lances
-iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,450)
-steel_lance = Weapon("Steel Lance",10,10,30,70,"Lance",200,600)
+iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,360)
+steel_lance = Weapon("Steel Lance",10,13,30,70,"Lance",200,480)
 silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",500,1200)
 #Anima Magic
-fire = Weapon("Fire",5,5,40,95,"Anima",100,450,0,1,40,True,maxrnge=2,anims=fireSprite)
+fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2,anims=fireSprite)
 #Light Magic
-lightning = Weapon("Lightning",4,4,35,100,"Light",100,500,5,1,35,True,maxrnge=2,anims=lightningSprite)
+lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,anims=lightningSprite)
+#Dark Magic
+flux = Weapon("Flux",7,8,45,80,"Dark",100,900,0,1,45,True,maxrnge=2,anims=fluxSprite)
 #Staves
 heal = Staff("Heal",30,100,600,10,"Heals an injured ally",anims=healSprite)
 #Swords
-slim_sword = Weapon("Slim Sword",3,2,35,100,"Sword",200,350,5)
-steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200,550)
-iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100,450)
-killing_edge = Weapon("Killing Edge",8,7,20,85,"Sword",300,900,30)
-rapier = Weapon("Rapier",7,5,40,90,"Sword",700,700,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
+slim_sword = Weapon("Slim Sword",3,2,30,100,"Sword",100,480,5)
+steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200,600)
+iron_sword = Weapon("Iron Sword",5,5,47,90,"Sword",100,460)
+killing_edge = Weapon("Killing Edge",9,7,20,75,"Sword",300,1300,30)
+rapier = Weapon("Rapier",7,5,40,95,"Sword",700,6000,10,1,40,False,["Cavalier","Paladin","Knight","General"],1,5,"Effective against knights, cavalry","Yoyo")
 #Axes
-iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,485)
-steel_axe = Weapon("Steel Axe",12,15,30,65,"Axe",200,615)
+iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,270)
+steel_axe = Weapon("Steel Axe",11,15,30,65,"Axe",100,360)
 #Consumables
 vulnerary = Consumable("Vulnerary",10,3,300,"Heals for 10 HP")
 #Misc.
@@ -342,7 +355,7 @@ henning = Transporter("Henning",0,0,
 henry = Mercenary("Henry",0,0,
                {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
                 "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
-               {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":70},
+               {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":75},
                [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
                {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"])
 eric = Priest("Eric",0,0,
@@ -363,6 +376,12 @@ stefano = Archer("Stefano",0,0,
                {"stren":40,"defen":25,"skl":50,"spd":45,"lck":35,"res":10,"maxhp":65},
                [iron_bow.getInstance(),white_gem.getInstance(),vulnerary.getInstance()],{"Bow":200},
                {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"])
+kevin = Shaman("Kevin",0,0,
+               {"lv":5,"stren":9,"defen":4,"skl":10,"lck":3,
+                "spd":8,"con":6,"move":5,"res":7,"hp":26,"maxhp":26},
+               {"stren":55,"defen":15,"skl":45,"spd":40,"lck":20,"res":50,"maxhp":70},
+               [flux.getInstance(),vulnerary.getInstance()],{"Dark":200},
+               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"]) 
 allies = [] #allies
 #ENEMIES
 #--Brigands
@@ -497,7 +516,7 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground),
-               ([henry,eric,brandon,stefano],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
+               ([henry,eric,kevin,stefano,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
                 "Seize gate",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -1814,7 +1833,7 @@ addAlly(player)
                                 FilledSurface((200,50),YELLOW,"KNIGHT",BLACK,monospace,(40,10)),
                                 FilledSurface((200,50),GREEN,"KNIGHT",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":5,"res":0,"skl":6,"lck":4,"con":5,"move":4},
+                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":5,"res":0,"skl":6,"lck":4,"con":12,"move":4},
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
@@ -2051,6 +2070,7 @@ class Game():
         self.staffableSquares = []
         self.attackableSquares = []
         self.moveableSquares = []
+        self.oldGold=gold
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
@@ -2187,8 +2207,9 @@ class Game():
                 screen.blit(enemyGreyMapSprites[e.__class__.__name__][self.framecounter%40//10],(e.x*30,e.y*30))
     def start(self):
         "starts a chapter, also serves a restart"
-        global allies,enemies,oldAllies
+        global allies,enemies,oldAllies,gold
         self.currAlly = 0
+        gold = self.oldGold
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
         if chapter < 99:
             #the early chapters have no prefight screen to load oldAllies so allAllies are oldAllies
@@ -2307,7 +2328,7 @@ class Game():
         self.attacked.clear()
         screen.blit(self.filler,(0,0)) #fills the screen
         event.clear()
-        if len(enemies) == 0:
+        if len(enemies) == 0 and self.goal.lower() == "defeat all enemies":
             #no more enemies means the player won
             self.mode = "gameVictory"
             self.gameVictory()
@@ -2535,6 +2556,7 @@ class Game():
                             self.mode = "itemattack"
                             self.menu.selected = 0
                             self.menu.items = [i for i in self.selected.items if type(i) == Weapon]
+                            self.menu.height = 30*len(self.menu.items)
                         elif self.menu.getOption().lower() == "item":
                             self.mode = "item"
                             self.menu.selected = 0
@@ -2591,7 +2613,10 @@ class Game():
                                 self.selectx,self.selecty = self.attackableEnemies[0].x,self.attackableEnemies[0].y
                                 self.selectedEnemy = 0
                             else:
-                                dispTempMsg(screen,"You have not enough mastery to equip that weapon",centerX=True,centerY=True)
+                                if not self.selected.canEquip(self.selected.items[self.menu.selected]):
+                                    dispTempMsg(screen,"You have not enough mastery to equip that weapon",centerX=True,centerY=True)
+                                else:
+                                    dispTempMsg(screen,"No enemies in range of that weapon",centerX=True,centerY=True)
                     elif self.mode == "attack":
                         #does an attack
                         attack(self.selected,self.attackableEnemies[self.selectedEnemy])
@@ -2701,6 +2726,10 @@ class Game():
                                 self.attacked.add(self.selected)
                                 self.moved.add(self.selected)
                                 dispTempMsg(screen,("A " if item.name[0].lower() not in "aeiou" else "An ")+item.name+" was stolen!",centerX=True,centerY=True)
+                                drawChangingBar(screen,self.selected.exp,self.selected.exp+25,100,420,330,360,60,"Exp") #draws exp gain
+                                if self.selected.gainExp(25):
+                                    self.selected.levelUp()
+                                    drawLevelUp(screen,self.selected)
                             else:
                                 dispTempMsg(screen,"Weapons cannot be stolen",centerX=True,centerY=True)
                     #TRANSFER MODE CLICK
