@@ -340,7 +340,7 @@ yoyo = Lord("Yoyo",0,0,
                 "spd":40,"res":40,"maxhp":60},
                [rapier.getInstance(),lightning.getInstance(),vulnerary.getInstance()],{"Sword":200,"Light":100},
                {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite,
-                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"],deathQuote="Sorry everyone... I'm nothing but a failure...")
+                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"])
 albert = Paladin("Albert",0,0,
               {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
                 "spd":15,"con":10,"move":8,"res":8,"hp":38,"maxhp":38},
@@ -348,65 +348,56 @@ albert = Paladin("Albert",0,0,
                 "spd":25,"res":10,"maxhp":40},
               [silver_lance.getInstance(),steel_sword.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Sword':300,'Lance':500},
               {'stand':albertStandSprite,'Lance':albertLanceSprite,'Lancecrit':albertLancecritSprite,
-               'Sword':albertSwordSprite,'Swordcrit':albertSwordcritSprite},faces["Albert"],
-                 deathQuote="Sigh... I don't even understand how I died... I'm OP. If someone were controlling me I'd call them a n00b...")
+               'Sword':albertSwordSprite,'Swordcrit':albertSwordcritSprite},faces["Albert"])#test person for chapter 1
 franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
                   {"stren":35,"defen":25,"skl":50,"spd":55,"lck":45,"res":15,"maxhp":70},
                   [iron_lance.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Lance':200,'Sword':200},
                   {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
-                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"],
-                  deathQuote="Lo siento amigos mío... Señor Albert... protegéis Señor You Zhou...")
+                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"])
 gary = Fighter("Gary",0,0,
                {"lv":3,"stren":9,"defen":6,"skl":6,"lck":4,
                 "spd":6,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":200},
-               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"],
-               deathQuote="Rip... Welp. It's 'bout time I got shut down... *kek*... GG... WP...")
+               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"])
 henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
                [red_gem.getInstance()],{},
-               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()],
-                deathQuote="lel I'm ded. jk m8. I'll be back next chapter, but like, i gotta scram or our stuff will get stolen.")
+               {"stand":henningStandSprite},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()])
 henry = Mercenary("Henry",0,0,
                {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
                 "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
                {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":75},
                [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
-               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"],
-                deathQuote="I've been bested. So be it...")
+               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"])
 eric = Priest("Eric",0,0,
                {"lv":5,"stren":6,"defen":2,"skl":8,"lck":8,
                 "spd":10,"con":6,"move":5,"res":8,"hp":24,"maxhp":24},
                {"stren":35,"defen":10,"skl":50,"spd":50,"lck":45,"res":35,"maxhp":60},
                [heal.getInstance(),vulnerary.getInstance()],{"Staff":200},
-               {"stand":ericStandSprite,"Staff":ericStaffSprite},faces["Eric"],
-              deathQuote="...Why... Why now? Please fight on everyone!")
+               {"stand":ericStandSprite,"Staff":ericStaffSprite},faces["Eric"])
 brandon = Thief("Brandon",0,0,
                 {"lv":4,"stren":5,"defen":3,"skl":7,"lck":5,
                 "spd":13,"con":5,"move":6,"res":3,"hp":22,"maxhp":22},
                {"stren":25,"defen":20,"skl":45,"spd":70,"lck":30,"res":15,"maxhp":60},
                [iron_sword.getInstance(),blue_gem.getInstance(),lock_pick.getInstance(),vulnerary.getInstance()],{"Sword":100},
-               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"],
-                deathQuote="Ouch! That really... hurt...........")
+               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"])
 stefano = Archer("Stefano",0,0,
                 {"lv":4,"stren":7,"defen":5,"skl":9,"lck":7,
                 "spd":9,"con":5,"move":5,"res":3,"hp":25,"maxhp":25},
                {"stren":40,"defen":25,"skl":50,"spd":45,"lck":35,"res":10,"maxhp":65},
                [iron_bow.getInstance(),white_gem.getInstance(),vulnerary.getInstance()],{"Bow":200},
-               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"],
-                 deathQuote="$!@#! I KNEW I shouldn't have joined this group. I swear I'm going to $@!# whoever let me die like a $!@# piece of !@#$!!!")
+               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"])
 kevin = Shaman("Kevin",0,0,
                {"lv":5,"stren":9,"defen":4,"skl":10,"lck":3,
                 "spd":8,"con":6,"move":5,"res":7,"hp":26,"maxhp":26},
                {"stren":55,"defen":15,"skl":45,"spd":40,"lck":20,"res":50,"maxhp":70},
                [flux.getInstance(),vulnerary.getInstance()],{"Dark":200},
-               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"],
-               deathQuote="我觉得谁控制我是哑巴。Dang it pygame no support my chinese...") 
+               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"]) 
 allies = [] #allies
 #ENEMIES
 #--Brigands
@@ -421,9 +412,7 @@ bandit1 = Brigand("Bandit",0,0,
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
                          "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70,guard=True,
-                fightQuote="How dare you kill all my friends! You're seriously going to pay!",
-                deathQuote="Ugh... how could I die to a pampered lordling... and some hobo...")
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70,guard=True)
 bandit2 = Brigand("Bandit",0,0,
                 {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
                 "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance()],{"Axe":300},
@@ -634,28 +623,30 @@ def getSavedChapter(file):
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
+    #used to draw battle stats
     draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
         opt = menu[i].title() #option to draw
         screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
-def drawItemMenu(person,x,y,menuselect):
-    "draws an item menu for a person"
-    if x + 8 > 39:
-        x -= 9
-    if y + 5 > 24:
-        y -= 4
-    draw.rect(screen,BLUE,(x*30,y*30,240,150)) #########CANCEEEEEEEEERRRRRRRRRR
-    for i in range(5):
-        if i < len(person.items):
-            col = WHITE
-            if type(person.items[i]) in [Weapon,Staff]:
-                if not person.canEquip(person.items[i]):
-                    #if the person cannot equip, the color goes grey
-                    col = GREY
-            screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
-            screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
-    draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
+##def drawItemMenu(person,x,y,menuselect):
+##    "draws an item menu for a person"
+##    if x + 8 > 39:
+##        x -= 9
+##    if y + 5 > 24:
+##        y -= 4
+##        
+##    draw.rect(screen,BLUE,(x*30,y*30,240,150)) 
+##    for i in range(5):
+##        if i < len(person.items):
+##            col = WHITE
+##            if type(person.items[i]) in [Weapon,Staff]:
+##                if not person.canEquip(person.items[i]):
+##                    #if the person cannot equip, the color goes grey
+##                    col = GREY
+##            screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
+##            screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
+##    draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
 def drawItem(person,item,x,y,diff=180,fnt=sans):
     "draws an item"
     col = WHITE
@@ -671,78 +662,20 @@ def checkDead(ally,enemy):
     "checks if an ally or an enemy is dead; also removes ally or enemy from list"
     if ally.hp == 0:
         allies.remove(ally)
-        if ally.deathQuote == "":
-            return True
-        if not writeDialogue(screen,ally.deathQuote,name=ally.name,face=ally.face):
-            quit()
-        waiting = True #waiting for user to press a key in order to move on
-        arrowflashcounter = 0
-        while waiting:
-            for e in event.get():
-                if e.type == QUIT:
-                    quit()
-                    return 0
-                if e.type == KEYDOWN:
-                    if e.key in [K_z,K_x,K_RETURN]:
-                        waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
-            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
-            arrowflashcounter += 0.15
-            display.flip()
         return True
     if enemy.hp == 0:
         enemies.remove(enemy)
-        if enemy.deathQuote == "":
-            return True
-        if not writeDialogue(screen,enemy.deathQuote,900,name=enemy.name,face=enemy.face):
-            quit()
-        waiting = True #waiting for user to press a key in order to move on
-        arrowflashcounter = 0
-        while waiting:
-            for e in event.get():
-                if e.type == QUIT:
-                    running = False
-                    return 0
-                if e.type == KEYDOWN:
-                    if e.key in [K_z,K_x,K_RETURN]:
-                        waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
-            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
-            arrowflashcounter += 0.15
-            display.flip()
         return True
     return False
 def attack(person,person2):
     "attack animation of person to person2"
     #sets who is the ally and who is the enemy
-    global running
     if person in allies:
         ally = person
         enemy = person2
     else:
         ally = person2
         enemy = person
-    if enemy.fightQuote != "" and not enemy.fought:
-        if not writeDialogue(screen,enemy.fightQuote,900,530,enemy.name,enemy.face):
-            quit()
-        enemy.fought = True #only enemy has a fightquote
-        waiting = True #waiting for user to press a key in order to move on
-        arrowflashcounter = 0
-        while waiting:
-            for e in event.get():
-                if e.type == QUIT:
-                    running = False
-                    return 0
-                if e.type == KEYDOWN:
-                    if e.key in [K_z,K_x,K_RETURN]:
-                        waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
-            botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
-            arrowflashcounter += 0.15
-            display.flip()
     screen.blit(chapterBattleBackgrounds[chapter],(0,0))
     display.flip()
     time.wait(200)
@@ -1079,7 +1012,6 @@ class Menu():
     def draw(self,person=None):
         "draws a list of strings as a vertical menu at positions x and y"
         draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
-        screen.blit(self.background,(self.x*30,self.y*30)) #blits the background (nothing atm)
         x = self.x*30
         for i in range(len(self.items)):
             #draws the item
@@ -1093,7 +1025,7 @@ class Menu():
                     ix = x+250
                     drawInfoBox(screen,ix,y,opt)
         screen.blit(pointer,(x-30,(self.y+self.selected)*30,self.width,30))
-        draw.rect(screen,WHITE,(x,(self.y+self.selected)*30,self.width,30),1)
+        draw.rect(screen,WHITE,(x,(self.y+self.selected)*30,self.width,30),1) #highlighted box
         if self.subMenu != None:
             self.subMenu.draw(person)#draws the subMenu
     def getOption(self):
@@ -1951,7 +1883,7 @@ class NewGame():
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
 [fire.getInstance()],
 {'Anima':200},
-{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
+{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'])
 addAlly(player)
 """,
                                 "changemode(getStory(chapter))"]),
@@ -1965,7 +1897,7 @@ addAlly(player)
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
-{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
+{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'])
 addAlly(player)
 """,
                                  "changemode(getStory(chapter))"])]
@@ -3056,7 +2988,6 @@ class Game():
             self.menu.draw()
             drawTransRect(screen,BLACK,0,680,1200,40)
             screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,680))
- #          drawMenu(self.menu,menux,menuy,120,480,self.menu.selected) #draws the main menu
         #OPTION MENU MODE DISPLAY
         if self.mode == "optionmenu":
             self.menu.x,self.menu.y = 32,2
@@ -3068,7 +2999,6 @@ class Game():
             y = 0 if self.selected.y > 12 else 680
             drawTransRect(screen,BLACK,0,y,1200,40)
             screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,y))
-#            drawMenu(self.menu,menux,menuy,120,len(self.menu.items)*30,self.menu.selected)
         #ATTACK MODE DISPLAY
         if self.mode == "itemattack":
             #displays item selection menu for attack
