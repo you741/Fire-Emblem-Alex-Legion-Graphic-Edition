@@ -1,10 +1,14 @@
-images/backgrounds/forest.jpg
+images/backgrounds/Randonia2.png
 :The kingdom of Randonia was split into 15 major cities and districts of the same name.
 :They were Leadia, the capital, along with Crazewell, Angrae, Sadana, Depreford, Intelierde, Tryhardion, Religelet, Condescen, Poetern, Litia, Tradaus, Insulria, Sadistaruz and Impatorde. Besides Leadia, the cities of Randonia are currently under rule of the Alex Legion - a group of revolutionaries under Alex.
+BACKGROUND:images/backgrounds/Leadia.png
 :Even Leadia is soon to fall under Alex's enormous military support.
+BACKGROUND:images/backgrounds/leadiaInori.png
 :Alex had been blackmailing the citizens over countless years, avoiding the detection of The Royal Zhou Family.They slowly recruited many great warriors within the army of the royal family, and soon the odds were turned against them in a single surprise attack. Only Leadia was not completely destroyed due to the great Sage Inori, but even she will not hold up much longer.
+BACKGROUND:images/backgrounds/village.png
 :Now Prince You Zhou and *Player* head towards Hypobrit, a small town in the district of Leadia...
 TITLE:Chapter 1 - A Revolution to a Revolution
+BACKGROUND:images/backgrounds/forest.jpg
 Yoyo:We should be there soon... Ah! Thank goodness! The crew is there!
 Franny:Hola Senor You Zhou! And who is this you brought along?
 Yoyo:I told you can call me Yoyo. This is *Player*, he saved me from some bandits.
@@ -44,5 +48,10 @@ Henning:Sigh... why did I choose this job? what was I thinking back then...
 *Player*:...This shouldn't be too hard. Their skill level is low...
 Albert:How do you know that?
 *Player*:I don't know... just a gut instinct. I think I can think up a plan that will allow us to win...
-Gary:Called it. I told you they were n00bs. [Hey you there! Yeah you, playing the game! I can break the fourth wall *kek*. This level is ez-pz just DON'T expose your weaker units. Use the OP Albert to pull away a majority of the enemies - he can pretty much 1 v 20. And remember the weapon triangle - Axes beat Lances, Lances beat Swords, and Swords beat Axes! GL!]
+Gary:Called it. I told you they were n00bs. [Hey you there! Yeah you, playing the game! I can break the fourth wall *kek*. This level is ez-pz just DON'T expose your weaker units. Use the OP Albert to pull away a majority of the enemies - he can pretty much 1 v 20. And remember the weapon triangle - Axes beat Lances, Lances beat Swords, and Swords beat Axes! GL! O yeah you should probably buy some stuff too. Don't forget to visit the villages.]
+Franny:Just don't forget Albert, Henning and I cannot go on mountains since we're mounted units. We can also move after doing any action except attacking or healing, since we are mounted, but we'll lose some squares in that turn. Don't worry though, we always get all our moves back the next turn.
+*Player*:Good to know.
+Albert:Are you sure you can do this lad? You seem like a novice tactician.
+Gary:[hey u! if u have trouble beating this level, i suggest asking someone you know who is good at fire emblem. even the pleb creator of this game has trouble beating it]
+*Player*:I can't guarantee anything... but something in me has confidence that I can win.
 Yoyo:Well you saved me once. I trust you *Player*! Let's fight!

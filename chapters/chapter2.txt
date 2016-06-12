@@ -1,6 +1,9 @@
-images/backgrounds/forest.jpg
+images/backgrounds/Randonia3.png
 :You Zhou and his group of men now are heading towards the sacred isle. In order to get there, they must pass the heavily fortified Xela Region. Alex has set up great defenses to prevent anyone from passing to get the sacred isle.
+BACKGROUND:images/backgrounds/XelaFortress.png
+:The Xela region has many guards and armored knights, who will not allow anyone to even enter the fortress. Entrance to the fortress is required as the road to the Sacred Isle has too many mountains to go by foot, so to access the Sacred Isle, they must use the underground train in the Xela Fortress.
 TITLE:Chapter 2 - Breaking Defenses
+BACKGROUND:images/backgrounds/forest.jpg
 Yoyo:We should be getting close now.
 CONDITION:Albert;
 Albert:I see a lot of troops up ahead.
@@ -45,4 +48,14 @@ Gary:Dw bros, i carry. [HEY YOU THERE! YEAH YOU PLAYER! Breaking the fourth wall
 Henry:Uh... okay?
 CONDITION:*End*
 *Player*:Okay guys... just do as I say and we should win.
-Yoyo:Alright guys! Let's go!
+Brandon:Oh yeah *Player*, I am a thief.
+*Player*:So...
+Brandon:I can steal stuff for you! But they have to be an enemy right next to me with less than or equal speed and they must also have a non-weapon. I can't steal weapons you know.
+*Player*:Interesting... I might have you steal things for me.
+Brandon:Just take a look at all the enemies and see which ones have non-weapons for me to steal! Oh yeah I have to have space in my inventory too, or I won't be able to steal.
+CONDITION:Gary;
+Gary:[remember max limit for items is 5]
+CONDITION:*End*
+Eric:Also if anyone gets injured, just have me heal them! You can also heal troops by having them stand on forts. They will get healed at the start of your turn if they're standing on one!
+*Player*:Yes... you guys are valuable assets indeed.
+Yoyo:Alright guys! Let's go! Have me seize the gate *Player*. Just get me to stand on it and I'll use my royal master key to get in!

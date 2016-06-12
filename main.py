@@ -183,6 +183,22 @@ knightLanceSprite = ([image.load("images/Knight/KnightAttackFrame"+str(i+1)+".pn
 knightStandSprite = knightLanceSprite[0][0]
 knightLancecritSprite = ([knightStandSprite] + [image.load("images/Knight/KnightCritFrame"+str(i+1)+".png")
                           for i in range(5)] + knightLanceSprite[0][1:],10)
+#SHAMAN
+shamanDarkSprite = ([transform.flip(img,True,False) for img in kevinDarkSprite[0]],24)
+shamanStandSprite = transform.flip(kevinStandSprite,True,False)
+shamanDarkcritSprite = ([transform.flip(img,True,False) for img in kevinDarkcritSprite[0]],18)
+
+#MAGE
+mageAnimaSprite = ([transform.flip(img,True,False) for img in playerMageAnimaSprite[0]],10)
+mageAnimacritSprite = ([transform.flip(img,True,False) for img in playerMageAnimacritSprite[0]],21)
+mageStandSprite = mageAnimaSprite[0][0]
+
+#MONSTER
+revenantClawSprite = ([image.load("images/Revenant/RevenantAttackFrame"+str(i+1)+".png")
+                       for i in range(13)],9)
+revenantStandSprite = revenantClawSprite[0][0]
+revenantClawcritSprite = ([revenantStandSprite] + [image.load("images/Revenant/RevenantCritFrame"+str(i+1)+".png")
+                                                   for i in range(2)] + revenantClawSprite[0][1:],11)
 #MAGIC ANIMATIONS
 #--FIRE
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
@@ -214,7 +230,10 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
 #--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
-                   "Knight":[transform.scale(image.load("images/MapSprites/Enemy/Knight"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                   "Knight":[transform.scale(image.load("images/MapSprites/Enemy/Knight"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                   "Mage":[transform.scale(image.load("images/MapSprites/Enemy/Mage"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                   "Shaman":[transform.scale(image.load("images/MapSprites/Enemy/Shaman"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                   "Revenant":[transform.scale(image.load("images/MapSprites/Enemy/Revenant"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
     allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
@@ -234,7 +253,10 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
          "Kevin":image.load('images/faces/Kevin.png'),
         "Bandit":image.load("images/faces/Bandit.png"),
         "Mercenary":image.load("images/faces/Bandit.png"),
-         "Villager":image.load("images/faces/Villager.png")} #dictionary of all faces of characters
+         "Villager":image.load("images/faces/Villager.png"),
+         "AlexTheMage":image.load("images/faces/AlexTheMage.gif"),
+         "Revenant":image.load("images/faces/revenant.gif"),
+         "Shaman":image.load("images/faces/Shaman.png")} #dictionary of all faces of characters
 
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
@@ -250,12 +272,17 @@ armImg = image.load("images/terrain/armory.png")
 vilImg = image.load("images/terrain/village.png")
 castleImg = image.load("images/terrain/castle.png")
 fortImg = image.load("images/terrain/fort.png")
+throneImg = image.load("images/terrain/throne.png")
+chestImg = image.load("images/terrain/chest.png")
+openChest = image.load("images/terrain/openChest.png")
+wallImg = image.load("images/terrain/Wall.png")
+floorImg = image.load("images/terrain/floor.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
 
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
-
+battleCastle = image.load("images/backgrounds/battleCastle.png")
 #UI Images
 menuBG = image.load("images/backgrounds/menuBackground.png")
 trnsferBG = image.load("images/backgrounds/transferscreen.png")
@@ -281,14 +308,17 @@ castle = Terrain("Castle",0,0,1,castleImg)
 castlePiece = Terrain("Castle",0,0,1)
 gate = Terrain("Gate",2,20,2,heal=6)
 fort = Terrain("Fort",2,20,2,fortImg,heal=6)
-throne = Terrain("Throne",30,3,3) #needs img
+throne = Terrain("Throne",30,3,3,throneImg)
 water = Terrain("Water",10,0,3) #needs img
+chest = Chest("Chest",0,0,1,chestImg)
+wall = Terrain("Wall",0,0,1,wallImg)
+floor = Terrain("Floor",0,0,1,floorImg)
 #ITEMS
 #Troll weapons
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
 #Bows
-iron_bow = Weapon("Iron Bow",6,5,45,85,"Bow",100,540,0,2,46,False,[],2)
-steel_bow = Weapon("Steel Bow",9,9,30,70,"Bow",200,720,0,2,30,False,[],2)
+iron_bow = Weapon("Iron Bow",6,5,45,85,"Bow",100,540,0,2,46,False,["PegasusKnight","FalcoKnight"],2)
+steel_bow = Weapon("Steel Bow",9,9,30,70,"Bow",200,720,0,2,30,False,["PegasusKnight","FalcoKnight"],2)
 #Lances
 iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,360)
 steel_lance = Weapon("Steel Lance",10,13,30,70,"Lance",200,480)
@@ -297,7 +327,7 @@ long_lance = Weapon("Long Lance",8,12,20,65,"Lance",200,900,maxrnge=2)
 #Anima Magic
 fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2,anims=fireSprite)
 #Light Magic
-lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,anims=lightningSprite)
+lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,anims=lightningSprite,sup_eff=["Revenant"])
 #Dark Magic
 flux = Weapon("Flux",7,8,45,80,"Dark",100,900,0,1,45,True,maxrnge=2,anims=fluxSprite)
 #Staves
@@ -311,6 +341,8 @@ rapier = Weapon("Rapier",7,5,40,95,"Sword",700,6000,10,1,40,False,["Cavalier","P
 #Axes
 iron_axe = Weapon("Iron Axe",8,10,45,75,"Axe",100,270)
 steel_axe = Weapon("Steel Axe",11,15,30,65,"Axe",100,360)
+#Claws
+claw = Weapon("Claw",5,0,1000,80,"Claw",100,10000)
 #Consumables
 vulnerary = Consumable("Vulnerary",10,3,300,"Heals for 10 HP")
 #Misc.
@@ -331,7 +363,7 @@ LS(550)
 #----PERSONS----#
 #ALLIES
 name = "" #name of player
-usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex","villager","kevin"] #names the player cannot use
+usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex","villager","kevin","inori"] #names the player cannot use
 player = None #player is defined in NewGame or LoadGame
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
@@ -449,18 +481,44 @@ alexTheMerc = Mercenary("Alex the Merc",0,0,
                 deathQuote="Watch out King Alex... these men are strong... After all, they even bested me!")
 #--Knights
 knight2 = Knight("Knight",0,0,
-                {"lv":5,"stren":8,"defen":6,"skl":3,"lck":0,
+                {"lv":5,"stren":8,"defen":7,"skl":3,"lck":0,
                 "spd":1,"con":12,"move":4,"res":0,"hp":20,"maxhp":20},{},[iron_lance.getInstance()],{"Lance":100},
                 {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],20,guard=True)
 alexTheKnight = Knight("Knight Alex",0,0,
-                {"lv":10,"stren":10,"defen":8,"skl":5,"lck":1,
-                "spd":4,"con":15,"move":4,"res":0,"hp":30,"maxhp":30},{},[steel_lance.getInstance(),long_lance.getInstance()],{"Lance":300},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],100,throne=True)
-
+                {"lv":10,"stren":10,"defen":11,"skl":5,"lck":1,
+                "spd":4,"con":15,"move":4,"res":0,"hp":32,"maxhp":32},{},[steel_lance.getInstance(),long_lance.getInstance(),red_gem.getInstance()],{"Lance":300},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],100,throne=True,
+                       fightQuote="What the-? Who are you!? How did you get past my knights!? Whatever... you're not leavin alive!",
+                       deathQuote="Ugh... sorry King Alex... I was bested... Someone... tell King Alex... to be... wary")
+knight3 = Knight("Knight",0,0,
+                {"lv":8,"stren":10,"defen":9,"skl":4,"lck":0,
+                "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],20)
+knight3_v = Knight("Knight",0,0,
+                {"lv":8,"stren":10,"defen":9,"skl":4,"lck":0,
+                "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],20,guard=True)
+#--Shamans
+shaman3 = Shaman("Shaman",0,0,
+                {"lv":8,"stren":7,"defen":3,"skl":5,"lck":0,
+                "spd":8,"con":8,"move":5,"res":7,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},
+                {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
+#--Mages
+alexTheMage = Mage("Alex the Mage",0,0,
+                {"lv":12,"stren":11,"defen":5,"skl":14,"lck":3,
+                "spd":12,"con":8,"move":5,"res":10,"hp":30,"maxhp":30},{},[fire.getInstance()],{"Anima":300},
+                 {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["AlexTheMage"],100,guard=True,
+                fightQuote="You who would dare stand up to the might of the Alex Legion... burn to crisp.",
+                deathQuote="I... just needed... more power... ugh... I leave the rest to you, King Alex...")
+#--Monsters
+revenant3 = Revenant("Revenant",0,0,
+                {"lv":5,"stren":10,"defen":5,"skl":2,"lck":0,
+                "spd":5,"con":5,"move":5,"res":0,"hp":21,"maxhp":21},{},[claw.getInstance()],{"Claw":200},
+                {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite},faces["Revenant"],20)
 enemies = []
 LS(660)
 #----CHAPTERS----#
-numChaps = 3 #number of chapters - including prologue
+numChaps = 4 #number of chapters - including prologue
 chapterShops = [[],
                 [vendor.setItems([vulnerary.getInstance()]),
                  armory.setItems([iron_sword.getInstance(),
@@ -471,13 +529,24 @@ chapterShops = [[],
                                   steel_lance.getInstance(),
                                   steel_axe.getInstance(),
                                   steel_bow.getInstance()]),
-
-                 vendor.setItems([vulnerary.getInstance(),fire.getInstance(),heal.getInstance(),lightning.getInstance()])]]
+                 vendor.setItems([vulnerary.getInstance(),fire.getInstance(),heal.getInstance(),lightning.getInstance()])],
+                [vendor.setItems([flux.getInstance(),
+                                  lightning.getInstance(),
+                                  fire.getInstance(),
+                                  heal.getInstance()])]]
 chapterVillages = [[],
                    [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")],
                    [village.setItems(silver_lance.getInstance(),"story/chapter2village1.txt"),
                     village.setItems(vulnerary.getInstance(),"story/chapter2village2.txt"),
-                    village.setItems(white_gem.getInstance(),"story/chapter2village3.txt")]]
+                    village.setItems(white_gem.getInstance(),"story/chapter2village3.txt")],
+                   []]
+chapterChests = [[],
+                 [],
+                 [],
+                 [chest.setItem(killing_edge.getInstance()),
+                  chest.setItem(lightning.getInstance()),
+                  chest.setItem(rapier.getInstance()),
+                  chest.setItem(white_gem.getInstance())]]
 #MAPS
 def createMap(width,height,terrains=[]):
     "creates a map (2d list)"
@@ -498,23 +567,30 @@ terrDict = {".":plain,
             "T":throne,
             "G":gate,
             "@":fort,
-            "-":water} #translates string into terrain
+            "-":water,
+            "=":wall,
+            "(":chest,
+            "_":floor} #translates string into terrain
 def createMapFromFile(chapterNum):
     "creates map from file"
     newMap = []
     mapFile = open("maps/chapter"+str(chapterNum)+".txt")
     shopNum = 0
     villageNum = 0
+    chestNum = 0
     for line in mapFile.read().strip().split("\n"):
         newLine = []
         for c in line:
             terr = terrDict[c]
             if c in ["S","R"]:
-                terr = chapterShops[chapterNum][shopNum]
+                terr = chapterShops[chapterNum][shopNum].getInstance()
                 shopNum += 1
             if c == "V":
                 terr = chapterVillages[chapterNum][villageNum].getInstance()
                 villageNum += 1
+            if c == "(":
+                terr = chapterChests[chapterNum][chestNum].getInstance()
+                chestNum += 1
             newLine.append(terr)
         newMap.append(newLine)
     return newMap
@@ -573,8 +649,10 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground),
                ([henry,eric,kevin,stefano,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v,knight2,alexTheKnight],getNumEnList(2),getEcoords(2)),
-                "Seize gate",plainsBackground)]
-chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
+                "Seize gate",plainsBackground),
+               ([],getAcoords(3),createEnemyList([knight3,shaman3,knight3_v,revenant3,alexTheMage],getNumEnList(3),getEcoords(3)),
+                "Seize throne",plainsBackground)]
+chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains,battleCastle]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
@@ -639,23 +717,7 @@ def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
         opt = menu[i].title() #option to draw
         screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
-def drawItemMenu(person,x,y,menuselect):
-    "draws an item menu for a person"
-    if x + 8 > 39:
-        x -= 9
-    if y + 5 > 24:
-        y -= 4
-    draw.rect(screen,BLUE,(x*30,y*30,240,150)) #########CANCEEEEEEEEERRRRRRRRRR
-    for i in range(5):
-        if i < len(person.items):
-            col = WHITE
-            if type(person.items[i]) in [Weapon,Staff]:
-                if not person.canEquip(person.items[i]):
-                    #if the person cannot equip, the color goes grey
-                    col = GREY
-            screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
-            screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
-    draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
+
 def drawItem(person,item,x,y,diff=180,fnt=sans):
     "draws an item"
     col = WHITE
@@ -886,6 +948,7 @@ def heal(person,person2,stf):
         quit()
     screen.blit(actionFiller,(0,0))
     if not singleAttack(screen,person,person2,False,chapterMaps[chapter],True,stf):
+        #heal function
         dispTempMsg(screen,stf.name+" Broke!",centerX=True,centerY=True)
     expgain = 20 + person.stren + stf.heal
     drawChangingBar(screen,person.exp,person.exp+expgain,100,420,330,360,60,"Exp")
@@ -1369,7 +1432,7 @@ class VillageScreen():
                     #displays narration
                     if not writeDialogue(screen,sentence):
                         #writes narration
-                        return 0 #if it returns false it means the user quit, so we quit as well
+                        quit()
                 elif func == "TITLE":
                     #display the title
                     screen.fill(BLACK)
@@ -1388,7 +1451,7 @@ class VillageScreen():
                         img = faces[func] #anyone else's face
                     if not writeDialogue(screen,sentence,x,530,func,img):
                         #writes dialogue
-                        return 0 #if it returns false it means the user quit, so we quit as well
+                        quit()
                     
             breakLoop = False if func != "CONDITION" and not self.cond else True
             cM = False #boolean: to break or not
@@ -1614,7 +1677,7 @@ class InfoScreen():
         if self.mode == "mastery":
             screen.blit(mastBG,(0,0))
             coords = {"Sword":(620,120),"Lance":(620,190),"Anima":(620,300),"Light":(620,370),"Axe":(940,120),"Bow":(940,190),
-                      "Dark":(940,300),"Staff":(940,370)}
+                      "Dark":(940,300),"Staff":(940,370),"Claw":(1300,730)}
             for i,k in enumerate(a.mast):
                 x,y = coords[k]
                 screen.blit(superScript40.render("FEDCBAS"[a.mast[k]//100],True,WHITE),(x,y))
@@ -1749,7 +1812,7 @@ class InstructionScreen():
             #checking if the user is skipping through text
             kp = key.get_pressed()
             if not writeDialogue(screen,sentence):
-                return 0
+                quit()
             arrowflashcounter = 0
             while not breakLoop:
                 #loops until user hits z or x to move on
@@ -2113,12 +2176,14 @@ class Story():
         elif self.cond:
             #self.cond == True indicates we did not meet the condition, so we skip over
             self.currDial += 1
+        elif func == "BACKGROUND":
+            self.background = image.load(sentence)
+            self.currDial += 1
         else:
             if func == "":
                 #displays narration
                 if not writeDialogue(screen,sentence):
-                    #writes narration
-                    return 0 #if it returns false it means the user quit, so we quit as well
+                    quit()
             elif func == "TITLE":
                 #display the title
                 screen.fill(BLACK)
@@ -2137,8 +2202,8 @@ class Story():
                     img = faces[func] #anyone else's face
                 if not writeDialogue(screen,sentence,x,530,func,img):
                     #writes dialogue
-                    return 0 #if it returns false it means the user quit, so we quit as well
-        breakLoop = False if func != "CONDITION" and not self.cond else True
+                    quit()
+        breakLoop = False if func not in ["CONDITION","BACKGROUND"] and not self.cond else True
         cM = False #boolean: change mode?
         arrowflashcounter = 0
         while not breakLoop:
@@ -2203,7 +2268,6 @@ class Game():
     def draw(self,screen):
         "draws game on screen - also starts game"
         self.start()
-        self.filler = screen.copy() #filler
     def getPath(self,ms,endx,endy):
         "Gets path"
         coords = [(x,y) for x,y,m,ali in ms]
@@ -2361,11 +2425,15 @@ class Game():
         self.attacked.clear()
         screen.blit(backgroundImage,(0,0))#draws map background on the screen
         for y in range(len(chapterMaps[chapter])):
-            for x in range(len(chapterMaps[chapter])):
+            for x in range(len(chapterMaps[chapter][0])):
                 if type(chapterMaps[chapter][y][x]) == Village:
                     chapterMaps[chapter][y][x].visited = False
+                if type(chapterMaps[chapter][y][x]) == Chest:
+                    chapterMaps[chapter][y][x].opened = False
+                    chapterMaps[chapter][y][x].img = chestImg
         drawMap(chapterMaps[chapter])#draws all terrain
         drawGrid(screen)
+        self.filler = screen.copy()
         self.selectx,self.selecty = yoyo.x,yoyo.y
         self.startTurn()
     def startTurn(self):
@@ -2377,7 +2445,6 @@ class Game():
         self.drawPeople()
         screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
         screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-        screen.blit(screenBuff,(0,0)) #covers up text
         display.flip() #updates screen
         time.wait(1000)
         for a in allies:
@@ -2385,6 +2452,7 @@ class Game():
             a.movesLeft = a.move
             if aterr.heal != 0 and a.hp < a.maxhp:
                 screen.blit(screenBuff,(0,0))
+                self.drawPeople()
                 draw.rect(screen,YELLOW,(a.x*30,a.y*30,30,30),2)
                 display.flip()
                 time.wait(500)
@@ -2539,6 +2607,12 @@ class Game():
                     if len(getTargetableAllies(1,1,self.selected.x,self.selected.y,allies)) > 0 and stf.heal != 0:
                         self.menu.items.append("staff")
                         break
+            #CHEST OPTION
+            if (type(self.selected) == Thief and len([i for i in self.selected.items if i.name.lower() == "lock pick"]) > 0) or len([i for i in self.selected.items if i.name.lower() == "chest key"]) > 0:                
+                terron = self.selected.getTerrain(chapterMaps[chapter]) #terrain thief is on
+                if terron.name == "Chest":
+                    if not terron.opened:
+                        self.menu.items.append("chest")
             #STEAL OPTION
             if type(self.selected) == Thief and len(self.selected.items) < 5:
                 units = getUnitsWithinRange(self.selected.x,self.selected.y,1,1,enemies)
@@ -2613,7 +2687,7 @@ class Game():
                     self.moveSelect() #handles movements by player
                     self.clickedFrame = self.framecounter #sets the clickedFrame to self
                 #----MENU MODE
-                if self.mode in ["optionmenu","itemattack","item","mainmenu"]:                    
+                if self.mode in ["optionmenu","itemattack","item","mainmenu","itemchest","itemstaff"]:                    
                     #moves selected menu item
                     self.menu.moveSelect()
                 #----ATTACK MODE
@@ -2727,6 +2801,11 @@ class Game():
                             self.mode = "itemstaff"
                             self.menu.selected = 0
                             self.menu.items = [i for i in self.selected.items if type(i) == Staff]
+                        elif self.menu.getOption().lower() == "chest":
+                            #adds the item to inventory from chest, sets chest item to None
+                            self.mode = "itemchest"
+                            self.menu.items = [i for i in self.selected.items if i.name.lower() in ["lock pick","chest key"]]
+                            self.menu.height = len(self.menu.items)*30
                         elif self.menu.getOption().lower() == "trade":
                             self.mode = "trade"
                             self.selectedAlly = 0
@@ -2872,6 +2951,33 @@ class Game():
                                     self.moved.add(self.selected)
                                 self.oldx,self.oldy = self.selected.x,self.selected.y
                                 self.oldM = self.selected.movesLeft
+                    #CHEST MODE CLICKS
+                    elif self.mode == "itemchest":
+                        self.menu.getOption().dur -= 1
+                        terron = self.selected.getTerrain(chapterMaps[chapter]) #terrain we're on
+                        if len(self.selected.items) < 5:
+                            self.selected.addItem(terron.item)
+                        else:
+                            itemOverflow(self.selected,terron.item)
+                        terron.opened=True
+                        terron.img = openChest
+                        screen.blit(self.filler,(0,0))
+                        drawMap(chapterMaps[chapter])#draws all terrain
+                        drawGrid(screen)
+                        self.filler = screen.copy() #resets filler to accomodate new chest image
+                        if not self.selected.mounted or self.selected.movesLeft == 0:
+                            self.mode = "freemove"
+                            self.attacked.add(self.selected)
+                            self.moved.add(self.selected)
+                        else:
+                            self.mode = "move"
+                            self.oldM = self.selected.movesLeft
+                            self.oldX,self.oldY = self.selected.x,self.selected.y
+                            self.attacked.add(self.selected)
+                        dispTempMsg(screen,terron.item.name+" looted",centerX=True,centerY=True)
+                        if self.menu.getOption().dur == 0:
+                            dispTempMsg(screen,self.menu.getOption() + " broke!",centerX=True,centerY=True)
+                            self.selected.removeItem(self.menu.getOption())
                     #STEAL MODE CLICKS
                     elif "steal" in self.mode:
                         if self.mode == "steal1":
@@ -2931,6 +3037,9 @@ class Game():
                         self.mode = "optionmenu"
                         self.createOptionMenu() #creates the option menu and sets the menu to it
                     elif self.mode == "itemstaff":
+                        self.mode = "optionmenu"
+                        self.createOptionMenu() #creates the option menu
+                    elif self.mode == "itemchest":
                         self.mode = "optionmenu"
                         self.createOptionMenu() #creates the option menu
                     elif self.mode == "item":
@@ -3005,6 +3114,12 @@ class Game():
                 if e.key == K_v:
                     self.gameVictory()
                     return 0
+                if e.key == K_l:
+                    for a in allies:
+                        a.gainExp(100)
+                        a.levelUp()
+                        drawLevelUp(screen,a)
+                        #levels everyone up cuz I'm lazy
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
@@ -3142,6 +3257,13 @@ class Game():
                     screen.blit(sans.render("Z to select an item; X to cancel; Arrow keys to change item; S to toggle info mode",True,WHITE),(0,680))
                 else:
                     screen.blit(sans.render("Z to trade selected item with current item; X to cancel; Arrow keys to change item",True,WHITE),(0,680))
+        #CHEST MODE DISPLAY
+        if self.mode == "itemchest":
+            self.menu.draw(self.selected)
+            draw.rect(screen,BLUE,(700,690,500,30))
+            screen.blit(sans.render("Choose an item to open chest with",True,WHITE),(700,690))
+            drawTransRect(screen,BLACK,0,0,1200,40)
+            screen.blit(sans.render("Z to select item; X to cancel; Arrow keys to change selected item",True,WHITE),(0,0))
         #STEAL MODE DISPLAY
         if self.mode == "steal1":
             fillSquares(screen,[(u.x,u.y) for u in self.targetableEnemies],transRed)

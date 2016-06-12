@@ -385,8 +385,11 @@ def singleAttack(screen,person,person2,isenemy,stage,heal=False,stf=None):
     drawFrames(screen,frames[:hitFrame]) #draws frames up tot he hit frame
     if equip.anims != None:
         #if the person's weapon has an animation, we draw it
+        weapAnims = equip.anims
+        if isenemy:
+            weapAnims = [transform.flip(img,True,False) for img in weapAnims]
         weapFiller = screen.copy() #weapon filler - only for the weapon
-        drawFrames(screen,equip.anims) #draws all weapon's animation
+        drawFrames(screen,weapAnims) #draws all weapon's animation
         screen.blit(weapFiller,(0,0)) #covers the weapon's final frame
 
     if heal:
@@ -507,8 +510,14 @@ def pathtoAlly(enemy,stage,allies,enemies):
         spot = node[1]
         x,y = spot
         terr = stage[y][x]
+        if not enemy.canPass(terr):
+            continue #if we can't pass we move on
         if spot in ecoords:
             cost += 2 #increases cost for walking through enemies
+        for w in [i for i in enemy.items if enemy.canEquip(i) and type(i) == Weapon]:
+            for ax,ay in acoords:
+                if canAttackTarget(enemy,ax,ay,x,y,w):
+                    return node[2] #if we can attack an ally we're good
         if spot in acoords:
             return node[2] #stop when we find an ally - always closest due to PriorityQueue
         if 0 <= y < len(stage) and 0 <= x < len(stage[0]) and not visited[y][x] and enemy.canPass(terr):
@@ -551,6 +560,10 @@ def getEnemyAction(enemy,stage,allies,moveableSquares):
     "returns whether enemy should attack or move"
     if enemy.throne:
         moveableSquares = [(enemy.x,enemy.y)] #throne guard can't move
+    if enemy.equip == None:
+        if enemy.guard or enemy.throne:
+            return "stay"
+        return "move"
     attackableSquares = getAttackableSquaresByMoving(moveableSquares,enemy)
     attackableAllies = [(a.x,a.y) for a in allies if (a.x,a.y) in attackableSquares]
     if len(attackableAllies) > 0:
