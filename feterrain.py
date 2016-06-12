@@ -1,22 +1,24 @@
 #Terrain classes
 class Terrain():
     "terrain class"
-    def __init__(self,name,adef,avo,hind,img=None):
+    def __init__(self,name,adef,avo,hind,img=None,heal=0):
         "initialize terrain"
         self.name = name
         self.adef = adef
         self.avo = avo
         self.hind = hind
         self.img = img
+        self.heal = heal
 class Chest(Terrain):
     "chest class"
-    def __init__(self,name,adef,avo,hind,img=None,item=None):
+    def __init__(self,name,adef,avo,hind,img=None,item=None,):
         self.name = name
         self.adef = adef
         self.avo = avo
         self.hind = hind
         self.img = img
         self.item = item
+        self.heal = 0
 class Vendor(Terrain):
     "vendor class"
     def __init__(self,name,adef,avo,hind,img=None,items=[]):
@@ -51,6 +53,7 @@ class Village(Terrain):
         self.item = item
         self.story = story
         self.visited = False
+        self.heal = 0
         if self.story != "":
             pass #get file here
     def setItems(self,item,story):

@@ -78,7 +78,7 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
         place = node[-1][-1]
         if node[0] <= movesleft:
             if 0 <= place[0] < len(stage[0]) and 0 <= place[1] < len(stage) and (place not in visited or visited.get(place) < movesleft - node[0]):
-            
+                hind = stage[place[1]][place[0]].hind if not person.flying else 1
                 if person.canPass(stage[place[1]][place[0]]):
                     if place not in allies+enemies:
                         #the path is already the shortest
@@ -87,7 +87,7 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
                         #put  four directions in the queue
                         visited[place] = movesleft - node[0]
                         for k in [(0,1),(0,-1),(1,0),(-1,0)]:
-                            q.put((node[0]+stage[place[1]][place[0]].hind,node[1]+[(place[0]+k[0],place[1]+k[1])]))                        
+                            q.put((node[0]+hind,node[1]+[(place[0]+k[0],place[1]+k[1])]))                        
 
     moveable = [(x,y,m,ali) for x,y,m,ali in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
     return moveable
@@ -133,8 +133,8 @@ def getUnitsWithinRange(x,y,rnge,maxrnge,persons):
             units.append(p)
     return units
 #----Other Calculations----#
-def canAttackTarget(person,ex,ey,x=None,y=None,weapon=None):
-    "returns whether person can attack square (ex,ey)"
+def canAttackTarget(person,tx,ty,x=None,y=None,weapon=None):
+    "returns whether person can target square (tx,ty)"
     if person.equip == None:
         return False
     if x == None:
@@ -142,7 +142,7 @@ def canAttackTarget(person,ex,ey,x=None,y=None,weapon=None):
     if y == None:
         y = person.y
     weapon = person.equip if weapon == None else weapon
-    return weapon.rnge <= getDistance(x,y,ex,ey) <= weapon.maxrnge
+    return weapon.rnge <= getDistance(x,y,tx,ty) <= weapon.maxrnge
 def getDistance(x,y,x2,y2):
     "returns distance between 2 points"
     return abs(x-x2) + abs(y-y2)
@@ -444,6 +444,7 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
         time.wait(50)      
         if handleEvents(event.get()):
             quit()
+    screen.blit(screenBuff,(0,0))
 def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,centerY=False,fnt=sans):
     "displays message temporarily"
     buffer = screen.copy()
@@ -562,7 +563,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
     "returns optimal ally out of attackableAllies, as well as which weapon to use and where to move"
     #returns a tuple (ally,x,y)
     
-    bestdam = 0 #best damage
+    bestdam = -1 #best damage
     bestAlly = attackableAllies[0]
     bestWeapon = enemy.equip
     bestx,besty = 0,0
@@ -577,12 +578,13 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
                         break
                 else:
                     #if we could not attack any allies with the current weapon, we move on
-                    break
+                    continue
                 perdam = 100*enemy.getDamage(a,stage)/a.hp #percentage of health damage
                 if perdam > bestdam:
                     bestdam = perdam
                     bestAlly = a
                     bestWeapon = w #sets the best stuff
+    enemy.equipWeapon(bestWeapon) #equips best weapon
     allCoords = [(x,y) for x,y in getAttackableSquares(enemy.equip.rnge,enemy.equip.maxrnge,bestAlly.x,bestAlly.y)
                  if (x,y) in moveableSquares] #all coordinates where enemy can attack ally
     bestx,besty = allCoords[0] #best place to move and attack ally
@@ -592,7 +594,6 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
             #if they cannot, we set the bestx and besty to this value and break
             bestx,besty = x,y
             break
-    enemy.equipWeapon(bestWeapon) #equips best weapon
     return (bestAlly,bestx,besty)
 
 

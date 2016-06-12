@@ -77,6 +77,8 @@ class Person():
         adef = eterr.adef #additional defense
         edefen = enemy.defen if not self.equip.mag else enemy.res
         dam = self.stren - edefen - adef + self.equip.mt
+        if enemy.__class__.__name__.title() in self.equip.sup_eff:
+            dam += self.equip.mt*2 #weapon might is tripled
         if self.getAdv(enemy) != -1:
             #if there is an advantage or a disadvantage we handle extra damage
             if self.getAdv(enemy):
@@ -121,6 +123,9 @@ class Person():
         return stage[self.y][self.x]
     def canPass(self,terrain):
         "returns whether person can pass terrain"
+        if "castle" in terrain.name.lower():
+            #nothing can pass castles
+            return False
         if terrain.name.lower() == "wall":
             return False #nothing can pass walls
         if self.flying:

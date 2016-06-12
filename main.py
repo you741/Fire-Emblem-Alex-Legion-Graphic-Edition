@@ -177,6 +177,12 @@ mercenarySwordSprite = ([image.load("images/Mercenary/MercenaryAttackFrame"+str(
 mercenaryStandSprite = mercenarySwordSprite[0][0]
 mercenarySwordcritSprite = ([mercenaryStandSprite]+[image.load("images/Mercenary/MercenaryCritFrame"+str(i+1)+".png")
                                                      for i in range(18)] + mercenarySwordSprite[0][6:],25)
+#KNIGHT
+knightLanceSprite = ([image.load("images/Knight/KnightAttackFrame"+str(i+1)+".png")
+                      for i in range(9)],5)
+knightStandSprite = knightLanceSprite[0][0]
+knightLancecritSprite = ([knightStandSprite] + [image.load("images/Knight/KnightCritFrame"+str(i+1)+".png")
+                          for i in range(5)] + knightLanceSprite[0][1:],10)
 #MAGIC ANIMATIONS
 #--FIRE
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
@@ -207,7 +213,8 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Shaman":[transform.scale(image.load("images/MapSprites/Ally/Shaman"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 #--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
-                   "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                   "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                   "Knight":[transform.scale(image.load("images/MapSprites/Enemy/Knight"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
     allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
@@ -241,6 +248,8 @@ peakImg = image.load("images/terrain/peak.png")
 vendImg = image.load("images/terrain/vendor.png")
 armImg = image.load("images/terrain/armory.png")
 vilImg = image.load("images/terrain/village.png")
+castleImg = image.load("images/terrain/castle.png")
+fortImg = image.load("images/terrain/fort.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
 
@@ -267,7 +276,13 @@ mountain = Terrain("Mountain",2,30,3,mountainImg)
 peak = Terrain("Peak",3,40,4,peakImg)
 vendor = Vendor("Vendor",0,10,1,vendImg)
 armory = Armory("Armory",0,10,1,armImg)
-village = Village("Village",0,10,1,vilImg) #need to fix sprite
+village = Village("Village",0,10,1,vilImg)
+castle = Terrain("Castle",0,0,1,castleImg)
+castlePiece = Terrain("Castle",0,0,1)
+gate = Terrain("Gate",2,20,2,heal=6)
+fort = Terrain("Fort",2,20,2,fortImg,heal=6)
+throne = Terrain("Throne",30,3,3) #needs img
+water = Terrain("Water",10,0,3) #needs img
 #ITEMS
 #Troll weapons
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
@@ -278,6 +293,7 @@ steel_bow = Weapon("Steel Bow",9,9,30,70,"Bow",200,720,0,2,30,False,[],2)
 iron_lance = Weapon("Iron Lance",7,8,45,80,"Lance",100,360)
 steel_lance = Weapon("Steel Lance",10,13,30,70,"Lance",200,480)
 silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",500,1200)
+long_lance = Weapon("Long Lance",8,12,20,65,"Lance",200,900,maxrnge=2)
 #Anima Magic
 fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2,anims=fireSprite)
 #Light Magic
@@ -431,6 +447,16 @@ alexTheMerc = Mercenary("Alex the Merc",0,0,
                  {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],100,guard=True,
                 fightQuote="You think you can stand up to LEX REAPER!? Ha! Try me",
                 deathQuote="Watch out King Alex... these men are strong... After all, they even bested me!")
+#--Knights
+knight2 = Knight("Knight",0,0,
+                {"lv":5,"stren":8,"defen":6,"skl":3,"lck":0,
+                "spd":1,"con":12,"move":4,"res":0,"hp":20,"maxhp":20},{},[iron_lance.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],20,guard=True)
+alexTheKnight = Knight("Knight Alex",0,0,
+                {"lv":10,"stren":10,"defen":8,"skl":5,"lck":1,
+                "spd":4,"con":15,"move":4,"res":0,"hp":30,"maxhp":30},{},[steel_lance.getInstance(),long_lance.getInstance()],{"Lance":300},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Bandit"],100,throne=True)
+
 enemies = []
 LS(660)
 #----CHAPTERS----#
@@ -464,9 +490,15 @@ terrDict = {".":plain,
             "|":forest,
             "^":mountain,
             "&":peak,
-            "s":vendor,
-            "r":armory,
-            "v":village} #translates string into terrain
+            "S":vendor,
+            "R":armory,
+            "V":village,
+            "$":castle,
+            "%":castlePiece,
+            "T":throne,
+            "G":gate,
+            "@":fort,
+            "-":water} #translates string into terrain
 def createMapFromFile(chapterNum):
     "creates map from file"
     newMap = []
@@ -477,11 +509,11 @@ def createMapFromFile(chapterNum):
         newLine = []
         for c in line:
             terr = terrDict[c]
-            if c in ["s","r"]:
+            if c in ["S","R"]:
                 terr = chapterShops[chapterNum][shopNum]
                 shopNum += 1
-            if c == "v":
-                terr = chapterVillages[chapterNum][villageNum]
+            if c == "V":
+                terr = chapterVillages[chapterNum][villageNum].getInstance()
                 villageNum += 1
             newLine.append(terr)
         newMap.append(newLine)
@@ -508,10 +540,21 @@ def getAcoords(chapterNum):
         line = map2D[y]
         for x in range(len(line)):
             c = line[x]
-            if c in "abcdefghijklmnopq":
+            if c in "abcdefghijklmnopqrstuvwxyz":
                 coords.append((c,x,y))
     coords.sort()
     return [(x,y) for c,x,y in coords] #returns coordinates for enemies
+def getNumEnList(chapterNum):
+    "gets list of number of enemies in specified chapter"
+    numEnList = [0 for i in range(10)]#the result
+    map2D = open("maps/chapter"+str(chapterNum)+"C.txt").read().strip().split("\n")
+    for y in range(len(map2D)):
+        line = map2D[y]
+        for x in range(len(line)):
+            c = line[x]
+            if isInt(c):
+                numEnList[int(c)] += 1
+    return [i for i in numEnList if i != 0] #returns all non-zeros
 def drawMap(maptodraw):
     "draws a map"
     for y in range(len(maptodraw)):
@@ -529,7 +572,7 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                 "Defeat all enemies",plainsBackground),
                ([albert,franny,gary,henning],getAcoords(1),createEnemyList([bandit1,merc1,alexTheMerc],[6,6,1],getEcoords(1)),
                 "Defeat all enemies",plainsBackground),
-               ([henry,eric,kevin,stefano,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v],[8,8,1],getEcoords(2)),
+               ([henry,eric,kevin,stefano,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v,knight2,alexTheKnight],getNumEnList(2),getEcoords(2)),
                 "Seize gate",plainsBackground)]
 chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
@@ -1513,8 +1556,8 @@ class InfoScreen():
             if ind >= len(pList):
                 ind = 0
             self.p = pList[ind]
-            cm.selectx,cm.selecty = self.p.x,self.p.x
-        if kp[K_RIGHT] or kp[K_LEFT]:
+            cm.selectx,cm.selecty = self.p.x,self.p.y
+        elif kp[K_RIGHT] or kp[K_LEFT]:
             #changes mode
             modes = ["stats","items","mastery"]
             ind = modes.index(self.mode)
@@ -2042,6 +2085,7 @@ class Story():
     def run(self,screen):
         "runs the story dialogue"
         global running
+        event.clear()
         screen.blit(self.background,(0,0))
         func,sentence = self.dialogue[self.currDial].split(":") #function and sentence to display
 
@@ -2333,12 +2377,23 @@ class Game():
         self.drawPeople()
         screen.blit(transform.scale(transBlue,(1200,60)),(0,330)) #blits the text "PLAYER PHASE" on a translucent blue strip
         screen.blit(papyrus.render("PLAYER PHASE",True,WHITE),(450,340))
-        for a in allies:
-            a.movesLeft = a.move
-        for e in enemies:
-            e.movesLeft = e.move
+        screen.blit(screenBuff,(0,0)) #covers up text
         display.flip() #updates screen
         time.wait(1000)
+        for a in allies:
+            aterr = a.getTerrain(chapterMaps[chapter])
+            a.movesLeft = a.move
+            if aterr.heal != 0 and a.hp < a.maxhp:
+                screen.blit(screenBuff,(0,0))
+                draw.rect(screen,YELLOW,(a.x*30,a.y*30,30,30),2)
+                display.flip()
+                time.wait(500)
+                if handleEvents(event.get()):
+                    quit()
+                drawChangingBar(screen,a.hp,a.hp+aterr.heal,a.maxhp,420,330,390,60,"Hp",False)
+                a.hp = min(a.hp+aterr.heal,a.maxhp)
+        for e in enemies:
+            e.movesLeft = e.move
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
         if handleEvents(event.get()):
@@ -2368,12 +2423,22 @@ class Game():
                     return 0
             #DRAWS PEOPLE
             self.drawPeople()
-            draw.rect(screen,WHITE,(en.x*30,en.y*30,30,30),1)
+            draw.rect(screen,YELLOW,(en.x*30,en.y*30,30,30),2)
+            eterr = en.getTerrain(chapterMaps[chapter])
+            if eterr.heal != 0 and en.hp < en.maxhp:
+                display.flip()
+                time.wait(500)
+                if handleEvents(event.get()):
+                    quit()
+                drawChangingBar(screen,en.hp,en.hp+eterr.heal,en.maxhp,420,330,390,60,"Hp",False,RED)
+                en.hp = min(en.hp+eterr.heal,en.maxhp)
             display.flip()
             time.wait(200)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
             enemyMoves = getMoves(en,en.x,en.y,en.movesLeft,chapterMaps[chapter],encoords,acoords,{}) #enemy's moveableSquares
+            if en.throne:
+                enemyMoves = [(en.x,en.y,en.move,[(en.x,en.y)])] #throne guard can't move
             enMoves = [(x,y) for x,y,m,ali in enemyMoves]
             action = getEnemyAction(en,chapterMaps[chapter],allies,enMoves)
             if action == "attack":
@@ -2447,6 +2512,14 @@ class Game():
         self.menu = Menu(32,2,270,30,FilledSurface((1,1),BLUE),0,[]) #menu for optionmenu mode
         #----Menu Creation
         if self.selected not in self.attacked:
+            #SEIZE OPTION
+            if self.selected == yoyo:
+                #only yoyo can seize
+                terr = self.selected.getTerrain(chapterMaps[chapter])
+                if terr.name.lower() == "gate" and self.goal.lower() == "seize gate":
+                    self.menu.items.append("seize")
+                elif terr.name.lower() == "throne" and self.goal.lower() == "seize throne":
+                    self.menu.items.append("seize")
             #ATTACK OPTION
             if not (self.selected in self.attacked or self.selected.equip == None):
                 for w in [i for i in self.selected.items if type(i) == Weapon]:
@@ -2637,6 +2710,9 @@ class Game():
                     #OPTION MENU CLICK
                     elif self.mode == "optionmenu":
                         #allows user to select options
+                        if self.menu.getOption().lower() == "seize":
+                            self.gameVictory()
+                            return 0
                         if self.menu.getOption().lower() == "attack":
                             self.mode = "itemattack"
                             self.menu.selected = 0
@@ -2666,9 +2742,9 @@ class Game():
                             if not isvillage:
                                 self.shopScreen = ShopScreen(self.selected,chapterMaps[chapter][self.selected.y][self.selected.x].items,isvendor)
                             else:
-                                village = self.selected.getTerrain(chapterMaps[chapter])
-                                village.visited = True
-                                villageScreen = VillageScreen(self.selected,village) #creates the dialogue
+                                vill = self.selected.getTerrain(chapterMaps[chapter])
+                                vill.visited = True
+                                villageScreen = VillageScreen(self.selected,vill) #creates the dialogue
                                 villageScreen.run(screen) #runs the dialogue
                                 self.mode = "move" #resets everything
                                 self.attacked.add(self.selected)
