@@ -1,14 +1,19 @@
-images/backgrounds/forest.jpg
+images/backgrounds/Randonia1.png
 :Long ago, the land of Randonia was ruled by the kingdom of randomness.
+BACKGROUND:images/backgrounds/KingYouZhouI.png
 :The man who started this kingdom was named King You Zhou I.
 :After 17 generations of rule, someone disapproved of the You Zhou rule.
+BACKGROUND:images/backgrounds/KingAlex1.png
 :That man's name was Alex.
 :All who joined him renamed themselves Alex or Alexa and massacred 14 of the 15 major cities' lords and bourgeoise.
 :The fifteenth city, Leadia, the capital was almost completely exterminated.
+BACKGROUND:images/backgrounds/PrinceYouZhouXVII.png
 :Only Prince You Zhou XVII managed to escape, along with a few trustworthy helpers.
+BACKGROUND:images/backgrounds/AlexBandits.png
 :However Alex supporting bandits separated Prince You Zhou from his allies.
-:You Zhou now finds a man unconscious in the woods of Leadia...
-TITLE:Prologue- The lost one in the woods
+:You Zhou now finds someone unconscious in the woods of Leadia...
+TITLE:Prologue - The lost one in the woods
+BACKGROUND:images/backgrounds/forest.jpg
 Yoyo: I found you sleeping here. I'm Prince You Zhou XVII, but you can call me Yoyo, as my formal name is quite long.
 *Player*: I forget... who I am...
 Yoyo: Do you at least remember your name?
@@ -18,4 +23,4 @@ Yoyo: Pleasure to be your acquaintance. Come with me to Hypobrit and I'll find s
 Bandit: Haha! Got ya surrounded. Prepare to die!
 Yoyo: Oh no! The bandits caught up to me! Quick! Hide!
 *Player*: No... for some reason I feel inclined to help you fight.
-Yoyo: Alright, just be careful!
+Yoyo: Alright, just be careful! And stand on mountains or in forests - it makes it easier to dodge attacks.

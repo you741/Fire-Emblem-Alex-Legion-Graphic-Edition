@@ -331,6 +331,7 @@ class Priest(Person):
     "priest class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         super(Priest,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.magical = True
 class Archer(Person):
     "archer class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
@@ -339,7 +340,10 @@ class Shaman(Person):
     "shaman class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         super(Shaman,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
-
+        self.magical = True
+class Revenant(Person):
+    "revenant class"
+    pass
 class Poop(Person):
     "poop class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):

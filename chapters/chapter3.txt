@@ -1,9 +1,5 @@
-images/backgrounds/forest.jpg
-:The group arrive at the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex.
-CONDITION:Albert;
-Albert:Whaaaa.....!
-CONDITION:*End*
-Yoyo:What's going on!?!?!??!?!?
-CONDITION:Henry;
-Henry:Oh no, what do we do?
-CONDITION:*End*
+images/backgrounds/xelaFortressExt.png
+:Now at the exterior of the Xela Fortress, You Zhou and co. decide to go in and seize the throne.
+TITLE:Chapter 3 - Conquering Xela
+Yoyo:Alright guys, you all ready?
+*Player*:Let us proceed.
