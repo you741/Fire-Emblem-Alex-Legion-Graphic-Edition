@@ -1,0 +1,3 @@
+images/backgrounds/xelaFortressExt.png
+Yoyo:We won...
+*Player*:Let's go then.
