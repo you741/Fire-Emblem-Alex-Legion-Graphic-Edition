@@ -639,23 +639,6 @@ def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
         opt = menu[i].title() #option to draw
         screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
-def drawItemMenu(person,x,y,menuselect):
-    "draws an item menu for a person"
-    if x + 8 > 39:
-        x -= 9
-    if y + 5 > 24:
-        y -= 4
-    draw.rect(screen,BLUE,(x*30,y*30,240,150)) #########CANCEEEEEEEEERRRRRRRRRR
-    for i in range(5):
-        if i < len(person.items):
-            col = WHITE
-            if type(person.items[i]) in [Weapon,Staff]:
-                if not person.canEquip(person.items[i]):
-                    #if the person cannot equip, the color goes grey
-                    col = GREY
-            screen.blit(sans.render(person.items[i].name,True,col),(x*30,(y+i)*30))
-            screen.blit(sans.render(str(person.items[i].dur)+"/"+str(person.items[i].maxdur),True,col),((x+6)*30,(y+i)*30)) #blits durability
-    draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,240,30),1) #draws selected item
 def drawItem(person,item,x,y,diff=180,fnt=sans):
     "draws an item"
     col = WHITE
