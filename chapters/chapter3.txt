@@ -1,5 +1,21 @@
 images/backgrounds/xelaFortressExt.png
 :Now at the exterior of the Xela Fortress, You Zhou and co. decide to go in and seize the throne.
+:The Xela Fortress is guarded by powerful magic users, as well as some newly spawned Revenants - demons from the Underworld.
+:Once the throne is seized though, You Zhou and co. will have access to the train, and thus the Sacred Isle.
 TITLE:Chapter 3 - Conquering Xela
+Yoyo:Whoa! Those are Revenants!
+*Player*:Revenants?
+Yoyo:They are demons from the underworld... Light Magic is super effective on them.
+*Player*:Hmmm... you are the only capable of using Light Magic. You wouldn't mind using it on them would you?
+Yoyo:Nope. By the way you should know something about magic. There are three main types, Light, Anima and Dark. Dark magic beats Anima magic, Anima magic beats Light magic and Light magic beats Dark magic.
+*Player*:Thanks for the information.
+CONDITION:Brandon;
+Brandon:Remember, I can pick items from chests using my trusty lockpicks! Just have me stand on the chest and I can take the item.
+*Player*:Good to know.
+CONDITION:*End*
+CONDITION:Gary;
+Gary:Alright bros, I carry. [I can do pretty well against those lance users, so have me fight them. But remember this: Defense protects a unit from physical attacks like lances and axes, whereas Resistance protects you from magical attacks like fire and lightning. I have high defense, but low resistance, so magic users can do quite a number to me. Typically magic users have high resistance and low defense, and everyone else is the opposite. Well GL m8]
+CONDITION:*End*
 Yoyo:Alright guys, you all ready?
 *Player*:Let us proceed.
+Yoyo:Alright then, let's fight!
