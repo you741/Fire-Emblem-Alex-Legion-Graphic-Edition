@@ -29,39 +29,6 @@ fpsLimiter = time.Clock() #fps Limiting clock
 infoBox = image.load('images/infoBox.png')
 infoBoxNW = image.load('images/infoBoxNW.png')
 #----Map Calculations----#
-##def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
-##    "gets all moveable squares for a person"
-##    moveable = [] #moveable squares
-##    #NOTE: the dictionary "visited" stores the amount of moves left after travelling to a point
-##    #in order to make this value optimal, I reset everytime I find a lower movesleft value
-##    #this is only really useful for mounted units
-##    if movesleft >= 0 and 0 <= y < len(stage) and 0 <= x < len(stage[0]) and ((x,y) not in visited or visited.get((x,y)) < movesleft):           
-##        if (x,y) not in allies+enemies:
-##            moveable.append((x,y,movesleft))
-##        if (x,y) not in enemies:
-##            if person.canPass(stage[y][x]):
-##                #if the person can pass this terrain
-##                #we call the function in four directions
-##                visited[(x,y)] = movesleft #sets visited at (x,y) to movesleft
-##                moveable += getMoves(person,x-1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-##                moveable += getMoves(person,x+1,y,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-##                moveable += getMoves(person,x,y-1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-##                moveable += getMoves(person,x,y+1,movesleft-stage[y][x].hind,stage,allies,enemies,visited)
-##    moveable = [(x,y,m) for x,y,m in moveable if visited[(x,y)] == m] #seeds out all non-optimal tuples (where m isn't as high as it could be)
-##    return moveable
-##
-##def getOptimalpath(person,x,y,movesleft,stage,allies,enemies,visited):
-##    "returns the optimal path from point to point as a list of coordinates"
-##    paths = Queue() #stores the paths as (travel dist, [coords])
-##    paths.put(0,[person.x,person.y])
-##    while True:
-##        node = paths.get()
-##        if node[0] - movesleft <= 0:
-##            break
-##    
-##
-##    
-##    return node[1]
 
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
     "returns all moveable squares with the pathing to it"
@@ -199,6 +166,43 @@ def createEnemyList(enemies,amounts,coords):
     return enemyList
 
 #----Drawing Functions----#
+def tileBackground(background,width,height):
+    "returns tiled background based on width and height, width and height > 2/3 original width and height"
+    #----vertically----#
+    vtilenum = height // background.get_height()
+    vtiledbackground = Surface((background.get_width(),height))
+    ##take top tier, bottom tier, place at top and bottom
+    ##stretch the middle
+    top = background.subsurface((0,0,int(background.get_width()),int(background.get_height()/3)))
+    bottom = background.subsurface((0,int(2*(background.get_height()/3)),int(background.get_width()),int(background.get_height()/3)))
+    middle = background.subsurface((0,int(background.get_height()/3),int(background.get_width()),int(background.get_height()/3)))
+    ##for each tilenum-1(tilenum times, but the original is already there, and starts at 0), blit 3 of the middle
+    for i in range (vtilenum):
+        vtiledbackground.blit(middle,(0,i*int(background.get_height())+int((0)*background.get_height()/3)))
+        vtiledbackground.blit(middle,(0,i*int(background.get_height())+int((1)*background.get_height()/3)))
+        vtiledbackground.blit(middle,(0,i*int(background.get_height())+int((2)*background.get_height()/3)))
+    vtiledbackground.blit(top,(0,0))
+    vtiledbackground.blit(middle,(0,int(vtiledbackground.get_height()-(2)*background.get_height()/3)))
+    vtiledbackground.blit(bottom,(0,int(vtiledbackground.get_height()-(1)*background.get_height()/3)))
+    #----vertically----#
+
+    #----horizontally----#
+    htilenum = width // background.get_width()
+    tiledbackground = Surface((width,height))
+    left = vtiledbackground.subsurface((0,0,int(vtiledbackground.get_width()/3),int(vtiledbackground.get_height())))
+    right = vtiledbackground.subsurface((int(2*(vtiledbackground.get_width()/3)),0,int(vtiledbackground.get_width()/3),int(vtiledbackground.get_height())))
+    hmiddle = vtiledbackground.subsurface((int(vtiledbackground.get_width()/3),0,int(vtiledbackground.get_width()/3),int(vtiledbackground.get_height())))
+    for i in range (htilenum):
+        tiledbackground.blit(hmiddle,(i*int(vtiledbackground.get_width())+int((0)*vtiledbackground.get_width()/3),0))
+        tiledbackground.blit(hmiddle,(i*int(vtiledbackground.get_width())+int((1)*vtiledbackground.get_width()/3),0))
+        tiledbackground.blit(hmiddle,(i*int(vtiledbackground.get_width())+int((2)*vtiledbackground.get_width()/3),0))
+    tiledbackground.blit(left,(0,0))
+    tiledbackground.blit(hmiddle,(int(tiledbackground.get_width()-(2)*vtiledbackground.get_width()/3),0))
+    tiledbackground.blit(right,(int(tiledbackground.get_width()-(1)*vtiledbackground.get_width()/3),0))
+    #----horizontally----#
+    
+    return tiledbackground
+
 def drawTransRect(screen,color,x,y,width,height):
     "draws a transparent rectangle"
     surf = Surface((width,height),SRCALPHA)
@@ -218,8 +222,9 @@ def drawLevelUp(screen,person):
     "draws the stat changes when a unit levels up"
     #the unit's individual stat attribute changes, but not the value in the dictionary "stats"
     #that's how we calculate which stats changed
-    screenBuff = screen.copy() #screen buffer    
-    draw.rect(screen,(0,0,255),(300,240,600,240))
+    screenBuff = screen.copy() #screen buffer
+    screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),600,240),(300,240))
+ #   draw.rect(screen,(0,0,255),(300,240,600,240))
     person.stats["lv"] += 1 #increases stats level member by one (should be same as person's lv member after the increase)
     screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
     statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
@@ -654,24 +659,7 @@ def writeDialogue(screen,sentence,x=0,y=530,name=None,face=None,fnt=sans):
         display.flip()
         fpsLimiter.tick(30) #limits it to 30 FPS
     return 1
-#----AESTHETIC FUNCTIONS----#
-def tileBackground(background,tilenum):
-    "returns tiled background tilenum times, tilenum > 0"
-    tiledbackground = Surface((background.get_width(),background.get_height()*tilenum))
-    ##take top tier, bottom tier, place at top and bottom
-    ##stretch the middle
-    top = background.subsurface((0,0,int(background.get_width()),int(background.get_height()/3)))
-    bottom = background.subsurface((0,int(2*(background.get_height()/3)),int(background.get_width()),int(background.get_height()/3)))
-    middle = background.subsurface((0,int(background.get_height()/3),int(background.get_width()),int(background.get_width()/3)))
-    ##for each tilenum-1(tilenum times, but the original is already there, and starts at 0), blit 3 of the middle
-    for i in range (tilenum):
-        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((0)*background.get_height()/3)))
-        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((1)*background.get_height()/3)))
-        tiledbackground.blit(middle,(0,i*int(background.get_height())+int((2)*background.get_height()/3)))
-    tiledbackground.blit(top,(0,0))
-    tiledbackground.blit(middle,(0,int(tiledbackground.get_height()/3)))
-    tiledbackground.blit(bottom,(0,int(tiledbackground.get_height()-background.get_height()/3)))
-    return tiledbackground
+
 #----USEFUL FUNCTIONS----#
 def isInt(string):
     "checks if a string represents an Int"

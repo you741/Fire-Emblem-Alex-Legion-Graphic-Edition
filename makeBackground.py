@@ -2,9 +2,8 @@ from pygame import *
 from math import *
 screen = display.set_mode((1200,720))
 img = transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60))
-#fix so height actually becomes height -> blit the bottom slightly lower
 def tileBackground(background,width,height):
-    "returns tiled background tilenum times, tilenum > 0"
+    "returns tiled background based on width and height, width and height > 2/3 original width and height"
     #----vertically----#
     vtilenum = height // background.get_height()
     vtiledbackground = Surface((background.get_width(),height))
@@ -37,6 +36,7 @@ def tileBackground(background,width,height):
     tiledbackground.blit(hmiddle,(int(tiledbackground.get_width()-(2)*vtiledbackground.get_width()/3),0))
     tiledbackground.blit(right,(int(tiledbackground.get_width()-(1)*vtiledbackground.get_width()/3),0))
     #----horizontally----#
+    
     return tiledbackground
 
 running = True

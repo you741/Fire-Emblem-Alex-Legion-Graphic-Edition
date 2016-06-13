@@ -1134,16 +1134,12 @@ class Menu():
                 self.selected = len(self.items) - 1
             elif self.selected >= len(self.items):
                 self.selected = 0
-    def makeBackground(self):
-        "transforms the background based on self.width & height"
-#        self.background = image.load("images/Menu/menubackground.png")
-#        sides = [self.background.subsurface(0,0,3,self.background.get_height()).copy(),self.background.subsurface(self.background.get_width()-3,0,3,self.background.get_height()).copy()]
- #       top = [self.background.subsurface(
+
     def draw(self,person=None):
         "draws a list of strings as a vertical menu at positions x and y"
- #       draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
-        screen.blit(transform.smoothscale(image.load("images/Menu/menubackground.png"),(self.width,self.height)),(self.x*30-3,self.y*30))
-        screen.blit(self.background,(self.x*30,self.y*30)) #blits the background (nothing atm)
+#        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
+        self.background = tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height)
+        screen.blit(self.background,(self.x*30,self.y*30))
         x = self.x*30
         for i in range(len(self.items)):
             #draws the item
@@ -1215,8 +1211,11 @@ class TradeMenu(Menu):
             return [self.firstSelection,self.getOption()]
     def draw(self,person=None,person2=None):
         "draws the trade menu"
-        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
-        draw.rect(screen,BLUE,((self.x+1)*30+self.width,self.y*30,self.width,self.height)) #draws two rectangles
+#        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
+        screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),(self.x*30,self.y*30))
+        screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),((self.x+1)*30+self.width,self.y*30))
+
+ #       draw.rect(screen,BLUE,((self.x+1)*30+self.width,self.y*30,self.width,self.height)) #draws two rectangles
         screen.blit(self.background,(self.x*30,self.y*30)) #blits the background
         screen.blit(self.background,((self.x+1)*30+self.width,self.y*30))
         people = [person,person2] #list of people
