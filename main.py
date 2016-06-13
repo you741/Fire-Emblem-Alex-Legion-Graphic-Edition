@@ -1135,12 +1135,14 @@ class Menu():
             elif self.selected >= len(self.items):
                 self.selected = 0
     def makeBackground(self):
-        "transforms the background based on how many items are in it"
-        #WIP
-        pass
+        "transforms the background based on self.width & height"
+#        self.background = image.load("images/Menu/menubackground.png")
+#        sides = [self.background.subsurface(0,0,3,self.background.get_height()).copy(),self.background.subsurface(self.background.get_width()-3,0,3,self.background.get_height()).copy()]
+ #       top = [self.background.subsurface(
     def draw(self,person=None):
         "draws a list of strings as a vertical menu at positions x and y"
-        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
+ #       draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
+        screen.blit(transform.smoothscale(image.load("images/Menu/menubackground.png"),(self.width,self.height)),(self.x*30-3,self.y*30))
         screen.blit(self.background,(self.x*30,self.y*30)) #blits the background (nothing atm)
         x = self.x*30
         for i in range(len(self.items)):
@@ -1148,7 +1150,7 @@ class Menu():
             opt = self.items[i] #option to draw
             y = (self.y+i)*30
             if type(opt) == str:
-                screen.blit(sans.render(opt.title(),True,WHITE),(x,y))
+                screen.blit(sans.render(opt.title(),True,BLACK),(x,y))
             elif type(opt) == Item or issubclass(type(opt),Item):
                 drawItem(person,opt,x,y)
                 if self.info and self.selected == i:
@@ -3176,7 +3178,7 @@ class Game():
             self.menu.x,self.menu.y = 32,2
             if self.selected.x >= 20:
                 self.menu.x = 0
-            self.menu.width=270
+            self.menu.width=230
             self.menu.height=30*len(self.menu.items)
             self.menu.draw()
             y = 0 if self.selected.y > 12 else 680
