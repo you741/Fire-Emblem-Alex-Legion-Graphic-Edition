@@ -477,7 +477,7 @@ alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
                 "spd":9,"con":10,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
                  {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],100,guard=True,
-                fightQuote="You think you can stand up to LEX REAPER!? Ha! Try me",
+                fightQuote="You think you can stand up to the LEX REAPER!? Ha! Try me",
                 deathQuote="Watch out King Alex... these men are strong... After all, they even bested me!")
 #--Knights
 knight2 = Knight("Knight",0,0,
@@ -717,7 +717,6 @@ def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
         opt = menu[i].title() #option to draw
         screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
-
 def drawItem(person,item,x,y,diff=180,fnt=sans):
     "draws an item"
     col = WHITE
@@ -2897,7 +2896,7 @@ class Game():
                                     #if it breaks we remove it
                                     self.selected.removeItem(self.selectedItem) #removes selectedItem from items
                                 self.mode = "move"
-                                if not self.selected.mounted and self.selected.movesLeft > 0:
+                                if not self.selected.mounted or self.selected.movesLeft == 0:
                                     self.moved.add(self.selected)
                                     self.mode = "freemove"
                                 self.attacked.add(self.selected) #guy who used consumable can't move - treated like an attack
