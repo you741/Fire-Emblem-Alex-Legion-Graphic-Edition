@@ -1217,7 +1217,7 @@ class Menu():
             opt = self.items[i] #option to draw
             y = (self.y+i)*30
             if type(opt) == str:
-                screen.blit(sans.render(opt.title(),True,BLACK),(x,y))
+                screen.blit(sans.render(opt.title(),True,WHITE),(x,y))
             elif type(opt) == Item or issubclass(type(opt),Item):
                 drawItem(person,opt,x,y)
                 if self.info and self.selected == i:
@@ -3067,6 +3067,7 @@ class Game():
                                     exec("self.selected."+self.selectedItem.stat+"+="+str(self.selectedItem.amnt)) #updates stat
                                     self.selected.stats[self.selectedItem.stat] += self.selectedItem.amnt
                                     dispTempMsg(screen,self.selectedItem.stat.title()+" Increased",centerX=True,centerY=True)
+                                    self.selected.removeItem(self.selectedItem)
                                 if type(self.selectedItem) == Promotional:
                                     #PROMOTIONAL
                                     ind = allies.index(self.selected)
@@ -3078,6 +3079,7 @@ class Game():
                                     allies[ind] = newPerson
                                     exec(nameOfPerson.lower()+"=newPerson") #resets new person as well
                                     drawPromotion(screen,newPerson,oldPerson)
+                                    self.selected.removeItem(self.selectedItem)
                                 self.mode = "move"
                                 if not self.selected.mounted or self.selected.movesLeft == 0:
                                     self.moved.add(self.selected)
