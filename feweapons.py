@@ -60,3 +60,23 @@ class Consumable(Item):
         if self.dur <= 0:
             return False
         return True
+class Booster(Item):
+    "Boosts a stat"
+    def __init__(self,name,maxdur,cost,stat,amnt,desc="",dur=None):
+        super(Booster,self).__init__(name,maxdur,cost,desc,dur)
+        self.stat = stat
+        self.amnt = amnt
+    def getInstance(self):
+        return Booster(self.name,self.maxdur,self.cost,self.stat,self.amnt,self.desc,self.dur)
+class Promotional(Item):
+    "promotes a unit"
+    def __init__(self,name,maxdur,cost,clss,desc="",dur=None):
+        super(Promotional,self).__init__(name,maxdur,cost,desc,dur)
+        self.clss = clss #classes that can be promoted
+    def canUse(self,p):
+        "can the person use it?"
+        if p.__class__.__name__.lower() in self.clss and p.lv >= 10:
+            return True
+        return False
+    def getInstance(self):
+        return Promotional(self.name,self.maxdur,self.cost,self.clss,self.desc,self.dur)

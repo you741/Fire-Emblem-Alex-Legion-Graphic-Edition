@@ -219,7 +219,7 @@ def drawLevelUp(screen,person):
     #the unit's individual stat attribute changes, but not the value in the dictionary "stats"
     #that's how we calculate which stats changed
     screenBuff = screen.copy() #screen buffer    
-    draw.rect(screen,(0,0,255),(300,240,600,240))
+    draw.rect(screen,BLUE,(300,240,600,240))
     person.stats["lv"] += 1 #increases stats level member by one (should be same as person's lv member after the increase)
     screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
     statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
@@ -239,7 +239,45 @@ def drawLevelUp(screen,person):
             display.flip()
             time.wait(500)
     time.wait(1500)
-    
+    screen.blit(screenBuff,(0,0))
+def drawPromotion(screen,person,oldPerson):
+    "draws a promotion - very similar to drawLevelUp"
+    screenBuff = screen.copy() #screen buffer    
+    draw.rect(screen,BLUE,(300,240,600,240))
+    screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
+    statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
+                  "res":(300,450)} #dictionary of the coordinates of every stat
+    for i,k in enumerate(statCoords):
+        screen.blit(sans.render(k.title()+": "+str(oldPerson.stats[k]),True,WHITE),statCoords[k])
+    screen.blit(sans.render(oldPerson.__class__.__name__,True,WHITE),(500,240))
+    display.flip()
+    time.wait(300)                            
+    if handleEvents(event.get()):
+        quit()
+    draw.rect(screen,BLUE,(500,240,400,30))
+    screen.blit(sans.render(person.__class__.__name__,True,WHITE),(500,240))
+    display.flip()
+    time.wait(500)
+    if handleEvents(event.get()):
+        quit()
+    for i,k in enumerate(statCoords):
+        #draws a +1 next to every stat gained
+        if oldPerson.stats[k] != person.stats[k]:                            
+            if handleEvents(event.get()):
+                quit()
+            newStatValue = person.stats[k]
+            screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
+            display.flip()
+            time.wait(500)
+    for i,k in enumerate(person.mast):
+        if k not in oldPerson.mast:
+            dispTempMsg(screen,"You can now use "+k+" weapons",centerX=True,centerY=True)
+        if handleEvents(event.get()):
+            quit()
+    time.wait(1500)                            
+    if handleEvents(event.get()):
+        quit()
+    screen.blit(screenBuff,(0,0))
 def drawHealthBar(screen,person,x,y):
     "draws a health bar"
     hpx,hpy = x,y #x,y for each health point line
@@ -395,11 +433,11 @@ def singleAttack(screen,person,person2,isenemy,stage,heal=False,stf=None):
     if heal:
         drawHealthGain(screen,person2,dam)
     elif not hit:
-        screen.blit(papyrus.render("MISS!",True,(0,0,0)),(x,y)) #writes MISS
+        screen.blit(papyrus.render("MISS!",True,WHITE,BLUE),(x,y)) #writes MISS
         display.flip()
         time.wait(500)
     elif dam == 0:
-        screen.blit(papyrus.render("NO DAMAGE!",True,(0,0,0)),(x,y)) #writes NO DAMAGE
+        screen.blit(papyrus.render("NO DAMAGE!",True,WHITE,BLUE),(x,y)) #writes NO DAMAGE
         display.flip()
         time.wait(500)
     else:

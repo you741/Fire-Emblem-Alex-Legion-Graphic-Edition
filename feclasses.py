@@ -245,6 +245,9 @@ class Person():
             #if the unit is a promoted unit, the internal LV is higher
             internalLV += 20
         return internalLV
+    def promote(self):
+        "returns promotion - unique for class"
+        return self
     def getInstance(self):
         "gets instance of person"
         return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)")
@@ -261,7 +264,31 @@ class Myrmidon(Person):
     pass
 class Lord(Person):
     "lord class"
-    pass
+    def promote(self,promAnims):
+        "uses promAnims to added the animations of the promoted class"
+        newStats = {"lv":1,
+                    "maxhp":self.maxhp+4,"hp":self.hp+4,
+                    "stren":self.stren+3,"spd":self.spd+3,
+                    "lck":self.lck+2,"skl":self.skl+2,
+                    "defen":self.defen+2,"res":self.res+2,
+                    "con":self.con+2,"move":self.move+2}
+        newMast = {"Sword":min(600,self.mast["Sword"]+100),
+                   "Light":min(600,self.mast["Light"]+100),
+                   "Dark":100,
+                   "Anima":100}
+        return KnightLord(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+class KnightLord(Lord):
+    "KnightLord class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(KnightLord,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.caps = {"maxhp":60,
+                     "stren":25,
+                     "skl":30,
+                     "spd":28,
+                     "lck":35,
+                     "defen":25,
+                     "res":25} #caps for stats
+        self.promoted = True
 class Brigand(Person):
     "brigand class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
@@ -344,6 +371,12 @@ class Shaman(Person):
 class Revenant(Person):
     "revenant class"
     pass
+class PegasusKnight(Person):
+    "pegasus knight class"
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(PegasusKnight,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.flying = True
+        self.mounted = True
 class Poop(Person):
     "poop class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):

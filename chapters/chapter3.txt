@@ -14,8 +14,20 @@ Brandon:Remember, I can pick items from chests using my trusty lockpicks! Just h
 *Player*:Good to know.
 CONDITION:*End*
 CONDITION:Gary;
-Gary:Alright bros, I carry. [I can do pretty well against those lance users, so have me fight them. But remember this: Defense protects a unit from physical attacks like lances and axes, whereas Resistance protects you from magical attacks like fire and lightning. I have high defense, but low resistance, so magic users can do quite a number to me. Typically magic users have high resistance and low defense, and everyone else is the opposite. Well GL m8]
+Gary:Alright bros, I carry. [I can do pretty well against those lance users, so have me fight them. But remember this - Defense protects a unit from physical attacks like lances and axes, whereas Resistance protects you from magical attacks like fire and lightning. I have high defense, but low resistance, so magic users can do quite a number to me. Typically magic users have high resistance and low defense, and everyone else is the opposite. Well GL m8]
 CONDITION:*End*
 Yoyo:Alright guys, you all ready?
 *Player*:Let us proceed.
 Yoyo:Alright then, let's fight!
+Yuno:WAIT FOR ME YUKKI!
+Yoyo:Yuno!? What are you doing here!?
+Yuno:I heard the castle got attacked so I escaped prison and decided to come help.
+CONDITION:Albert;
+Albert:Oh dear... this one is back
+CONDITION:*End*
+*Player*:Who is she?
+Yoyo:She's uh..
+Yuno:Yukki is the most important person in the world to me! NO ONE IS GOING TO HURT HIM!
+Yoyo:Well, she's this obsessed commoner who calls me Yukki. She decided to become a pegasus knight, but we had to send her to prison for killing these men who came to talk to me about business.
+Yuno:BUT YUKKI! THEY LOOKED LIKE THEY WERE GOING TO HURT YOU!
+Yoyo:Sigh... I guess I don't have a choice. Fight with us Yuno, but don't cause trouble. Anyway, let's fight!
