@@ -325,7 +325,10 @@ unitsBG2 = image.load("images/backgrounds/units2.png")
 statusBG = image.load("images/backgrounds/status.png")
 armorySelect,armorySelect2,vendorSelect,vendorSelect2 = [image.load("images/backgrounds/"+imgName+".png") for imgName in ["armorySelect","armorySelect2","vendorSelect",
                                                                                                                           "vendorSelect2"]]
-pointer = image.load('images/pointer.png')
+#Story Images
+storytextBG = transform.smoothscale(image.load("story/storytextbackground.png"),(1200,60))
+
+pointer = image.load('images/Menu/pointer.png')
 infoBox = image.load('images/infoBox.png')
 infoBoxNW = image.load('images/infoBoxNW.png')
 LS(440)
@@ -819,7 +822,7 @@ def checkDead(ally,enemy):
                         waiting = False
             draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
+            screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
             display.flip()
         return True
@@ -841,7 +844,7 @@ def checkDead(ally,enemy):
                         waiting = False
             draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
+            screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
             display.flip()
         return True
@@ -872,7 +875,7 @@ def attack(person,person2):
                         waiting = False
             draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
+            screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
             display.flip()
     screen.blit(chapterBattleBackgrounds[chapter],(0,0))
@@ -1507,7 +1510,8 @@ class VillageScreen():
                 elif func == "TITLE":
                     #display the title
                     screen.fill(BLACK)
-                    draw.rect(screen,BLUE,(0,330,1200,60))
+ #                   draw.rect(screen,BLUE,(0,330,1200,60))
+                    screen.blit(storytextBG,(0,330))
                     img = sans.render(sentence,True,WHITE) #img of string to blit
                     screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
                 else:
@@ -1981,7 +1985,7 @@ class InstructionScreen():
                 #tiny instructions with flashing arrow
                 draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
                 botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-                screen.blit(botinstruct,(0,690))
+                screen.blit(botinstruct,(5,690))
                 arrowflashcounter += 0.15
                 for b in self.buttons:
                     b.draw(screen)
@@ -2330,7 +2334,9 @@ class Story():
             elif func == "TITLE":
                 #display the title
                 screen.fill(BLACK)
-                draw.rect(screen,BLUE,(0,330,1200,60))
+ #               draw.rect(screen,BLUE,(0,330,1200,60))
+
+                screen.blit(storytextBG,(0,330))
                 img = sans.render(sentence,True,WHITE) #img of string to blit
                 screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
             else:
@@ -2367,7 +2373,7 @@ class Story():
             #tiny instructions with flashing arrow
             draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(0,690))
+            screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
             
             display.flip()

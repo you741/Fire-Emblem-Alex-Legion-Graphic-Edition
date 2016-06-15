@@ -25,9 +25,10 @@ superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
 
 fpsLimiter = time.Clock() #fps Limiting clock
 
-#IMAGES                                                                            "vendorSelect2"]]
+#IMAGES
 infoBox = image.load('images/infoBox.png')
 infoBoxNW = image.load('images/infoBoxNW.png')
+storytextBG = transform.smoothscale(image.load("story/storytextbackground.png"),(1200,200))
 #----Map Calculations----#
 
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
@@ -655,7 +656,8 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence,x=10,y=530,fnt=sans):
     "draws the sentence as a dialogue box"
-    draw.rect(screen,BLUE,(0,520,1200,200))
+    screen.blit(storytextBG,(0,520))    
+#    draw.rect(screen,BLUE,(0,520,1200,200))
     words = sentence.split()
     for i in range(len(words)):
         word = words[i] #current word
