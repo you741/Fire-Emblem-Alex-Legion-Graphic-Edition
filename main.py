@@ -384,6 +384,7 @@ armorySelect,armorySelect2,vendorSelect,vendorSelect2 = [image.load("images/back
                                                                                                                           "vendorSelect2"]]
 #Story Images
 storytextBG = transform.smoothscale(image.load("story/storytextbackground.png"),(1200,60))
+storytextBGcover = storytextBG.subsurface(0,30,1200,30).copy()
 
 pointer = image.load('images/Menu/pointer.png')
 infoBox = image.load('images/infoBox.png')
@@ -977,7 +978,8 @@ def checkDead(ally,enemy):
                 if e.type == KEYDOWN:
                     if e.key in [K_z,K_x,K_RETURN]:
                         waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+ #           screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
+            screen.blit(storytextBGcover,(0,690))
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
             screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
@@ -999,7 +1001,7 @@ def checkDead(ally,enemy):
                 if e.type == KEYDOWN:
                     if e.key in [K_z,K_x,K_RETURN]:
                         waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
             screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
@@ -1030,7 +1032,7 @@ def attack(person,person2):
                 if e.type == KEYDOWN:
                     if e.key in [K_z,K_x,K_RETURN]:
                         waiting = False
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
             screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
@@ -2140,7 +2142,7 @@ class InstructionScreen():
                                 return 0
                             
                 #tiny instructions with flashing arrow
-                draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+                screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
                 botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
                 screen.blit(botinstruct,(5,690))
                 arrowflashcounter += 0.15
@@ -2528,7 +2530,7 @@ class Story():
                         breakLoop = True
                         
             #tiny instructions with flashing arrow
-            draw.rect(screen,BLUE,(0,690,1200,30)) #might have to be subsurface
+            screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
             screen.blit(botinstruct,(5,690))
             arrowflashcounter += 0.15
