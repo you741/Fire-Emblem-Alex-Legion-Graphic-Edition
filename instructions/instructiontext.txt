@@ -1,16 +1,17 @@
 instructions/backgrounds/instructionscreen0.png
 :Welcome to Fire Emblem, The Alex Legion
 :Click BACK if you missed something, SKIP if you don't want to read this, and MENU to go back to the Start Menu
-:In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion
+:In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion.
+:Basic controls - Z: Select, X: Cancel, S: Information, A: Cycle (think of them as "A","B","R", and "L" respectively on the Gameboy)
 :Units are all unique. They have different stats, and do different things. You can check on a unit's abilities by selecting them and clicking "s".
 :Units can also use items. Items are either Weapons, or Consumables.
 :Consumables may be used to help defeat enemies..... or just stylepoints
 :Units can weild Weapons based on their mastery level in that item category.
 :Weapons are split into two categories. MAGIC, and PHYSICAL.
 :These two categories each have a weapon triangle. Light > Dark, Dark > Anima, Anima > Light.  Axes > Lances, Lances > Swords, and Swords > Axes. Just like Rock Paper Scissors! This is important to know so that you are fighting at an advantage, and not at a disadvantage!
-:Wielding a weapon is not enough for your units to attack the enemies. You must move your units in range so that they can attack. You move your units by selecting them and clicking “x”. A BLUE area will show all possible squares that the unit may move to, and the RED squares show the squares that your unit can attack. NOTE: SOME UNITS CANNOT ATTACK.
-:Choose which square you would like to move to, and your unit will move. If you mess up, that's okay! You can just click "z" to go back. However, you cannot go back once you have attacked, so BE CAREFUL!!
-:Once you have moved, you will be given many options. If you choose to attack, then you will be given the choice of who to attack (if possible) and then click “x” to enter the battle phase.
+:Wielding a weapon is not enough for your units to attack the enemies. You must move your units in range so that they can attack. You move your units by selecting them and clicking "Z". A BLUE area will show all possible squares that the unit may move to, and the RED squares show the squares that your unit can attack. NOTE: SOME UNITS CANNOT ATTACK.
+:Choose which square you would like to move to, and your unit will move. If you mess up, that's okay! You can just click "X" to go back. However, you cannot go back once you have attacked, so BE CAREFUL!!
+:Once you have moved, you will be given many options. If you choose to attack, then you will be given the choice of who to attack (if possible) and then click "Z" to enter the battle phase.
 :Here you will watch the two units attack. If the enemy cannot attack you, they will not. If they can, they will. BEWARE, you can lose units if you impulsively attack a strong character!
 :You can also interact with non-enemy units. These interactions are HEALING, TRADING, VILLAGES, BUYING, and SELLING.
 :Healing is almost the same as Attacking, except that you will be healing your units instead of damaging them, and you target your own units.
