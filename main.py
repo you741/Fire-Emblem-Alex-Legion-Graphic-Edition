@@ -21,7 +21,7 @@ mixer.init()
 font.init()
 #----METADATA----#
 __author__ = "Yttrium Z (You Zhou) & AZhan (Albert Zhan)"
-__date__ = "Incomplete"
+__date__ = "June 17th, 2016"
 __purpose__ = "Game for Grade 11 final project"
 __name__ = "Fire Emblem Alex Legion"
 __copyright__ = "Yttrium Z 2015-2016"
