@@ -652,7 +652,7 @@ shaman4 = Shaman("Shaman",0,0,
 #--Druids
 druid5 = Druid("Alex the Druid",0,0,
                 {"lv":1,"stren":13,"defen":6,"skl":9,"lck":0,
-                "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},
+                "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance()],{"Dark":500,"Staff":100},
                  {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["AlexTheDruid"],100,guard=True)
 alexTheDruid = Druid("Alex the Druid",0,0,
                 {"lv":1,"stren":14,"defen":7,"skl":13,"lck":0,
@@ -1071,7 +1071,7 @@ def attack(person,person2):
         #gains exp
         if enemy.hp == 0:
             expgain = getExpGain(ally,enemy,True) #gains exp on a kill
-            drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
+            drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
@@ -1104,7 +1104,7 @@ def attack(person,person2):
         #gains exp if enemy died
         if enemy.hp == 0:
             expgain = getExpGain(ally,enemy,True) #gains exp on a kill
-            drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
+            drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
@@ -1141,7 +1141,7 @@ def attack(person,person2):
     if ally == person2 and not person2hit:
         #if person2 did not hit and that was the ally, we only gain 1 exp
         expgain = 1
-    drawChangingBar(screen,ally.exp,ally.exp+expgain,100,420,330,360,60,"Exp")
+    drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
     if handleEvents(event.get()):
         quit()
     needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
@@ -1181,7 +1181,7 @@ def heal(person,person2,stf):
         #heal function
         dispTempMsg(screen,stf.name+" Broke!",centerX=True,centerY=True)
     expgain = 20 + person.stren + stf.heal
-    drawChangingBar(screen,person.exp,person.exp+expgain,100,420,330,360,60,"Exp")
+    drawChangingBar(screen,person.exp,person.exp+person.getExpGain(expgain),100,420,330,360,60,"Exp")
     if person.gainExp(expgain):
         #level up
         person.levelUp()
@@ -2314,9 +2314,9 @@ class NewGame():
                                 FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
                                 FilledSurface((200,50),GREEN,"MAGE",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
+                                 """player = Mage(name,0,0,{'lv':10,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
-[fire.getInstance()],
+[fire.getInstance(),vulnerary.getInstance()],
 {'Anima':200},
 {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
 addAlly(player)
@@ -3236,31 +3236,33 @@ class Game():
                                     self.selected.stats[self.selectedItem.stat] += self.selectedItem.amnt
                                     dispTempMsg(screen,self.selectedItem.stat.title()+" Increased",centerX=True,centerY=True)
                                     self.selected.removeItem(self.selectedItem)
-                                self.mode = "move"
-                                if not self.selected.mounted or self.selected.movesLeft == 0:
-                                    self.moved.add(self.selected)
-                                    self.mode = "freemove"
-                                self.attacked.add(self.selected) #guy who used consumable can't move - treated like an attack
-                                self.oldx,self.oldy = self.selected.x,self.selected.y
-                                self.oldM = self.selected.movesLeft
-                                self.setMoveableSquares(self.selected,True)
                                 if type(self.selectedItem) == Promotional:
                                     #PROMOTIONAL
                                     ind = allies.index(self.selected)
                                     oldPerson = self.selected
                                     nameOfPerson = self.selected.name
+                                    nameOfPersonProm = nameOfPerson
                                     if nameOfPerson.lower() not in usedNames:
-                                        nameOfPerson = "Player"+self.selected.__class__.__name__
+                                        nameOfPersonProm = "Player"+self.selected.__class__.__name__
+                                        nameOfPerson = "Player"
                                     self.selected.removeItem(self.selectedItem)
-                                    newPerson = self.selected.promote(promAnims[nameOfPerson])
+                                    newPerson = self.selected.promote(promAnims[nameOfPersonProm])
                                     allies[ind] = newPerson
                                     exec("global "+nameOfPerson.lower()+"\n"+nameOfPerson.lower()+"=newPerson") #resets new person as well
                                     drawPromotion(screen,newPerson,oldPerson)
-                                    self.moved.clear()
-                                    self.attacked.clear()
+                                    self.selected = newPerson
                                     self.moved.add(newPerson)
                                     self.attacked.add(newPerson)
                                     self.mode = "freemove"
+                                if self.mode != "freemove":
+                                    self.mode = "move"
+                                    if not self.selected.mounted or self.selected.movesLeft == 0:
+                                        self.moved.add(self.selected)
+                                        self.mode = "freemove"
+                                    self.attacked.add(self.selected) #guy who used consumable can't move - treated like an attack
+                                    self.oldx,self.oldy = self.selected.x,self.selected.y
+                                    self.oldM = self.selected.movesLeft
+                                    self.setMoveableSquares(self.selected,True)
                             elif optselected.lower() == "equip":
                                 #equip option
                                 self.selected.equipWeapon(self.selectedItem) #tries to equip

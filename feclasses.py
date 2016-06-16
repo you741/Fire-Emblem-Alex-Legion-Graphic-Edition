@@ -191,12 +191,16 @@ class Person():
                 #tries to equip weapons
                 if self.equipWeapon(w):
                     break
-    def gainExp(self,exp):
-        "gains exp, returns whether should level up or not"
+    def getExpGain(self,exp):
+        "edits exp based on unit"
         if self.promoted:
             #if the unit is a promoted unit, gains only half exp
             exp = exp//2
             exp = max(1,exp)
+        return exp
+    def gainExp(self,exp):
+        "gains exp, returns whether should level up or not"
+        exp = self.getExpGain(exp)
         self.exp += exp
         if self.exp >= 100:
             return True #returns True if we should level up
@@ -270,7 +274,9 @@ class Mage(Person):
 
 class Sage(Mage):
     "sage class"
-    pass
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Sage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.promoted = True
 class Knight(Person):
     "knight class"
     pass
@@ -389,7 +395,9 @@ class Priest(Person):
 
 class Bishop(Priest):
     "Bishop class"
-    pass
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Bishop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.promoted = True
 class Archer(Person):
     "archer class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
@@ -412,7 +420,9 @@ class Shaman(Person):
         return Druid(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
 class Druid(Shaman):
     "druid class"
-    pass
+    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Druid,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+        self.promoted = True
 class Revenant(Person):
     "revenant class"
     pass
