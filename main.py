@@ -2314,7 +2314,7 @@ class NewGame():
                                 FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
                                 FilledSurface((200,50),GREEN,"MAGE",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Mage(name,0,0,{'lv':10,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
+                                 """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
 [fire.getInstance(),vulnerary.getInstance()],
 {'Anima':200},
