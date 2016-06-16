@@ -46,7 +46,7 @@ def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
         if node[0] <= movesleft:
             if 0 <= place[0] < len(stage[0]) and 0 <= place[1] < len(stage) and (place not in visited or visited.get(place) < movesleft - node[0]):
                 hind = stage[place[1]][place[0]].hind if not person.flying else 1
-                if person.canPass(stage[place[1]][place[0]]):
+                if person.canPass(stage[place[1]][place[0]]) or place == (person.x,person.y):
                     if place not in allies+enemies:
                         #the path is already the shortest
                         moveable.append((place[0],place[1],movesleft-node[0],node[1]))
@@ -248,7 +248,7 @@ def drawPromotion(screen,person,oldPerson):
     "draws a promotion - very similar to drawLevelUp"
     screenBuff = screen.copy() #screen buffer    
     screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),600,240),(300,240))
-    screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
+    screen.blit(sans.render(oldPerson.name+" LV "+str(person.lv),True,WHITE),(300,240))
     statCoords = {"maxhp":(300,270),"stren":(300,300),"skl":(300,330),"spd":(300,360),"lck":(300,390),"defen":(300,420),
                   "res":(300,450)} #dictionary of the coordinates of every stat
     for i,k in enumerate(statCoords):
@@ -258,8 +258,9 @@ def drawPromotion(screen,person,oldPerson):
     time.wait(300)                            
     if handleEvents(event.get()):
         quit()
-    draw.rect(screen,BLUE,(500,240,400,30))
+    screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),600,240).subsurface(0,0,600,30),(300,240))
     screen.blit(sans.render(person.__class__.__name__,True,WHITE),(500,240))
+    screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
     display.flip()
     time.wait(500)
     if handleEvents(event.get()):
@@ -270,7 +271,7 @@ def drawPromotion(screen,person,oldPerson):
             if handleEvents(event.get()):
                 quit()
             newStatValue = person.stats[k]
-            screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
+            screen.blit(sans.render("+"+str(person.stats[k]-oldPerson.stats[k])+" = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
             display.flip()
             time.wait(500)
     for i,k in enumerate(person.mast):

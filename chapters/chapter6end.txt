@@ -1,0 +1,5 @@
+images/backgrounds/forest.jpg
+Yoyo:We did it...
+*Player*:Yes we did.
+Yoyo:Now to get the sacred weapons!
+TITLE:TO BE CONTINUED

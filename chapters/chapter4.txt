@@ -1,5 +1,7 @@
-images/backgrounds/forest.jpg
-:The group arrive at the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex.
+images/backgrounds/SacredIsle.png
+:The group arrive at the entrance to the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex. This ambush was very carefully planned. Many of the soldiers had trained in Sadana, Randonia's capital of magic. With this training, the enemies are much stronger than what our heroes are used to...
+TITLE:Chapter 4 - Ambush
+BACKGROUND:images/backgrounds/forest.jpg
 CONDITION:Albert;
 Albert:Whaaaa.....!
 CONDITION:*End*
@@ -7,3 +9,13 @@ Yoyo:What's going on!?!?!??!?!?
 CONDITION:Henry;
 Henry:Oh no, what do we do?
 CONDITION:*End*
+CONDITION:Yuno;
+Yuno:DON'T WORRY I'LL PROTECT YOU YUKKI!
+CONDITION:*End*
+*Player*:Remain calm everyone... I can lead us out of this one.
+Yoyo:Hey *Player*, if you have a heaven seal, feel free to use it on me to promote me. I would recommend waiting until I am as strong as possible though.
+*Player*:Hmmm... I might do that...
+CONDITION:Gary;
+Gary: Dw bros, I got dis. [Hey you! If you have a heaven seal, you can feed it to Yoyo and he'll promote (as long as he's level 10 or higher). I recommend waiting as long as possible before doing this. My reasoning is that once promoted, a unit gains Exp much much slower. Oh yeah, and I'm pretty sure the boss of this level has a guiding ring, which can promote magic users. You might want to get that ;)]
+CONDITION:*End*
+Yoyo:Anyway, LET'S FIGHT!

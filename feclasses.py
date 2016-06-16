@@ -256,6 +256,21 @@ class Mage(Person):
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
+    def promote(self,promAnims):
+        "uses promAnims to added the animations of the promoted class"
+        newStats = {"lv":1,
+                    "maxhp":self.maxhp+2,"hp":self.hp+2,
+                    "stren":self.stren+3,"spd":self.spd+2,
+                    "lck":self.lck+3,"skl":self.skl+2,
+                    "defen":self.defen+1,"res":self.res+2,
+                    "con":self.con+1,"move":self.move+1}
+        newMast = {"Anima":min(600,self.mast["Anima"]+100),
+                   "Staff":100}
+        return Sage(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+
+class Sage(Mage):
+    "sage class"
+    pass
 class Knight(Person):
     "knight class"
     pass
@@ -288,6 +303,7 @@ class KnightLord(Lord):
                      "lck":35,
                      "defen":25,
                      "res":25} #caps for stats
+        self.mounted = True
         self.promoted = True
 class Brigand(Person):
     "brigand class"
@@ -359,6 +375,21 @@ class Priest(Person):
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         super(Priest,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
+    def promote(self,promAnims):
+        "uses promAnims to added the animations of the promoted class"
+        newStats = {"lv":1,
+                    "maxhp":self.maxhp+2,"hp":self.hp+2,
+                    "stren":self.stren+3,"spd":self.spd+3,
+                    "lck":self.lck+3,"skl":self.skl+2,
+                    "defen":self.defen+1,"res":self.res+4,
+                    "con":self.con+1,"move":self.move+1}
+        newMast = {"Staff":min(600,self.mast["Staff"]+100),
+                   "Light":100}
+        return Bishop(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+
+class Bishop(Priest):
+    "Bishop class"
+    pass
 class Archer(Person):
     "archer class"
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
@@ -368,6 +399,20 @@ class Shaman(Person):
     def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         super(Shaman,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
+    def promote(self,promAnims):
+        "uses promAnims to added the animations of the promoted class"
+        newStats = {"lv":1,
+                    "maxhp":self.maxhp+3,"hp":self.hp+3,
+                    "stren":self.stren+2,"spd":self.spd+2,
+                    "lck":self.lck+2,"skl":self.skl+3,
+                    "defen":self.defen+2,"res":self.res+3,
+                    "con":self.con+2,"move":self.move+1}
+        newMast = {"Dark":min(600,self.mast["Dark"]+100),
+                   "Staff":100}
+        return Druid(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+class Druid(Shaman):
+    "druid class"
+    pass
 class Revenant(Person):
     "revenant class"
     pass

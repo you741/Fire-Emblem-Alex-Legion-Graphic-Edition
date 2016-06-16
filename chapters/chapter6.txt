@@ -1,0 +1,6 @@
+images/backgrounds/SacredIsle.png
+:The group arrived at the entrance to the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex. After defeating the first two waves of enemies, a third one comes along quickly...
+TITLE:Chapter 6 - Third Time's a Charm?
+BACKGROUND:images/backgrounds/forest.jpg
+*Player*:We don't have time to prepare...
+Yoyo:Let's fight... and try not to lose anyone!

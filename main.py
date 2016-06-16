@@ -1,7 +1,7 @@
 #Fire Emblem Alex Legion
 #This game is a Fire Emblem Spin-off featuring my own unique characters named after my classmates
-#The user controls an army that fights off the enemy's army for multiple levels to win
-#There is also a great story line
+#The user controls an army that fights off the enemy's army for multiple levels to win (the story may be incomplete)
+#There is also a great story line (imo)
 
 #----BUILT-IN MODULE IMPORTS
 import os
@@ -90,6 +90,17 @@ playerMageAnimaSprite = ([image.load("images/Player/Mage/MageAttackFrame"+str(i+
 playerMageStandSprite = playerMageAnimaSprite[0][0]
 playerMageAnimacritSprite = ([image.load("images/Player/Mage/MageCritFrame"+str(i+1)+".png")
                         for i in range(12)] + playerMageAnimaSprite[0][1:],21)
+playerSageAnimaSpriteP = ([image.load("images/Player/Mage/SageAttackFrame"+str(i+1)+".png")
+                          for i in range(11)],5)
+playerSageStandSpriteP = playerSageAnimaSpriteP[0][0]
+playerSageAnimacritSpriteP = ([playerSageStandSpriteP] + [image.load("images/Player/Mage/SageCritFrame"+str(i+1)+".png")
+                                                          for i in range(6)] + playerSageAnimaSpriteP[0][5:],8)
+playerSageStaffSpriteP = ([image.load("images/Player/Mage/SageStaffFrame"+str(i+1)+".png")
+                           for i in range(3)],2)
+playerMagePromAnims = {"stand":playerSageStandSpriteP,
+                       "Anima":playerSageAnimaSpriteP,
+                       "Animacrit":playerSageAnimacritSpriteP,
+                       "Staff":playerSageStaffSpriteP}
 playerKnightLanceSprite = ([image.load("images/Player/Knight/KnightAttackFrame"+str(i+1)+".png")
                             for i in range(11)],5)
 playerKnightStandSprite = playerKnightLanceSprite[0][0]
@@ -161,6 +172,13 @@ henrySwordcritSprite = ([henryStandSprite] + [image.load("images/Henry/HenryCrit
 ericStaffSprite = ([image.load("images/Eric/EricHealFrame"+str(i+1)+".png")
                     for i in range(7)],3)
 ericStandSprite = ericStaffSprite[0][0]
+ericLightSpriteP = ([image.load("images/Eric/EricPAttackFrame"+str(i+1)+".png")
+                     for i in range(8)],7)
+ericStandSpriteP = ericLightSpriteP[0][0]
+ericLightcritSpriteP = ([ericStandSpriteP] + [image.load("images/Eric/EricPCritFrame"+str(i+1)+".png")
+                                              for i in range(5)] + ericLightSpriteP[0][3:],10)
+ericStaffSpriteP = ericLightSpriteP
+ericPromAnims = {"stand":ericStandSpriteP,"Light":ericLightSpriteP,"Lightcrit":ericLightcritSpriteP,"Staff":ericStaffSpriteP}
 #LOADING BRANDON
 brandonSwordSprite = ([image.load("images/Brandon/BrandonAttackFrame"+str(i+1)+".png")
                        for i in range(15)],5)
@@ -179,6 +197,14 @@ kevinDarkSprite = ([image.load('images/Kevin/KevinAttackFrame'+str(i+1)+'.png')
 kevinStandSprite = kevinDarkSprite[0][0]
 kevinDarkcritSprite = ([kevinStandSprite] + [image.load('images/Kevin/KevinCritFrame'+str(i+1)+'.png')
                                              for i in range(14)] + kevinDarkSprite[0][22:],18)
+kevinDarkSpriteP = ([image.load('images/Kevin/KevinPAttackFrame'+str(i+1)+'.png')
+                    for i in range(10)],9)
+kevinStandSpriteP = kevinDarkSpriteP[0][0]
+kevinDarkcritSpriteP = ([kevinStandSpriteP] + [image.load('images/Kevin/KevinPCritFrame'+str(i+1)+'.png')
+                                             for i in range(5)] + kevinDarkSpriteP[0][1:],14)
+kevinStaffSpriteP = ([image.load("images/Kevin/KevinPStaffFrame"+str(i+1)+".png")
+                      for i in range(4)]+[image.load("images/Kevin/KevinPStaffFrame1.png")],4)
+kevinPromAnims = {"stand":kevinStandSpriteP,"Dark":kevinDarkSpriteP,"Darkcrit":kevinDarkcritSpriteP,"Staff":kevinStaffSpriteP}
 #LOADING YUNO
 yunoLanceSprite = ([image.load('images/Yuno/YunoAttackFrame'+str(i+1)+'.png')
                     for i in range(13)],4)
@@ -210,10 +236,28 @@ shamanDarkSprite = ([transform.flip(img,True,False) for img in kevinDarkSprite[0
 shamanStandSprite = transform.flip(kevinStandSprite,True,False)
 shamanDarkcritSprite = ([transform.flip(img,True,False) for img in kevinDarkcritSprite[0]],18)
 
+#DRUID
+druidDarkSprite = ([transform.flip(img,True,False) for img in kevinDarkSpriteP[0]],9)
+druidStandSprite = druidDarkSprite[0][0]
+druidDarkcritSprite = ([transform.flip(img,True,False) for img in kevinDarkcritSpriteP[0]],14)
+druidStaffSprite = ([transform.flip(img,True,False) for img in kevinStaffSpriteP[0]],4)
+
 #MAGE
 mageAnimaSprite = ([transform.flip(img,True,False) for img in playerMageAnimaSprite[0]],10)
 mageAnimacritSprite = ([transform.flip(img,True,False) for img in playerMageAnimacritSprite[0]],21)
 mageStandSprite = mageAnimaSprite[0][0]
+
+#SAGE
+sageAnimaSprite = ([transform.flip(img,True,False) for img in playerSageAnimaSpriteP[0]],playerSageAnimaSpriteP[1])
+sageAnimacritSprite = ([transform.flip(img,True,False) for img in playerSageAnimacritSpriteP[0]],playerSageAnimacritSpriteP[1])
+sageStandSprite = sageAnimaSprite[0][0]
+sageStaffSprite = ([transform.flip(img,True,False) for img in playerSageStaffSpriteP[0]],playerSageStaffSpriteP[1])
+
+#BISHOP
+bishopLightSprite = ([transform.flip(img,True,False) for img in ericLightSpriteP[0]],ericLightSpriteP[1])
+bishopLightcritSprite = ([transform.flip(img,True,False) for img in ericLightcritSpriteP[0]],ericLightcritSpriteP[1])
+bishopStandSprite = bishopLightSprite[0][0]
+bishopStaffSprite = ([transform.flip(img,True,False) for img in ericStaffSpriteP[0]],ericStaffSpriteP[1])
 
 #MONSTER
 revenantClawSprite = ([image.load("images/Revenant/RevenantAttackFrame"+str(i+1)+".png")
@@ -250,14 +294,20 @@ allyMapSprites = {"Mage":[transform.scale(image.load("images/MapSprites/Ally/Mag
                   "Archer":[transform.scale(image.load("images/MapSprites/Ally/Archer"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "Shaman":[transform.scale(image.load("images/MapSprites/Ally/Shaman"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                   "PegasusKnight":[transform.scale(image.load("images/MapSprites/Ally/PegasusKnight"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
-                  "KnightLord":[transform.scale(image.load("images/MapSprites/Ally/KnightLord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                  "KnightLord":[transform.scale(image.load("images/MapSprites/Ally/KnightLord"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Druid":[transform.scale(image.load("images/MapSprites/Ally/Druid"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Sage":[transform.scale(image.load("images/MapSprites/Ally/Sage"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
+                  "Bishop":[transform.scale(image.load("images/MapSprites/Ally/Bishop"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)]}
 #--enemies
 enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enemy/Brigand"+str(i+1)+".gif").convert_alpha(),(30,30)) for i in range(4)],
                    "Mercenary":[transform.scale(image.load("images/MapSprites/Enemy/Mercenary"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                    "Knight":[transform.scale(image.load("images/MapSprites/Enemy/Knight"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                    "Mage":[transform.scale(image.load("images/MapSprites/Enemy/Mage"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                    "Shaman":[transform.scale(image.load("images/MapSprites/Enemy/Shaman"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
-                   "Revenant":[transform.scale(image.load("images/MapSprites/Enemy/Revenant"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+                   "Revenant":[transform.scale(image.load("images/MapSprites/Enemy/Revenant"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Druid":[transform.scale(image.load("images/MapSprites/Enemy/Druid"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Sage":[transform.scale(image.load("images/MapSprites/Enemy/Sage"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
+                  "Bishop":[transform.scale(image.load("images/MapSprites/Enemy/Bishop"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
     allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
@@ -285,8 +335,14 @@ faces = {"Yoyo":image.load("images/faces/Yoyo.png"),
          "Shaman":image.load("images/faces/Shaman.png"),
          "Mage":image.load("images/faces/mage.png"),
          "Knight":image.load("images/faces/knight.png"),
-         "Yuno":image.load("images/faces/Yuno.png")} #dictionary of all faces of characters
-promAnims = {"Yoyo":yoyoPromAnims} #promotional animations - changes to during promotion
+         "Yuno":image.load("images/faces/Yuno.png"),
+         "AlexTheSage":image.load("images/faces/AlexTheSage.png"),
+         "AlexTheDruid":image.load("images/faces/AlexTheDruid.png"),
+         "AlexTheBishop":image.load("images/faces/AlexTheBishop.png")} #dictionary of all faces of characters
+promAnims = {"Yoyo":yoyoPromAnims,
+             "PlayerMage":playerMagePromAnims,
+             "Eric":ericPromAnims,
+             "Kevin":kevinPromAnims} #promotional animations - changes to during promotion
 
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
@@ -307,6 +363,7 @@ chestImg = image.load("images/terrain/chest.png")
 openChest = image.load("images/terrain/openChest.png")
 wallImg = image.load("images/terrain/Wall.png")
 floorImg = image.load("images/terrain/floor.png")
+waterImg = image.load("images/terrain/water.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
 
@@ -343,7 +400,7 @@ castlePiece = Terrain("Castle",0,0,1)
 gate = Terrain("Gate",2,20,2,heal=6)
 fort = Terrain("Fort",2,20,2,fortImg,heal=6)
 throne = Terrain("Throne",30,3,3,throneImg)
-water = Terrain("Water",10,0,3) #needs img
+water = Terrain("Water",10,0,3,waterImg)
 chest = Chest("Chest",0,0,1,chestImg)
 wall = Terrain("Wall",0,0,1,wallImg)
 floor = Terrain("Floor",0,0,1,floorImg)
@@ -361,8 +418,10 @@ long_lance = Weapon("Long Lance",8,12,20,65,"Lance",200,900,maxrnge=2)
 slim_lance = Weapon("Slim Lance",4,4,20,90,"Lance",100,450,5)
 #Anima Magic
 fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2,anims=fireSprite)
+elfire = Weapon("Fire",8,6,30,80,"Anima",200,1000,0,1,30,True,maxrnge=2,anims=fireSprite)
 #Light Magic
 lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,anims=lightningSprite,sup_eff=["Revenant"])
+shine = Weapon("Shine",6,7,30,85,"Light",200,800,5,1,30,True,maxrnge=2,anims=lightningSprite,sup_eff=["Revenant"])
 #Dark Magic
 flux = Weapon("Flux",7,8,45,80,"Dark",100,900,0,1,45,True,maxrnge=2,anims=fluxSprite)
 #Staves
@@ -392,6 +451,7 @@ boots = Booster("Boots",1,8000,"move",2,"Boosts an ally's move")
 talisman = Booster("Talisman",1,8000,2,"Boosts an ally's resistance")
 #Promotionals
 heaven_seal = Promotional("Heaven Seal",1,50000,["lord"],"Promotes Lords Lv. 10 and up")
+guiding_ring = Promotional("Guiding Ring",1,50000,["mage","priest","shaman"],"Promotes Magic users Lv. 10 and up")
 #Misc.
 lock_pick = Item("Lock Pick",45,500,"Opens doors and chests")
 red_gem = Item("Red Gem",1,4000,"Sells for 2000G")
@@ -518,6 +578,11 @@ bandit2_v = Brigand("Bandit",0,0,
                 {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
                 "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},
                 {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+
+bandit4 = Brigand("Bandit",0,0,
+                {"lv":10,"stren":12,"defen":7,"skl":4,"lck":0,
+                "spd":5,"con":10,"move":5,"res":0,"hp":30,"maxhp":30},{},[steel_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},
+                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
 #--Mercenaries
 merc1 = Mercenary("Mercenary",0,0,
                 {"lv":3,"stren":5,"defen":2,"skl":8,"lck":2,
@@ -526,6 +591,10 @@ merc1 = Mercenary("Mercenary",0,0,
 merc2 = Mercenary("Mercenary",0,0,
                 {"lv":5,"stren":6,"defen":3,"skl":9,"lck":2,
                 "spd":9,"con":6,"move":5,"res":0,"hp":19,"maxhp":19},{},[iron_sword.getInstance()],{"Sword":200},
+                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+merc4 = Mercenary("Mercenary",0,0,
+                {"lv":10,"stren":8,"defen":6,"skl":12,"lck":3,
+                "spd":13,"con":6,"move":5,"res":0,"hp":27,"maxhp":227},{},[steel_sword.getInstance()],{"Sword":300},
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
@@ -545,42 +614,91 @@ alexTheKnight = Knight("Knight Alex",0,0,
                        fightQuote="What the-? Who are you!? How did you get past my knights!? Whatever... you're not leavin alive!",
                        deathQuote="Ugh... sorry King Alex... I was bested... Someone... tell King Alex... to be... wary")
 knight3 = Knight("Knight",0,0,
-                {"lv":8,"stren":10,"defen":9,"skl":4,"lck":0,
-                "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance()],{"Lance":100},
+                {"lv":8,"stren":9,"defen":8,"skl":4,"lck":0,
+                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},
                 {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
 knight3_v = Knight("Knight",0,0,
                 {"lv":8,"stren":10,"defen":9,"skl":4,"lck":0,
                 "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},
                 {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20,guard=True)
+knight3 = Knight("Knight",0,0,
+                {"lv":8,"stren":9,"defen":8,"skl":4,"lck":0,
+                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
+knight4 = Knight("Knight",0,0,
+                {"lv":10,"stren":11,"defen":10,"skl":5,"lck":0,
+                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
+knight4_v = Knight("Knight",0,0,
+                {"lv":10,"stren":11,"defen":10,"skl":5,"lck":0,
+                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance(),long_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},
+                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20,guard=True)
 #--Shamans
 shaman3 = Shaman("Shaman",0,0,
-                {"lv":8,"stren":8,"defen":3,"skl":5,"lck":0,
-                "spd":8,"con":8,"move":5,"res":7,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},
+                {"lv":8,"stren":8,"defen":2,"skl":5,"lck":0,
+                "spd":7,"con":8,"move":5,"res":7,"hp":20,"maxhp":20},{},[flux.getInstance()],{"Dark":200},
                 {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
 shaman3_r = Shaman("Shaman",0,0,
-                {"lv":8,"stren":8,"defen":3,"skl":5,"lck":0,
-                "spd":8,"con":8,"move":5,"res":7,"hp":23,"maxhp":23},{},[flux.getInstance(),red_gem.getInstance()],{"Dark":200},
+                {"lv":9,"stren":8,"defen":3,"skl":6,"lck":0,
+                "spd":8,"con":8,"move":5,"res":8,"hp":21,"maxhp":21},{},[flux.getInstance(),red_gem.getInstance()],{"Dark":200},
                 {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20,guard=True)
+shaman4 = Shaman("Shaman",0,0,
+                {"lv":10,"stren":9,"defen":3,"skl":7,"lck":0,
+                "spd":9,"con":8,"move":5,"res":9,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},
+                {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
+#--Druids
+druid5 = Druid("Alex the Druid",0,0,
+                {"lv":1,"stren":13,"defen":6,"skl":9,"lck":0,
+                "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},
+                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["AlexTheDruid"],100,guard=True)
+alexTheDruid = Druid("Alex the Druid",0,0,
+                {"lv":1,"stren":14,"defen":7,"skl":13,"lck":0,
+                "spd":12,"con":13,"move":6,"res":9,"hp":34,"maxhp":34},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},
+                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["AlexTheDruid"],100,throne=True,
+                fightQuote="You have gotten far... but the darkness will end you here. A Darkness greater than any light!",
+                deathQuote="Ha.. Ha ha... you have overcome darkness... but good luck overcoming King Alex")
 #--Mages
 mage3 = Mage("Mage",0,0,
                 {"lv":8,"stren":6,"defen":3,"skl":12,"lck":2,
                 "spd":10,"con":5,"move":5,"res":7,"hp":20,"maxhp":20},{},[fire.getInstance()],{"Anima":300},
                  {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["Mage"],100,throne=True)
+mage4 = Mage("Mage",0,0,
+                {"lv":10,"stren":6,"defen":4,"skl":13,"lck":2,
+                "spd":11,"con":5,"move":5,"res":8,"hp":22,"maxhp":22},{},[fire.getInstance()],{"Anima":300},
+                 {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["Mage"],100,guard=True)
 alexTheMage = Mage("Alex the Mage",0,0,
                 {"lv":12,"stren":11,"defen":5,"skl":14,"lck":3,
                 "spd":12,"con":8,"move":5,"res":10,"hp":30,"maxhp":30},{},[fire.getInstance(),goddess_icon.getInstance()],{"Anima":300},
                  {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["AlexTheMage"],100,throne=True,
                 fightQuote="You who would dare stand up to the might of the Alex Legion... burn to crisp.",
                 deathQuote="I... just needed... more power... ugh... I leave the rest to you, King Alex...")
+#--Sages
+alexTheSage = Sage("Sage Alex",0,0,
+                {"lv":10,"stren":13,"defen":6,"skl":16,"lck":5,
+                "spd":14,"con":6,"move":6,"res":12,"hp":33,"maxhp":33},{},[elfire.getInstance(),guiding_ring.getInstance()],{"Anima":500,"Staff":100},
+                 {"Anima":sageAnimaSprite,"Animacrit":sageAnimacritSprite,"stand":sageStandSprite,"Staff":sageStaffSprite},faces["AlexTheSage"],100,throne=True,
+                fightQuote="Feel the burn... you'll need to prepared for the after life.",
+                deathQuote="Ugh..... I can feel... the burn already....")
+#--Bishops
+alexTheBishop = Bishop("Bishop Alex",0,0,
+                {"lv":3,"stren":11,"defen":6,"skl":17,"lck":12,
+                "spd":12,"con":6,"move":6,"res":12,"hp":36,"maxhp":36},{},[shine.getInstance(),white_gem.getInstance()],{"Light":500,"Staff":100},
+                 {"Light":bishopLightSprite,"Lightcrit":bishopLightcritSprite,"stand":bishopStandSprite,"Staff":bishopStaffSprite},faces["AlexTheBishop"],100,throne=True,
+                fightQuote="The Lord will punish the Zhou family for their cruel dictatorship! Now, face his divine judgement!",
+                deathQuote="My brothers... I'm sorry... But this must be the will of God...")
 #--Monsters
 revenant3 = Revenant("Revenant",0,0,
-                {"lv":5,"stren":10,"defen":5,"skl":2,"lck":0,
+                {"lv":5,"stren":9,"defen":6,"skl":1,"lck":0,
                 "spd":5,"con":5,"move":5,"res":0,"hp":21,"maxhp":21},{},[claw.getInstance()],{"Claw":200},
+                {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite},faces["Revenant"],20)
+revenant5 = Revenant("Revenant",0,0,
+                {"lv":12,"stren":12,"defen":7,"skl":2,"lck":0,
+                "spd":6,"con":5,"move":5,"res":0,"hp":29,"maxhp":29},{},[claw.getInstance()],{"Claw":200},
                 {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite},faces["Revenant"],20)
 enemies = []
 LS(660)
 #----CHAPTERS----#
-numChaps = 4 #number of chapters - including prologue
+numChaps = 7 #number of chapters - including prologue
 chapterNames = ["Prologue - The Lost one in the Woods",
                 "Chapter 1 - A Revolution to a Revolution",
                 "Chapter 2 - Breaking Defenses",
@@ -604,12 +722,42 @@ chapterShops = [[],
                  armory.setItems([long_lance.getInstance(),
                                   killing_edge.getInstance(),
                                   silver_lance.getInstance(),
+                                  slim_lance.getInstance()])],
+                [vendor.setItems([flux.getInstance(),
+                                  lightning.getInstance(),
+                                  fire.getInstance(),
+                                  heal.getInstance(),
+                                  lock_pick.getInstance()]),
+                 armory.setItems([long_lance.getInstance(),
+                                  killing_edge.getInstance(),
+                                  silver_lance.getInstance(),
+                                  slim_lance.getInstance()])],
+                [vendor.setItems([flux.getInstance(),
+                                  lightning.getInstance(),
+                                  fire.getInstance(),
+                                  heal.getInstance(),
+                                  lock_pick.getInstance()]),
+                 armory.setItems([long_lance.getInstance(),
+                                  killing_edge.getInstance(),
+                                  silver_lance.getInstance(),
+                                  slim_lance.getInstance()])],
+                [vendor.setItems([flux.getInstance(),
+                                  lightning.getInstance(),
+                                  fire.getInstance(),
+                                  heal.getInstance(),
+                                  lock_pick.getInstance()]),
+                 armory.setItems([long_lance.getInstance(),
+                                  killing_edge.getInstance(),
+                                  silver_lance.getInstance(),
                                   slim_lance.getInstance()])]]
 chapterVillages = [[],
                    [village.setItems(vulnerary.getInstance(),"story/chapter1village1.txt")],
                    [village.setItems(silver_lance.getInstance(),"story/chapter2village1.txt"),
                     village.setItems(angelic_robe.getInstance(),"story/chapter2village2.txt"),
                     village.setItems(white_gem.getInstance(),"story/chapter2village3.txt")],
+                    [],
+                   [village.setItems(vulnerary.getInstance(),"story/chapter1village4.txt")],
+                   [],
                    []]
 chapterChests = [[],
                  [],
@@ -617,7 +765,10 @@ chapterChests = [[],
                  [chest.setItem(angelic_robe.getInstance()),
                   chest.setItem(heaven_seal.getInstance()),
                   chest.setItem(rapier.getInstance()),
-                  chest.setItem(white_gem.getInstance())]]
+                  chest.setItem(white_gem.getInstance())],
+                 [],
+                 [],
+                 []]
 #MAPS
 def createMap(width,height,terrains=[]):
     "creates a map (2d list)"
@@ -722,15 +873,21 @@ chapterData = [([yoyo],getAcoords(0),createEnemyList([bandit0,alexTheBandit],[5,
                ([henry,eric,kevin,stefano,brandon],getAcoords(2),createEnemyList([bandit2,merc2,bandit2_v,knight2,alexTheKnight],getNumEnList(2),getEcoords(2)),
                 "Seize gate",plainsBackground),
                ([yuno],getAcoords(3),createEnemyList([knight3,shaman3,knight3_v,revenant3,shaman3_r,mage3,alexTheMage],getNumEnList(3),getEcoords(3)),
+                "Seize throne",plainsBackground),
+               ([],getAcoords(4),createEnemyList([knight4_v,shaman4,merc4,bandit4,knight4,mage4,alexTheDruid],getNumEnList(4),getEcoords(4)),
+                "Seize throne",plainsBackground),
+               ([],getAcoords(5),createEnemyList([knight4,shaman4,revenant5,bandit4,knight4_v,druid5,alexTheSage],getNumEnList(5),getEcoords(5)),
+                "Seize throne",plainsBackground),
+               ([],getAcoords(6),createEnemyList([revenant5,druid5,knight4,bandit4,knight4_v,druid5,alexTheBishop],getNumEnList(6),getEcoords(6)),
                 "Seize throne",plainsBackground)]
-chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains,battleCastle]
+chapterBattleBackgrounds = [battlePlains,battlePlains,battlePlains,battleCastle,battlePlains,battlePlains,battlePlains]
 oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
 #----MUSIC----#
 #add at the end because Albert's mac is funny
 #each index represents what music is played in the chapter of that index
-#chapterMusic = [conquest]
+#chapterMusic = [conquest]*7
 
 #miscellaneous
 chapter = 0 #changes when load new/old game, so stays global
@@ -2518,7 +2675,7 @@ class Game():
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
         ##whatever animation/dialogue that needs to happen
-        allAllies = [a for a in allAllies if a.name not in [al.name for al in allies]] #removes all of allies from allAllies
+        allAllies = [a for a in allAllies if a.name not in [al.name for al in oldAllies+chapterData[chapter][0]]] #removes all of allies from allAllies
         allAllies += allies #adds allies to allAllies
         if henning not in allAllies and chapter > 0:
             allAllies.append(henning)
@@ -2526,7 +2683,10 @@ class Game():
             #brings all allies back to full health
             a.hp = a.maxhp
             a.stats["hp"] = a.maxhp
-        changemode(getStory(chapter,True))
+        if chapter == numChaps:
+            pass #changemode to credits
+        else:
+            changemode(getStory(chapter,True))
     def drawPeople(self,alliesToDraw=None,enemiesToDraw=None):
         "draws all people on the map"
         alliesToDraw = allies if alliesToDraw==None else alliesToDraw
@@ -2814,7 +2974,7 @@ class Game():
             self.staffableSquares = []
     def run(self,screen):
         "runs the game in the running loop"
-        global running,chapter
+        global running,chapter,allies,allAllies
         #----EVENT LOOP----#
         for e in event.get():
             if e.type == QUIT:
@@ -2914,7 +3074,7 @@ class Game():
                             #if the user presses a blank spot, we set the mode to main menu
                             self.mode = "mainmenu"
                             self.menu = Menu(35,1,150,60)
-                            self.menu.items = ["Units","Status","End"] #menu has End turn
+                            self.menu.items = ["Units","Status","Suspend","End"] #menu has End turn
                             self.menu.height = len(self.menu.items)*30
                             self.menu.selected = 0
                             
@@ -2937,6 +3097,8 @@ class Game():
                         if self.menu.getOption().lower() == "units":
                             self.mode = "units"
                             self.unitsScreen = UnitsScreen()
+                        if self.menu.getOption().lower() == "suspend":
+                            self.mode = "suspend"
                         if self.menu.getOption().lower() == "status":
                             self.mode = "status"
                             self.statusScreen = StatusScreen()
@@ -3005,14 +3167,14 @@ class Game():
                     #ATTACK CLICKS
                     elif self.mode == "itemattack":
                         if self.menu.selected < len(self.selected.items):
-                            if self.selected.canEquip(self.selected.items[self.menu.selected]) and getAttackableEnemies(self.selected,enemies,weapon=self.selected.items[self.menu.selected]):
+                            if self.selected.canEquip(self.menu.getOption()) and getAttackableEnemies(self.selected,enemies,weapon=self.menu.getOption()):
                                 self.mode = "attack"
-                                self.selected.equipWeapon(self.selected.items[self.menu.selected])
+                                self.selected.equipWeapon(self.menu.getOption())
                                 self.attackableEnemies = getAttackableEnemies(self.selected,enemies)
                                 self.selectx,self.selecty = self.attackableEnemies[0].x,self.attackableEnemies[0].y
                                 self.selectedEnemy = 0
                             else:
-                                if not self.selected.canEquip(self.selected.items[self.menu.selected]):
+                                if not self.selected.canEquip(self.menu.getOption()):
                                     dispTempMsg(screen,"You have not enough mastery to equip that weapon",centerX=True,centerY=True)
                                 else:
                                     dispTempMsg(screen,"No enemies in range of that weapon",centerX=True,centerY=True)
@@ -3068,18 +3230,6 @@ class Game():
                                     self.selected.stats[self.selectedItem.stat] += self.selectedItem.amnt
                                     dispTempMsg(screen,self.selectedItem.stat.title()+" Increased",centerX=True,centerY=True)
                                     self.selected.removeItem(self.selectedItem)
-                                if type(self.selectedItem) == Promotional:
-                                    #PROMOTIONAL
-                                    ind = allies.index(self.selected)
-                                    oldPerson = self.selected
-                                    nameOfPerson = self.selected.name
-                                    if nameOfPerson.lower() not in usedNames:
-                                        nameOfPerson = "Player"
-                                    newPerson = self.selected.promote(promAnims[self.selected.name.title()])
-                                    allies[ind] = newPerson
-                                    exec(nameOfPerson.lower()+"=newPerson") #resets new person as well
-                                    drawPromotion(screen,newPerson,oldPerson)
-                                    self.selected.removeItem(self.selectedItem)
                                 self.mode = "move"
                                 if not self.selected.mounted or self.selected.movesLeft == 0:
                                     self.moved.add(self.selected)
@@ -3088,6 +3238,23 @@ class Game():
                                 self.oldx,self.oldy = self.selected.x,self.selected.y
                                 self.oldM = self.selected.movesLeft
                                 self.setMoveableSquares(self.selected,True)
+                                if type(self.selectedItem) == Promotional:
+                                    #PROMOTIONAL
+                                    ind = allies.index(self.selected)
+                                    oldPerson = self.selected
+                                    nameOfPerson = self.selected.name
+                                    if nameOfPerson.lower() not in usedNames:
+                                        nameOfPerson = "Player"+self.selected.__class__.__name__
+                                    self.selected.removeItem(self.selectedItem)
+                                    newPerson = self.selected.promote(promAnims[nameOfPerson])
+                                    allies[ind] = newPerson
+                                    exec("global "+nameOfPerson.lower()+"\n"+nameOfPerson.lower()+"=newPerson") #resets new person as well
+                                    drawPromotion(screen,newPerson,oldPerson)
+                                    self.moved.clear()
+                                    self.attacked.clear()
+                                    self.moved.add(newPerson)
+                                    self.attacked.add(newPerson)
+                                    self.mode = "freemove"
                             elif optselected.lower() == "equip":
                                 #equip option
                                 self.selected.equipWeapon(self.selectedItem) #tries to equip
@@ -3197,6 +3364,13 @@ class Game():
                             self.moved.add(self.selected)
                         self.oldx,self.oldy = self.selectx,self.selecty
                         self.oldM = self.selected.movesLeft
+                    #SUSPEND MODE CLICK
+                    elif self.mode == "suspend":
+                        allies = []
+                        allAllies = []
+                        changemode(StartMenu())
+                        print(allies)
+                        return 0
                 #------X------#
                 if e.key == K_x:
                     #if the user pressed x
@@ -3269,6 +3443,8 @@ class Game():
                         if not self.shopScreen.onX():
                             self.mode = "optionmenu"
                             self.createOptionMenu()
+                    elif self.mode == "suspend":
+                        self.mode = "mainmenu"
                     elif self.mode == "info":
                         self.mode = "freemove"
                         self.selected = None
@@ -3483,6 +3659,11 @@ class Game():
         #VENDOR/ARMORY MODE DISPLAY
         if self.mode in ["armory","vendor"]:
             self.shopScreen.draw()
+        #SUSPEND MODE DISPLAY
+        if self.mode == "suspend":
+            screen.fill(BLUE)
+            screen.blit(sans.render("Are you sure you want to lose all progress and go back to the main menu?",True,WHITE),(200,350))
+            screen.blit(sans.render("Z: Yes, X: No",True,WHITE),(200,380))
         #--------------------HIGHLIGHTING A PERSON---------------#
         if self.mode == "freemove":
             for p in allies+enemies:

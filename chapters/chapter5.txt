@@ -1,0 +1,6 @@
+images/backgrounds/SacredIsle.png
+:The group arrived at the entrance to the sacred isle. Upon arrival, they are ambushed by soldiers sent by Alex. After defeating the first ambush, the heroes must defeat a second wave of enemies
+TITLE:Chapter 5 - Another Defense Break
+BACKGROUND:images/backgrounds/forest.jpg
+*Player*:We don't have time to prepare...
+Yoyo:Oh well... let's fight!

@@ -1,0 +1,7 @@
+images/backgrounds/forest.jpg
+Yoyo:We did it...
+*Player*:Not yet... more troops up ahead.
+Yoyo:Sigh... we must prepare for another battle.
+CONDITION:Gary;
+Gary:Déjà vu lol
+CONDITION:*End*
