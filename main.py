@@ -343,7 +343,7 @@ promAnims = {"Yoyo":yoyoPromAnims,
              "PlayerMage":playerMagePromAnims,
              "Eric":ericPromAnims,
              "Kevin":kevinPromAnims} #promotional animations - changes to during promotion
-
+LS(420)
 #ARROW SPRITES
 arrowHead = image.load("images/Arrow/arrowHead.png")
 arrowBent = image.load("images/Arrow/arrowBent.png")
@@ -385,6 +385,12 @@ armorySelect,armorySelect2,vendorSelect,vendorSelect2 = [image.load("images/back
 #Story Images
 storytextBG = transform.smoothscale(image.load("story/storytextbackground.png"),(1200,60))
 storytextBGcover = storytextBG.subsurface(0,30,1200,30).copy()
+
+#Button Images
+buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png").convert_alpha(),(200,50))
+buttonnormalstretch = transform.smoothscale(buttonnormal,(300,50))
+buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
+buttonhlstretch = transform.smoothscale(buttonhl,(300,50))
 
 pointer = image.load('images/Menu/pointer.png')
 infoBox = image.load('images/infoBox.png')
@@ -938,17 +944,25 @@ def save(file):
 def getSavedChapter(file):
     "gets the chapter saved file #"
     try:
-        return "Chapter: "+str(file["chapter"])
+        return "Chapter:"+str(file["chapter"])
     except:
-        return "--NO DATA--"
+        return "-NO DATA-"
 #----DRAWING FUNCTIONS----#
 def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
-    draw.rect(screen,col,(x*30,y*30,width,height))
+    #these are for battle Stats
+    if col == BLUE:
+        draw.rect(screen,BLUE,(x*30,y*30,width,height))
+    elif col == RED:
+        draw.rect(screen,RED,(x*30,y*30,width,height))
+    else:
+        draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
         opt = menu[i].title() #option to draw
-        screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
+        screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30)) #draws the option texts
+        
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
+    
 def drawItem(person,item,x,y,diff=180,fnt=sans):
     "draws an item"
     col = WHITE
@@ -981,7 +995,7 @@ def checkDead(ally,enemy):
  #           screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             screen.blit(storytextBGcover,(0,690))
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(5,690))
+            screen.blit(botinstruct,(20,690))
             arrowflashcounter += 0.15
             display.flip()
         return True
@@ -1003,7 +1017,7 @@ def checkDead(ally,enemy):
                         waiting = False
             screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(5,690))
+            screen.blit(botinstruct,(20,690))
             arrowflashcounter += 0.15
             display.flip()
         return True
@@ -1034,7 +1048,7 @@ def attack(person,person2):
                         waiting = False
             screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(5,690))
+            screen.blit(botinstruct,(20,690))
             arrowflashcounter += 0.15
             display.flip()
     screen.blit(chapterBattleBackgrounds[chapter],(0,0))
@@ -1444,11 +1458,9 @@ class TradeMenu(Menu):
             return [self.firstSelection,self.getOption()]
     def draw(self,person=None,person2=None):
         "draws the trade menu"
-#        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height))
         screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),(self.x*30,self.y*30))
         screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),((self.x+1)*30+self.width,self.y*30))
 
- #       draw.rect(screen,BLUE,((self.x+1)*30+self.width,self.y*30,self.width,self.height)) #draws two rectangles
         screen.blit(self.background,(self.x*30,self.y*30)) #blits the background
         screen.blit(self.background,((self.x+1)*30+self.width,self.y*30))
         people = [person,person2] #list of people
@@ -1524,7 +1536,7 @@ class TransferScreen():
             draw.rect(screen,WHITE,(330,165+75*self.selAct,216,75),1)
             screen.blit(sans.render("Z to select an option; X to cancel; Arrow keys to change option",True,WHITE),(0,680))
         if self.mode == "give":
-            draw.rect(screen,RED,(330,165,216,75),1)
+            draw.rect(screen,RED,(330,165,216,75),1) #border
             if len(self.p.items) != 0:
                 screen.blit(pointer,(50,330+60*self.selItem))
                 draw.rect(screen,WHITE,(80,330+60*self.selItem,480,30),1)
@@ -1669,7 +1681,6 @@ class VillageScreen():
                 elif func == "TITLE":
                     #display the title
                     screen.fill(BLACK)
- #                   draw.rect(screen,BLUE,(0,330,1200,60))
                     screen.blit(storytextBG,(0,330))
                     img = sans.render(sentence,True,WHITE) #img of string to blit
                     screen.blit(img,(600-img.get_width()//2,360-img.get_height()//2)) #draws title in the center
@@ -2007,10 +2018,10 @@ class StartMenu():
         "sets button list of mode"
         self.stopped = False
         #BUTTON SPRITES
-        self.buttonnormal = transform.smoothscale(image.load("images/Buttons/button.png").convert_alpha(),(200,50))
-        self.buttonnormalstretch = transform.smoothscale(self.buttonnormal,(300,50))
-        self.buttonhl = transform.smoothscale(image.load("images/Buttons/buttonhl.png").convert_alpha(),(200,50))
-        self.buttonhlstretch = transform.smoothscale(self.buttonhl,(300,50))
+        self.buttonnormal = buttonnormal
+        self.buttonnormalstretch = buttonnormalstretch
+        self.buttonhl = buttonhl
+        self.buttonhlstretch = buttonhlstretch
         self.buttons = [Button(500,420,200,50,
                                FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
@@ -2056,20 +2067,20 @@ class InstructionScreen():
         #the func will be changing currmode.background
         #running loop will continuously blit background
  #       self.backgrounds = [image.load("instructions/backgrounds/instructionscreen"+str(i)+".png")for i in range (2)]
-        self.buttons = [Button(500,420,200,50,
-                               FilledSurface((200,50),RED,"Menu",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"Menu",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"Menu",BLACK,monospace,(30,10)),
+        self.buttons = [Button(25,471,200,50,
+                               FilledSurface((200,50),buttonnormal,"Menu",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Menu",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Menu",WHITE,monospace,(30,10)),
                                ["changemode(StartMenu())"]),
-                        Button(710,420,200,50,
-                               FilledSurface((200,50),RED,"Skip",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"Skip",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"Skip",BLACK,monospace,(30,10)),
+                        Button(730,471,200,50,
+                               FilledSurface((200,50),buttonnormal,"Skip",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Skip",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Skip",WHITE,monospace,(30,10)),
                                ["currmode.currDial += 1"]),
-                        Button(920,420,200,50,
-                               FilledSurface((200,50),RED,"Back",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"Back",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"Back",BLACK,monospace,(30,10)),
+                        Button(990,471,200,50,
+                               FilledSurface((200,50),buttonnormal,"Back",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Back",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"Back",WHITE,monospace,(30,10)),
                                ["currmode.currDial -= 1"])
                                ]
         #dialogue is in form of either:
@@ -2144,7 +2155,7 @@ class InstructionScreen():
                 #tiny instructions with flashing arrow
                 screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
                 botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-                screen.blit(botinstruct,(5,690))
+                screen.blit(botinstruct,(20,690))
                 arrowflashcounter += 0.15
                 for b in self.buttons:
                     b.draw(screen)
@@ -2169,34 +2180,37 @@ class SaveGame():
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
         #sets the button text based on which files have data
-        button1Text = getSavedChapter(self.file1)
-        button2Text = getSavedChapter(self.file2)
-        button3Text = getSavedChapter(self.file3)
+        button1Text = " " + getSavedChapter(self.file1)
+        button2Text = " " + getSavedChapter(self.file2)
+        button3Text = " " + getSavedChapter(self.file3)
+        self.sbuttonnormal = transform.smoothscale(buttonnormal,(85,50))
+        self.sbuttonhl = transform.smoothscale(buttonhl,(85,50))
+        self.buttonoutline = transform.smoothscale(image.load("images/Buttons/buttonoutline.png"),(200,50))
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,
-                                       FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
-                                       FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                                       FilledSurface((200,50),GREEN,button1Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonnormal,button1Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button1Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button1Text,WHITE,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=1"]),
                                 Button(500,480,200,50,
-                                       FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
-                                       FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                                       FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonnormal,button2Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button2Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button2Text,WHITE,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=2"]),
                                 Button(500,540,200,50,
-                                       FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
-                                       FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                                       FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonnormal,button3Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button3Text,BLACK,monospace,(0,10)),
+                                       FilledSurface((200,50),buttonhl,button2Text,WHITE,monospace,(0,10)),
                                        ["currmode.savingfile = True","currmode.filenum=3"])]
-        self.buttons2 = [Button(500,600,80,50,
-                                FilledSurface((80,50),BLUE,"SAVE",WHITE,monospace,(0,10)),
-                                FilledSurface((80,50),YELLOW,"SAVE",BLACK,monospace,(0,10)),
-                                FilledSurface((80,50),GREEN,"SAVE",BLACK,monospace,(0,10)),
+        self.buttons2 = [Button(500,600,85,50,
+                                FilledSurface((85,50),self.sbuttonnormal,"SAVE",BLACK,monospace,(0,10)),
+                                FilledSurface((85,50),self.sbuttonhl,"SAVE",BLACK,monospace,(0,10)),
+                                FilledSurface((85,50),self.sbuttonhl,"SAVE",WHITE,monospace,(0,10)),
                                 ["save([currmode.file1,currmode.file2,currmode.file3][currmode.filenum-1])"]),
-                         Button(600,600,80,50,
-                                FilledSurface((80,50),BLUE,"QUIT",WHITE,monospace,(0,10)),
-                                FilledSurface((80,50),YELLOW,"QUIT",BLACK,monospace,(0,10)),
-                                FilledSurface((80,50),GREEN,"QUIT",BLACK,monospace,(0,10)),
+                         Button(600,600,85,50,
+                                FilledSurface((85,50),self.sbuttonnormal,"QUIT",BLACK,monospace,(0,10)),
+                                FilledSurface((85,50),self.sbuttonhl,"QUIT",BLACK,monospace,(0,10)),
+                                FilledSurface((85,50),self.sbuttonhl,"QUIT",WHITE,monospace,(0,10)),
                                 ["quit()"])]
                          
     def draw(self,screen):
@@ -2233,8 +2247,9 @@ class SaveGame():
         if self.savingfile:
             for b in self.buttons2:
                 b.draw(screen)
-            ##this is temporary to show which one is selected, probably these'll all change to images
-            draw.rect(screen,YELLOW,(500,420-60+self.filenum*60,200,50),5)
+            ##highlighting the selected one    
+ #           draw.rect(screen,YELLOW,(500,420-60+self.filenum*60,200,50),5)
+            screen.blit(self.buttonoutline,(500,420-60+self.filenum*60))
             
 class LoadGame():
     "screen for loading game files"
@@ -2247,25 +2262,25 @@ class LoadGame():
         self.file2 = shelve.open("saves/file2")
         self.file3 = shelve.open("saves/file3")
 
-        button1Text = getSavedChapter(self.file1)
-        button2Text = getSavedChapter(self.file2)
-        button3Text = getSavedChapter(self.file3)
+        button1Text = " " + getSavedChapter(self.file1)
+        button2Text = " " + getSavedChapter(self.file2)
+        button3Text = " " + getSavedChapter(self.file3)
 
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,
-                               FilledSurface((200,50),BLUE,button1Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button1Text,BLACK,monospace,(0,10)),
-                               FilledSurface((200,50),GREEN,button1Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonnormal,button1Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button1Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button1Text,WHITE,monospace,(0,10)),
                                ["load(currmode.file1)"]),
                         Button(500,480,200,50,
-                               FilledSurface((200,50),BLUE,button2Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button2Text,BLACK,monospace,(0,10)),
-                               FilledSurface((200,50),GREEN,button2Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonnormal,button2Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button2Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button2Text,WHITE,monospace,(0,10)),
                                ["load(currmode.file2)"]),
                         Button(500,540,200,50,
-                               FilledSurface((200,50),BLUE,button3Text,WHITE,monospace,(0,10)),
-                               FilledSurface((200,50),YELLOW,button3Text,BLACK,monospace,(0,10)),
-                               FilledSurface((200,50),GREEN,button3Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonnormal,button3Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button3Text,BLACK,monospace,(0,10)),
+                               FilledSurface((200,50),buttonhl,button3Text,WHITE,monospace,(0,10)),
                                ["load(currmode.file3)"])]
 
     def draw(self,screen):
@@ -2343,7 +2358,7 @@ addAlly(player)
         "draws newgame screen"
         screen.fill(BLACK)
         screen.blit(comicsans.render("ENTER NAME: ",True,WHITE),(self.tbrect[0]-250,self.tbrect[1]+10))
-        draw.rect(screen,WHITE,self.tbrect)
+        draw.rect(screen,WHITE,self.tbrect) #place to enter name
     def playMusic(self):
         "does not have music - same as menu"
         pass
@@ -2493,7 +2508,6 @@ class Story():
             elif func == "TITLE":
                 #display the title
                 screen.fill(BLACK)
- #               draw.rect(screen,BLUE,(0,330,1200,60))
 
                 screen.blit(storytextBG,(0,330))
                 img = sans.render(sentence,True,WHITE) #img of string to blit
@@ -2532,7 +2546,7 @@ class Story():
             #tiny instructions with flashing arrow
             screen.blit(storytextBGcover,(0,690)) #might have to be subsurface
             botinstruct = sans.render("Z to continue, X or Enter to Skip",True,WHITE) if int(arrowflashcounter)%2 else sans.render("Z to continue, X or Enter to Skip V",True,WHITE)
-            screen.blit(botinstruct,(5,690))
+            screen.blit(botinstruct,(20,690))
             arrowflashcounter += 0.15
             
             display.flip()
@@ -3217,7 +3231,6 @@ class Game():
                             firOp = "Use" if type(self.selectedItem) in [Consumable,Booster,Promotional] else firOp
                             if firOp == "Use" and type(self.selectedItem) == Promotional and not self.selectedItem.canUse(self.selected):
                                 #if the selected unit cannot use the promotional item, we don't add it
-                                print("lol")
                                 firOp = ""
                             itms = [firOp,"Discard"] if firOp != "" else ["Discard"]
                             self.menu.subMenu = Menu(24,8,120,60,items=itms)
@@ -3379,7 +3392,6 @@ class Game():
                         allies = []
                         allAllies = []
                         changemode(StartMenu())
-                        print(allies)
                         return 0
                 #------X------#
                 if e.key == K_x:
@@ -3548,7 +3560,6 @@ class Game():
             self.menu.draw()
             drawTransRect(screen,BLACK,0,680,1200,40)
             screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,680))
- #          drawMenu(self.menu,menux,menuy,120,480,self.menu.selected) #draws the main menu
         #STATUS SCREEN MODE DISPLAY
         if self.mode == "status":
             self.statusScreen.draw()
@@ -3560,13 +3571,12 @@ class Game():
             self.menu.x,self.menu.y = 32,2
             if self.selected.x >= 20:
                 self.menu.x = 0
-            self.menu.width=230
+            self.menu.width=240
             self.menu.height=30*len(self.menu.items)
             self.menu.draw()
             y = 0 if self.selected.y > 12 else 680
             drawTransRect(screen,BLACK,0,y,1200,40)
             screen.blit(sans.render("Z to select an option; X to cancel; Up and down keys to change option",True,WHITE),(0,y))
-#            drawMenu(self.menu,menux,menuy,120,len(self.menu.items)*30,self.menu.selected)
         #ATTACK MODE DISPLAY
         if self.mode == "itemattack":
             #displays item selection menu for attack
