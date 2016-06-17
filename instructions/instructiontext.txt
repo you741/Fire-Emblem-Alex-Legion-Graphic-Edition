@@ -1,10 +1,13 @@
 instructions/backgrounds/instructionscreen0.png
 :Welcome to Fire Emblem, The Alex Legion
+instructions/backgrounds/instructionscreenarrows.png
 :Click BACK if you missed something, SKIP if you don't want to read this, and MENU to go back to the Start Menu
 :In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion.
+instructions/backgrounds/instructionscreen1.png
 :Basic controls - Z: Select, X: Cancel, S: Information, A: Cycle (think of them as "A","B","R", and "L" respectively on the Gameboy)
 :Units are all unique. They have different stats, and do different things. You can check on a unit's abilities by selecting them and clicking "s".
-:Units can also use items. Items are either Weapons, or Consumables.
+:Units can also use items. Items are either Promotionals, Boosters, Weapons, or Consumables.
+:Promotionals can be used to "PROMOTE" a unit. Boosters can be used to temporarily "BOOST" a unit. Both are used to give you an edge as you attempt to defeat the Alex Legion.
 :Consumables may be used to help defeat enemies..... or just stylepoints
 :Units can weild Weapons based on their mastery level in that item category.
 :Weapons are split into two categories. MAGIC, and PHYSICAL.
@@ -13,6 +16,12 @@ instructions/backgrounds/instructionscreen0.png
 :Choose which square you would like to move to, and your unit will move. If you mess up, that's okay! You can just click "X" to go back. However, you cannot go back once you have attacked, so BE CAREFUL!!
 :Once you have moved, you will be given many options. If you choose to attack, then you will be given the choice of who to attack (if possible) and then click "Z" to enter the battle phase.
 :Here you will watch the two units attack. If the enemy cannot attack you, they will not. If they can, they will. BEWARE, you can lose units if you impulsively attack a strong character!
-:You can also interact with non-enemy units. These interactions are HEALING, TRADING, VILLAGES, BUYING, and SELLING.
+:You can also interact with non-enemy units. These interactions are HEALING, TRADING, VILLAGES, BUYING and SELLING.
 :Healing is almost the same as Attacking, except that you will be healing your units instead of damaging them, and you target your own units.
-:Trading is also very similar to Attacking, and
+:Trading is when you target an ally and decide to trade items with them.
+:Villages allow you to interact with NPCs. They might give you free items, but bandits will also target them. Protecting and visiting them may give you an edge as you progress through the game!
+:Buying and Selling is done at an armoury or a shop, where you can buy specific items or sell of your own for gold.
+instructions/backgrounds/terrain.png
+:There are multiple types of terrain. Forests, Peaks, Plains, etc. The only thing worth noting is that mounted units cannot go on mountains, and that different terrain makes it so you can't travel as far in them.
+instructions/backgrounds/end.png
+:This is all you need to know, now have fun in Fire Emblem, The Alex Legion!!!

@@ -909,8 +909,8 @@ oldAllies = [] #keeps track of allies before the fight
 allAllies = [] #all allies that exist
 
 #----MUSIC----#
-#add at the end because Albert's mac is funny
-#each index represents what music is played in the chapter of that index
+##add at the end because Albert's mac is funny
+##each index represents what music is played in the chapter of that index
 chapterMusic = [conquest]*7
 chapterMusic[3] = shamanInTheDark
 
@@ -2059,7 +2059,6 @@ class StartMenu():
         screen.blit(logo,(300,50))
     def playMusic(self):
         "plays menu music"
-        #WIP
         mixer.stop()
         shamanInTheDark.play(-1)
     def run(self,screen):
@@ -2087,7 +2086,6 @@ class InstructionScreen():
         #buttons are BACK, SKIP, MENU
         #the func will be changing currmode.background
         #running loop will continuously blit background
- #       self.backgrounds = [image.load("instructions/backgrounds/instructionscreen"+str(i)+".png")for i in range (2)]
         self.buttons = [Button(25,471,200,50,
                                FilledSurface((200,50),buttonnormal,"Menu",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),buttonhl,"Menu",BLACK,monospace,(30,10)),
@@ -2130,8 +2128,10 @@ class InstructionScreen():
                 for b in self.buttons:
                     if b.istouch():
                         b.click()
-        if self.currDial <=  len(self.dialogue):
+        if self.currDial <  len(self.dialogue):
             self.display(screen)
+        elif self.currDial == len(self.dialogue):
+            changemode(StartMenu())
         if self.stopped:
                 return 0 #stops the method once stopped
         for b in self.buttons:
