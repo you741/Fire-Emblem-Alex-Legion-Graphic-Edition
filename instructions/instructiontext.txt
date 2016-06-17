@@ -5,6 +5,7 @@ instructions/backgrounds/instructionscreenarrows.png
 :In this game, you will control units in order to complete objectives. The goal of the game is to defeat Alex and his Legion.
 instructions/backgrounds/instructionscreen1.png
 :Basic controls - Z: Select, X: Cancel, S: Information, A: Cycle (think of them as "A","B","R", and "L" respectively on the Gameboy)
+instructions/backgrounds/instructionscreen0.png
 :Units are all unique. They have different stats, and do different things. You can check on a unit's abilities by selecting them and clicking "s".
 :Units can also use items. Items are either Promotionals, Boosters, Weapons, or Consumables.
 :Promotionals can be used to "PROMOTE" a unit. Boosters can be used to temporarily "BOOST" a unit. Both are used to give you an edge as you attempt to defeat the Alex Legion.
