@@ -380,6 +380,7 @@ waterImg = image.load("images/terrain/water.png")
 plainsBackground = image.load("images/Maps/prologue.png")
 loadsaveBG = transform.smoothscale(image.load("images/backgrounds/SaveLoadBG.jpg"),(1200,720))
 chooseclassBG = transform.smoothscale(image.load("images/backgrounds/choosingclass.jpg"),(1200,720))
+mainMenuBG = transform.smoothscale(image.load("images/Menu/menubackground.png"),(54,42))
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
 battleCastle = image.load("images/backgrounds/battleCastle.png")
@@ -966,9 +967,9 @@ def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
     "draws a list of strings as a vertical menu at positions x and y"
     #these are for battle Stats
     if col == BLUE:
-        draw.rect(screen,BLUE,(x*30,y*30,width,height))
+        screen.blit(tileBackground(transform.smoothscale(mainMenuBG,(100,60)),width,height),(x*30,y*30))
     elif col == RED:
-        draw.rect(screen,RED,(x*30,y*30,width,height))
+        screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackgroundred.png"),(100,60)),width,height),(x*30,y*30))
     else:
         draw.rect(screen,col,(x*30,y*30,width,height))
     for i in range(len(menu)):
@@ -1398,8 +1399,7 @@ class Menu():
 
     def draw(self,person=None):
         "draws a list of strings as a vertical menu at positions x and y"
-#        draw.rect(screen,BLUE,(self.x*30,self.y*30,self.width,self.height)) #this is the menu background
-        self.background = tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height)
+        self.background = tileBackground(transform.smoothscale(mainMenuBG,(100,60)),self.width,self.height)
         screen.blit(self.background,(self.x*30,self.y*30))
         x = self.x*30
         for i in range(len(self.items)):
@@ -1472,8 +1472,8 @@ class TradeMenu(Menu):
             return [self.firstSelection,self.getOption()]
     def draw(self,person=None,person2=None):
         "draws the trade menu"
-        screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),(self.x*30,self.y*30))
-        screen.blit(tileBackground(transform.smoothscale(image.load("images/Menu/menubackground.png"),(100,60)),self.width,self.height),((self.x+1)*30+self.width,self.y*30))
+        screen.blit(tileBackground(transform.smoothscale(mainMenuBG,(100,60)),self.width,self.height),(self.x*30,self.y*30))
+        screen.blit(tileBackground(transform.smoothscale(mainMenuBG,(100,60)),self.width,self.height),((self.x+1)*30+self.width,self.y*30))
 
         screen.blit(self.background,(self.x*30,self.y*30)) #blits the background
         screen.blit(self.background,((self.x+1)*30+self.width,self.y*30))
@@ -3709,7 +3709,7 @@ class Game():
         #CHEST MODE DISPLAY
         if self.mode == "itemchest":
             self.menu.draw(self.selected)
-            draw.rect(screen,BLUE,(700,690,500,30))
+            screen.blit(tileBackground(mainMenuBG,500,30),(700,690))
             screen.blit(sans.render("Choose an item to open chest with",True,WHITE),(700,690))
             drawTransRect(screen,BLACK,0,0,1200,40)
             screen.blit(sans.render("Z to select item; X to cancel; Arrow keys to change selected item",True,WHITE),(0,0))
@@ -3721,7 +3721,7 @@ class Game():
             screen.blit(sans.render("Z to select an enemy to steal from; X to cancel; Arrow keys to change selected enemy",True,WHITE),(0,y))
         if self.mode == "steal2":
             self.menu.draw(self.targetableEnemies[self.selectedEnemy])
-            draw.rect(screen,BLUE,(700,0,500,30))
+            screen.blit(tileBackground(mainMenuBG,500,30),(700,0))
             screen.blit(sans.render("Choose an item to steal",True,WHITE),(700,0))
             drawTransRect(screen,BLACK,0,680,1200,40)
             screen.blit(sans.render("Z to steal item; X to cancel; Arrow keys to change selected item",True,WHITE),(0,680))
@@ -3748,7 +3748,8 @@ class Game():
                     pdbx,pdby = 0,40 #person data box x and y
                     if self.selectx < 20 and self.selecty <= 12:
                         pdby = 590
-                    draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
+ #                   draw.rect(screen,BLUE,(pdbx,pdby,300,90)) #background box
+                    screen.blit(tileBackground(mainMenuBG,300,90),(pdbx,pdby)) #background box
                     screen.blit(sans.render(p.name,True,WHITE),(pdbx+15,pdby+3)) #person's name
                     screen.blit(smallsans.render("HP: "+str(p.hp)+"/"+str(p.maxhp),True,WHITE),(pdbx+15,pdby+33)) #health
                     draw.line(screen,(80,60,30),(pdbx+90,pdby+48),(pdbx+270,pdby+48),30) #health bar
@@ -3765,7 +3766,8 @@ class Game():
             stage = chapterMaps[chapter]
             if self.selectx >= 20:
                 tbx = 0
-            draw.rect(screen,BLUE,(tbx,tby,180,90))
+ #           draw.rect(screen,BLUE,(tbx,tby,180,90))
+            screen.blit(tileBackground(mainMenuBG,300,90),(tbx,tby))
             screen.blit(sans.render(stage[self.selecty][self.selectx].name,True,WHITE),(tbx+15,tby+3))
             draw.rect(screen,(255,230,200),(tbx,tby+30,180,60))
             screen.blit(sans.render("DEFENSE: "+str(stage[self.selecty][self.selectx].adef),True,BLACK),(tbx+15,tby+33))
