@@ -72,6 +72,7 @@ anotherMedium = mixer.Sound("music/mus_anothermedium.ogg")
 temShop = mixer.Sound("music/mus_temshop.ogg")
 xUndyne = mixer.Sound("music/mus_x_undyne.ogg")
 battle1MUS = mixer.Sound("music/mus_battle1.ogg")
+gameOverMUS = mixer.Sound("music/mus_toomuch.ogg")
 shamanInTheDark.play(-1)
 LS(220)
 #----IMAGE LOAD----#
@@ -747,7 +748,7 @@ chapterShops = [[],
                                   slim_lance.getInstance()])],
                 [vendor.setItems([flux.getInstance(),
                                   lightning.getInstance(),
-                                  fire.getInstance(),
+                                  elfire.getInstance(),
                                   heal.getInstance(),
                                   lock_pick.getInstance()]),
                  armory.setItems([long_lance.getInstance(),
@@ -755,8 +756,8 @@ chapterShops = [[],
                                   silver_lance.getInstance(),
                                   slim_lance.getInstance()])],
                 [vendor.setItems([flux.getInstance(),
-                                  lightning.getInstance(),
-                                  fire.getInstance(),
+                                  shine.getInstance(),
+                                  elfire.getInstance(),
                                   heal.getInstance(),
                                   lock_pick.getInstance()]),
                  armory.setItems([long_lance.getInstance(),
@@ -764,8 +765,8 @@ chapterShops = [[],
                                   silver_lance.getInstance(),
                                   slim_lance.getInstance()])],
                 [vendor.setItems([flux.getInstance(),
-                                  lightning.getInstance(),
-                                  fire.getInstance(),
+                                  shine.getInstance(),
+                                  elfire.getInstance(),
                                   heal.getInstance(),
                                   lock_pick.getInstance()]),
                  armory.setItems([long_lance.getInstance(),
@@ -2604,7 +2605,10 @@ class Story():
             fpsLimiter.tick(60) #limits to 60 FPS
         if self.currDial >= self.limit or cM:
             if self.end:
-                changemode(SaveGame()) #we change to savegame if it's the end
+                if chapter == numChaps-1:
+                    changemode(CreditScreen()) #changemode to credits if last chapter
+                else:
+                    changemode(SaveGame()) #we change to savegame if it's the end
             else:
                 #once we hit the limit we transition to the game mode
                 changemode(Game())
@@ -2756,10 +2760,8 @@ class Game():
             #brings all allies back to full health
             a.hp = a.maxhp
             a.stats["hp"] = a.maxhp
-        if chapter == numChaps:
-            changemode(CreditScreen()) #changemode to credits
-        else:
-            changemode(getStory(chapter,True))
+        
+        changemode(getStory(chapter,True))
     def drawPeople(self,alliesToDraw=None,enemiesToDraw=None):
         "draws all people on the map"
         alliesToDraw = allies if alliesToDraw==None else alliesToDraw
@@ -2779,6 +2781,7 @@ class Game():
     def start(self):
         "starts a chapter, also serves a restart"
         global allies,enemies,oldAllies,gold
+        self.playMusic()
         self.currAlly = 0
         gold = self.oldGold
         newAllies,allyCoords,newenemies,self.goal,backgroundImage = chapterData[chapter]
@@ -2932,6 +2935,8 @@ class Game():
         self.startTurn() #starts the turn
     def gameOver(self):
         "draws game over screen"
+        mixer.stop()
+        gameOverMUS.play()
         for i in range(50):
             screen.blit(transBlack,(0,0)) #fills the screen with black slowly over time - creates fading effect
             display.flip()
