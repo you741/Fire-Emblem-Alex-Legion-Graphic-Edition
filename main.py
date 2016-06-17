@@ -132,6 +132,7 @@ yoyoDarkcritSpriteP = yoyoLightcritSpriteP
 yoyoPromAnims = {"stand":yoyoStandSpriteP,"Sword":yoyoSwordSpriteP,"Swordcrit":yoyoSwordcritSpriteP,"Light":yoyoLightSpriteP,
                  "Lightcrit":yoyoLightcritSpriteP,"Anima":yoyoAnimaSpriteP,"Animacrit":yoyoAnimacritSpriteP,"Dark":yoyoDarkSpriteP,
                  "Darkcrit":yoyoDarkcritSpriteP}
+LS(265)
 #LOADING ALBERT
 albertLanceSpriteP = ([image.load("images/Albert/AlbertLanceFrame"+str(i+1)+".png")
                       for i in range(24)],7)
@@ -179,6 +180,7 @@ ericLightcritSpriteP = ([ericStandSpriteP] + [image.load("images/Eric/EricPCritF
                                               for i in range(5)] + ericLightSpriteP[0][3:],10)
 ericStaffSpriteP = ericLightSpriteP
 ericPromAnims = {"stand":ericStandSpriteP,"Light":ericLightSpriteP,"Lightcrit":ericLightcritSpriteP,"Staff":ericStaffSpriteP}
+LS(335)
 #LOADING BRANDON
 brandonSwordSprite = ([image.load("images/Brandon/BrandonAttackFrame"+str(i+1)+".png")
                        for i in range(15)],5)
@@ -205,6 +207,7 @@ kevinDarkcritSpriteP = ([kevinStandSpriteP] + [image.load('images/Kevin/KevinPCr
 kevinStaffSpriteP = ([image.load("images/Kevin/KevinPStaffFrame"+str(i+1)+".png")
                       for i in range(4)]+[image.load("images/Kevin/KevinPStaffFrame1.png")],4)
 kevinPromAnims = {"stand":kevinStandSpriteP,"Dark":kevinDarkSpriteP,"Darkcrit":kevinDarkcritSpriteP,"Staff":kevinStaffSpriteP}
+LS(365)
 #LOADING YUNO
 yunoLanceSprite = ([image.load('images/Yuno/YunoAttackFrame'+str(i+1)+'.png')
                     for i in range(13)],4)
@@ -231,6 +234,7 @@ knightLanceSprite = ([image.load("images/Knight/KnightAttackFrame"+str(i+1)+".pn
 knightStandSprite = knightLanceSprite[0][0]
 knightLancecritSprite = ([knightStandSprite] + [image.load("images/Knight/KnightCritFrame"+str(i+1)+".png")
                           for i in range(5)] + knightLanceSprite[0][1:],10)
+LS(380)
 #SHAMAN
 shamanDarkSprite = ([transform.flip(img,True,False) for img in kevinDarkSprite[0]],24)
 shamanStandSprite = transform.flip(kevinStandSprite,True,False)
@@ -253,6 +257,7 @@ sageAnimacritSprite = ([transform.flip(img,True,False) for img in playerSageAnim
 sageStandSprite = sageAnimaSprite[0][0]
 sageStaffSprite = ([transform.flip(img,True,False) for img in playerSageStaffSpriteP[0]],playerSageStaffSpriteP[1])
 
+LS(385)
 #BISHOP
 bishopLightSprite = ([transform.flip(img,True,False) for img in ericLightSpriteP[0]],ericLightSpriteP[1])
 bishopLightcritSprite = ([transform.flip(img,True,False) for img in ericLightcritSpriteP[0]],ericLightcritSpriteP[1])
@@ -265,6 +270,7 @@ revenantClawSprite = ([image.load("images/Revenant/RevenantAttackFrame"+str(i+1)
 revenantStandSprite = revenantClawSprite[0][0]
 revenantClawcritSprite = ([revenantStandSprite] + [image.load("images/Revenant/RevenantCritFrame"+str(i+1)+".png")
                                                    for i in range(2)] + revenantClawSprite[0][1:],11)
+LS(390)
 #MAGIC ANIMATIONS
 #--FIRE
 fireSprite = [image.load("images/Magic/Fire/Fire"+str(i+1)+".png").convert_alpha()
@@ -308,6 +314,7 @@ enemyMapSprites = {"Brigand":[transform.scale(image.load("images/MapSprites/Enem
                   "Druid":[transform.scale(image.load("images/MapSprites/Enemy/Druid"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Sage":[transform.scale(image.load("images/MapSprites/Enemy/Sage"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)],
                   "Bishop":[transform.scale(image.load("images/MapSprites/Enemy/Bishop"+str(i+1)+".png").convert_alpha(),(30,30)) for i in range(4)]}
+LS(410)
 allyGreyMapSprites = {}
 for i,k in enumerate(allyMapSprites):
     allyGreyMapSprites[k] = [greyScale(img) for img in allyMapSprites[k]]
@@ -366,7 +373,8 @@ floorImg = image.load("images/terrain/floor.png")
 waterImg = image.load("images/terrain/water.png")
 #BACKGROUND IMAGES
 plainsBackground = image.load("images/Maps/prologue.png")
-
+loadsaveBG = transform.smoothscale(image.load("images/backgrounds/SaveLoadBG.jpg"),(1200,720))
+chooseclassBG = transform.smoothscale(image.load("images/backgrounds/choosingclass.jpg"),(1200,720))
 #battle background
 battlePlains = image.load("images/backgrounds/battlePlains.png")
 battleCastle = image.load("images/backgrounds/battleCastle.png")
@@ -2216,7 +2224,7 @@ class SaveGame():
                          
     def draw(self,screen):
         "draws mode on screen"
-        screen.fill(BLACK)
+        screen.blit(loadsaveBG,(0,0))
     def playMusic(self):
         "plays menu music"
         #WIP
@@ -2286,7 +2294,7 @@ class LoadGame():
 
     def draw(self,screen):
         "draws mode on screen"
-        screen.fill(WHITE)
+        screen.blit(loadsaveBG,(0,0))
         pass
     def playMusic(self):
         "plays menu music"
@@ -2362,7 +2370,7 @@ addAlly(player)
         
     def draw(self,screen):
         "draws newgame screen"
-        screen.fill(BLACK)
+        screen.blit(loadsaveBG,(0,0))
         screen.blit(comicsans.render("ENTER NAME: ",True,WHITE),(self.tbrect[0]-250,self.tbrect[1]+10))
         draw.rect(screen,WHITE,self.tbrect) #place to enter name
     def playMusic(self):
@@ -2443,6 +2451,7 @@ addAlly(player)
             screen.blit(comicsans.render(name,True,BLACK),self.tbrect) #blits text on
         elif self.selectingclass:
             #draws class select buttons
+            screen.blit(chooseclassBG,(0,0))
             for b in self.buttons2:
                 b.draw(screen)
 
