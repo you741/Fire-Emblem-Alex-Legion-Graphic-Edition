@@ -16,6 +16,3 @@ instructions/backgrounds/instructionscreen0.png
 :You can also interact with non-enemy units. These interactions are HEALING, TRADING, VILLAGES, BUYING, and SELLING.
 :Healing is almost the same as Attacking, except that you will be healing your units instead of damaging them, and you target your own units.
 :Trading is also very similar to Attacking, and
-
-
-
