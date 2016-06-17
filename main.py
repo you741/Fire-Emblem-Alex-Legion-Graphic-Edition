@@ -451,7 +451,7 @@ body_ring = Booster("Body Ring",1,8000,"con",2,"Boosts an ally's constitution")
 secret_book = Booster("Secret Book",1,8000,"skl",2,"Boosts an ally's skill")
 power_ring = Booster("Power Ring",1,8000,"stren",2,"Boosts an ally's strength or magic")
 boots = Booster("Boots",1,8000,"move",2,"Boosts an ally's move")
-talisman = Booster("Talisman",1,8000,2,"Boosts an ally's resistance")
+talisman = Booster("Talisman",1,8000,"res",2,"Boosts an ally's resistance")
 #Promotionals
 heaven_seal = Promotional("Heaven Seal",1,50000,["lord"],"Promotes Lords Lv. 10 and up")
 guiding_ring = Promotional("Guiding Ring",1,50000,["mage","priest","shaman"],"Promotes Magic users Lv. 10 and up")
@@ -650,10 +650,10 @@ shaman4 = Shaman("Shaman",0,0,
                 "spd":9,"con":8,"move":5,"res":9,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},
                 {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
 #--Druids
-druid5 = Druid("Alex the Druid",0,0,
+druid5 = Druid("Druid",0,0,
                 {"lv":1,"stren":13,"defen":6,"skl":9,"lck":0,
                 "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance()],{"Dark":500,"Staff":100},
-                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["AlexTheDruid"],100,guard=True)
+                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["Shaman"],100,guard=True)
 alexTheDruid = Druid("Alex the Druid",0,0,
                 {"lv":1,"stren":14,"defen":7,"skl":13,"lck":0,
                 "spd":12,"con":13,"move":6,"res":9,"hp":34,"maxhp":34},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},
@@ -948,7 +948,7 @@ def drawMenu(menu,x,y,width,height,menuselect,col=BLUE):
         opt = menu[i].title() #option to draw
         screen.blit(sans.render(opt,True,WHITE),(x*30,(y+i)*30))
     draw.rect(screen,WHITE,(x*30,(y+menuselect)*30,width,30),1) #draws a border around the selected option
-def drawItem(person,item,x,y,diff=180,fnt=sans):
+def drawItem(person,item,x,y,diff=16,fnt=sans):
     "draws an item"
     col = WHITE
     if type(item) in [Weapon,Staff]:
@@ -1798,13 +1798,14 @@ class ShopScreen():
         elif self.mode == "buy":
             if gold >= self.items[self.selItem].getCost():
                 #can buy
-                if len(self.p.items) < 5:
-                    self.p.addItem(self.items[self.selItem])
                 gold -= self.items[self.selItem].getCost()
+                dispTempMsg(screen,"Bought "+self.items[self.selItem].name,centerX=True,centerY=True)
+                if len(self.p.items) >= 5:
+                    itemOverflow(self.p,self.items[self.selItem]) #handles the overflow
+                else:
+                    self.p.addItem(self.items[self.selItem])
             else:
                 dispTempMsg(screen,"Can't buy - no money",centerX=True,centerY=True,fnt=superScript40)
-            if len(self.p.items) >= 5:
-                itemOverflow(self.p,self.items[self.selItem]) #handles the overflow
         elif self.mode == "sell":
             gold += self.p.items[self.selItem].getCost()//2
             self.p.removeItem(self.p.items[self.selItem]) #removes the item
