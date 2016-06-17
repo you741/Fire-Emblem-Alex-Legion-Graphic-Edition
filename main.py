@@ -3552,21 +3552,7 @@ class Game():
                     if self.currAlly >= len(allies):
                         self.currAlly = 0
                     self.selectx,self.selecty = allies[self.currAlly].x,allies[self.currAlly].y
-                #-------##temporary##-------#
-                #WIP(this symbol is used to represent all things to delete at the end)
-                if e.key == K_v:
-                    self.gameVictory()
-                    return 0
-                if e.key == K_l:
-                    for a in allies:
-                        a.gainExp(100)
-                        a.levelUp()
-                        drawLevelUp(screen,a)
-                        #levels everyone up cuz I'm lazy
-                if e.key == K_g:
-                    #Ez game over
-                    self.gameOver()
-                    return 0
+
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#
