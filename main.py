@@ -66,9 +66,13 @@ superScript14 = font.Font("fonts/SUPERSCR.TTF",14)
 superScript40 = font.Font("fonts/SUPERSCR.TTF",40)
 LS(110)
 #----MUSIC----#
-bgMusic = mixer.Channel(0) #channel for background music
-sndEffs = mixer.Channel(1) #channel for sound effects
-#conquest = mixer.Sound("music/3-01-conquest.ogg")
+conquest = mixer.Sound("music/3-01-conquest.ogg")
+shamanInTheDark = mixer.Sound("music/Fire_Emblem_6_-_Shaman_in_the_Dark.ogg")
+anotherMedium = mixer.Sound("music/mus_anothermedium.ogg")
+temShop = mixer.Sound("music/mus_temshop.ogg")
+xUndyne = mixer.Sound("music/mus_x_undyne.ogg")
+battle1MUS = mixer.Sound("music/mus_battle1.ogg")
+shamanInTheDark.play(-1)
 LS(220)
 #----IMAGE LOAD----#
 logo = image.load("images/logo.png")
@@ -418,7 +422,7 @@ castlePiece = Terrain("Castle",0,0,1)
 gate = Terrain("Gate",2,20,2,heal=6)
 fort = Terrain("Fort",2,20,2,fortImg,heal=6)
 throne = Terrain("Throne",30,3,3,throneImg)
-water = Terrain("Water",10,0,3,waterImg)
+water = Terrain("Water",0,10,3,waterImg)
 chest = Chest("Chest",0,0,1,chestImg)
 wall = Terrain("Wall",0,0,1,wallImg)
 floor = Terrain("Floor",0,0,1,floorImg)
@@ -905,7 +909,8 @@ allAllies = [] #all allies that exist
 #----MUSIC----#
 #add at the end because Albert's mac is funny
 #each index represents what music is played in the chapter of that index
-#chapterMusic = [conquest]*7
+chapterMusic = [conquest]*7
+chapterMusic[3] = shamanInTheDark
 
 #miscellaneous
 chapter = 0 #changes when load new/old game, so stays global
@@ -2040,7 +2045,12 @@ class StartMenu():
                                FilledSurface((300,50),self.buttonnormalstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",WHITE,monospace,(30,10)),
-                               ["changemode(InstructionScreen())"])] #Start button and Instruction button
+                               ["changemode(InstructionScreen())"]),
+                        Button(500,560,200,50,
+                               FilledSurface((200,50),self.buttonnormal,"CREDITS",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"CREDITS",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"CREDITS",WHITE,monospace,(30,10)),
+                               ["changemode(CreditScreen())"])] #Start button and Instruction button
 
     def draw(self,screen):
         "draws mode on screen"
@@ -2049,7 +2059,8 @@ class StartMenu():
     def playMusic(self):
         "plays menu music"
         #WIP
-        pass
+        mixer.stop()
+        shamanInTheDark.play(-1)
     def run(self,screen):
         "runs the mode as if it were in the running loop"
         global running
@@ -2105,7 +2116,8 @@ class InstructionScreen():
         pass
     def playMusic(self):
         "plays instruction music"
-        pass
+        mixer.stop()
+        xUndyne.play(-1)
     def run(self,screen):
         "runs the mode as if it were in the running loop"
         global running
@@ -2173,7 +2185,28 @@ class InstructionScreen():
         if self.currDial >= self.limit or cM:
             changemode(StartMenu())
             
-
+class CreditScreen():
+    "Screen more for credits"
+    def __init__(self):
+        self.stopped = False
+    def draw(self,screen):
+        screen.blit(image.load("images/backgrounds/credits.png"),(0,0))
+    def playMusic(self):
+        mixer.stop()
+        temShop.play(-1)
+    def run(self,screen):
+        global running
+        for e in event.get():
+            if e.type == QUIT:
+                running = False
+                return 0
+            if e.type == KEYDOWN:
+                if e.key == K_x:
+                    changemode(StartMenu())
+                    return 0
+        if self.stopped:
+            return 0
+        
 class SaveGame():
     "Screen mode for saving the game"
     def __init__(self):
@@ -2227,8 +2260,8 @@ class SaveGame():
         screen.blit(loadsaveBG,(0,0))
     def playMusic(self):
         "plays menu music"
-        #WIP
-        pass
+        mixer.stop()
+        battle1MUS.play(-1)
     def run(self,screen):
         "runs the menus as if it were in the running loop"
         global running
@@ -2298,8 +2331,8 @@ class LoadGame():
         pass
     def playMusic(self):
         "plays menu music"
-        #WIP
-        pass
+        mixer.stop()
+        battle1MUS.play(-1)
     def run(self,screen):
         "runs the menus as if it were in the running loop"
         global running
@@ -2482,8 +2515,8 @@ class Story():
         screen.blit(self.background,(0,0))
     def playMusic(self):
         "Plays music"
-        #WIP
-        pass
+        mixer.stop()
+        anotherMedium.play(-1)
     def run(self,screen):
         "runs the story dialogue"
         global running
@@ -2709,8 +2742,8 @@ class Game():
             screen.blit(self.getArrow(steps[-1],steps[-2],steps[0],True),(steps[-1][0]*30,steps[-1][1]*30)) #Blits arrowhead
     def playMusic(self):
         "plays music for the chapter"
-        #bgMusic.play(chapterMusic[chapter],-1)
-        pass
+        mixer.stop()
+        chapterMusic[chapter].play(-1)
     def gameVictory(self):
         "Victory, to continue the storyline"
         global oldAllies,allies,allAllies
@@ -2724,7 +2757,7 @@ class Game():
             a.hp = a.maxhp
             a.stats["hp"] = a.maxhp
         if chapter == numChaps:
-            pass #changemode to credits
+            changemode(CreditScreen()) #changemode to credits
         else:
             changemode(getStory(chapter,True))
     def drawPeople(self,alliesToDraw=None,enemiesToDraw=None):
