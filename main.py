@@ -2315,21 +2315,26 @@ class NewGame():
     "this class let's user choose his name and class"
     def __init__(self):
         self.selectingname = True #is the user choosing his name?
+        self.doneselectingname = False # is the user done selecting name
         self.selectingclass = False #is the user selecting his class?
         self.typing = False #is the user typing his name?
         self.tbrect = Rect(400,300,500,50)
         self.ipos = 0 #insertion point position
+        self.mage = image.load("images/Buttons/Mage.png")
+        self.magehl = image.load("images/Buttons/Magehl.png")
+        self.knight = image.load("images/Buttons/Knight.png")
+        self.knighthl = image.load("images/Buttons/Knighthl.png")
         #name select buttons
         self.buttons1 = [Button(900,300,200,50,
-                               FilledSurface((200,50),BLUE,"SUBMIT",WHITE,monospace,(30,10)),
-                               FilledSurface((200,50),YELLOW,"SUBMIT",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),GREEN,"SUBMIT",BLACK,monospace,(30,10)),
-                               ["currmode.selectingname = False","currmode.selectingclass = True","screen.fill(BLACK)"])]
+                               FilledSurface((200,50),buttonnormal,"SUBMIT",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"SUBMIT",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),buttonhl,"SUBMIT",WHITE,monospace,(30,10)),
+                               ["currmode.selectingname = False","currmode.doneselectingname = True","screen.fill(BLACK)"])]
         #class select buttons
-        self.buttons2 = [Button(300,300,200,50,
-                                FilledSurface((200,50),BLUE,"MAGE",WHITE,monospace,(40,10)),
-                                FilledSurface((200,50),YELLOW,"MAGE",BLACK,monospace,(40,10)),
-                                FilledSurface((200,50),GREEN,"MAGE",BLACK,monospace,(40,10)),
+        self.buttons2 = [Button(150,300,300,400,
+                                FilledSurface((300,400),self.mage,"",WHITE,monospace,(40,10)),
+                                FilledSurface((300,400),self.magehl,"",BLACK,monospace,(40,10)),
+                                FilledSurface((300,400),self.magehl,"",BLACK,monospace,(40,10)),
                                 ["global player",
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
@@ -2340,10 +2345,10 @@ addAlly(player)
 """,
                                 "changemode(getStory(chapter))"]),
                          
-                         Button(600,300,200,50,
-                                FilledSurface((200,50),BLUE,"KNIGHT",WHITE,monospace,(40,10)),
-                                FilledSurface((200,50),YELLOW,"KNIGHT",BLACK,monospace,(40,10)),
-                                FilledSurface((200,50),GREEN,"KNIGHT",BLACK,monospace,(40,10)),
+                         Button(750,300,300,400,
+                                FilledSurface((300,400),self.knight,"",WHITE,monospace,(40,10)),
+                                FilledSurface((300,400),self.knighthl,"",BLACK,monospace,(40,10)),
+                                FilledSurface((300,400),self.knighthl,"",BLACK,monospace,(40,10)),
                                 ["global player",
                                  """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":5,"res":0,"skl":6,"lck":4,"con":12,"move":4},
 {"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
@@ -2392,6 +2397,9 @@ addAlly(player)
                     for b in self.buttons2:
                         if b.istouch():
                             b.click()
+            if e.type == MOUSEBUTTONUP:
+                if self.doneselectingname:
+                    self.selectingclass = True
             if e.type == KEYDOWN:
                 #handles key presses
                 if self.typing:
