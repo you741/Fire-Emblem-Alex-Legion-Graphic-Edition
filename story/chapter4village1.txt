@@ -1,0 +1,4 @@
+images/backgrounds/village.png
+*Visitor*:Oh cool a village? Out here in the sacred isle?
+Villager:We are a secret village. Here is a special ring to power up magic users.
+*Visitor*:Thanks.

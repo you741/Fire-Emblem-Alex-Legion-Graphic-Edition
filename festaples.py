@@ -6,7 +6,7 @@ from random import *
 from feweapons import *
 from queue import *
 from math import *
-import winsound
+#import winsound
 #----COLORS----#
 BLACK = (0,0,0,255)
 WHITE = (255,255,255,255)
@@ -38,6 +38,16 @@ nodamageSnd = mixer.Sound("music/snd_curtgunshot.ogg")
 infoBox = image.load('images/infoBox.png')
 infoBoxNW = image.load('images/infoBoxNW.png')
 storytextBG = transform.smoothscale(image.load("story/storytextbackground.png"),(1200,200))
+
+#--battle images--#
+battlestatblue = transform.smoothscale(image.load("images/battle/battlestatblue.png"),(50,50))
+battlestatred = transform.smoothscale(image.load("images/battle/battlestatred.png"),(50,50))
+healthbarblue = transform.smoothscale(image.load("images/battle/healthbarblue.png"),(500,120))
+healthbarred = transform.smoothscale(image.load("images/battle/healthbarred.png"),(500,120))
+nameblue = transform.smoothscale(image.load("images/battle/nameblue.png"),(300,50))
+namered = transform.smoothscale(image.load("images/battle/namered.png"),(300,50))
+weapontagr = transform.smoothscale(image.load("images/battle/weapontagr.png"),(450,50))
+weapontagl = transform.flip(weapontagr,True,False)
 #----Map Calculations----#
 
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
@@ -318,31 +328,33 @@ def drawHealthBar(screen,person,x,y):
 def drawStatBox(screen,person1,person2,stage,x,y,color):
     "draws a little stat box to show hit,dam and crit within a fight"
     hit,dam,crit = person1.getHit(person2,stage),person1.getDamage(person2,stage),person1.getCritical(person2)
-    draw.rect(screen,color,(x,y,50,50)) #draw rect background for text
-    #draws text
+    if color == BLUE:
+        screen.blit(battlestatblue,(x,y-5))
+    elif color == RED:
+        screen.blit(battlestatred,(x,y-5))    #draws text
     screen.blit(smallsans.render("Hit "+str(hit),True,WHITE),(x,y))
     screen.blit(smallsans.render("Dmg "+str(dam),True,WHITE),(x,y+17))
     screen.blit(smallsans.render("Crt "+str(crit),True,WHITE),(x,y+34))
 
 def drawBattleInfo(screen,ally,enemy,stage,heal=False,stf=False):
     "draws all the battle info on the screen"
-    draw.rect(screen,BLUE,(900,0,300,50)) #ally name rectangle
-    draw.rect(screen,RED if not heal else BLUE,(0,0,300,50)) #enemy name rectangle
-    draw.rect(screen,(250,240,204),(700,550,450,50)) #draws ally weapon name background
-    draw.rect(screen,(250,240,204),(50,550,450,50)) #draws enemy weapon name background
+    screen.blit(nameblue,(900,0))
+    screen.blit(namered if not heal else nameblue,(0,0))
+    screen.blit(weapontagr,(50,550))
+    screen.blit(weapontagl,(700,550))
     drawStatBox(screen,ally,enemy,stage,1150,550,BLUE) #draws two little boxes
     drawStatBox(screen,enemy,ally,stage,0,550,RED if not heal else BLUE) #each shows the hit, dam and crit
     #draws ally and enemy's names
-    screen.blit(sans.render(ally.name,True,WHITE),(920,0))
-    screen.blit(sans.render(enemy.name,True,WHITE),(50,0))
+    screen.blit(sans.render(ally.name,True,WHITE),(960,10))
+    screen.blit(sans.render(enemy.name,True,WHITE),(50,10))
     if ally.equip != None:
         screen.blit(sans.render(ally.equip.name,True,BLACK),(720,560))
     if heal:
         screen.blit(sans.render(stf.name,True,BLACK),(720,560))
     if enemy.equip != None:
         screen.blit(sans.render(enemy.equip.name,True,BLACK),(70,560))
-    draw.rect(screen,BLUE,(700,600,500,120)) #draws ally health background
-    draw.rect(screen,RED if not heal else BLUE,(0,600,500,120)) #draws enemy health background (draws blue if we're healing)
+    screen.blit(healthbarblue,(700,600))
+    screen.blit(healthbarred if not heal else healthbarblue,(0,600))
     #draws ally and enemy's health bar
     drawHealthBar(screen,ally,870,615)
     drawHealthBar(screen,enemy,170,615)
@@ -361,10 +373,10 @@ def drawHealthLoss(screen,person,dam,enemy=True):
         person.hp -= 1
         #cover up the health bar so that it doesn't blit on top of itself
         if enemy:
-            draw.rect(screen,RED,(0,600,500,100)) #enemy's covering
+            screen.blit(healthbarred,(0,600))
             x,y = 170,615 #sets enemy's health bar coordinates
         else:
-            draw.rect(screen,BLUE,(700,600,500,100)) #ally's covering
+            screen.blit(healthbarblue,(700,600)) #ally's covering
             x,y = 870,615
         #draw health bar and amount of health
         drawHealthBar(screen,person,x,y)
@@ -382,10 +394,10 @@ def drawHealthGain(screen,person,dam,enemy=True):
         person.hp += 1
         #cover up the health bar so that it doesn't blit on top of itself
         if enemy:
-            draw.rect(screen,BLUE,(0,600,500,100)) #enemy's covering
+            screen.blit(healthbarblue,(700,600))
             x,y = 170,615 #sets enemy's health bar coordinates
         else:
-            draw.rect(screen,BLUE,(700,600,500,100)) #ally's covering
+            screen.blit(healthbarblue,(0,600))
             x,y = 870,615
         #draw health bar and amount of health
         drawHealthBar(screen,person,x,y)
@@ -674,9 +686,8 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence,x=10,y=530,fnt=sans):
     "draws the sentence as a dialogue box"
-    winsound.Beep(500,33)
+    #winsound.Beep(500,33)
     screen.blit(storytextBG,(0,520))    
-#    draw.rect(screen,BLUE,(0,520,1200,200))
     words = sentence.split()
     for i in range(len(words)):
         word = words[i] #current word

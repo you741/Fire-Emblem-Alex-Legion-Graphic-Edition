@@ -780,7 +780,7 @@ chapterVillages = [[],
                     village.setItems(angelic_robe.getInstance(),"story/chapter2village2.txt"),
                     village.setItems(white_gem.getInstance(),"story/chapter2village3.txt")],
                     [],
-                   [village.setItems(vulnerary.getInstance(),"story/chapter1village4.txt")],
+                   [village.setItems(vulnerary.getInstance(),"story/chapter4village1.txt")],
                    [],
                    []]
 chapterChests = [[],
@@ -2007,10 +2007,12 @@ class UnitsScreen():
         if self.mode == 1:
             screen.blit(unitsBG2,(0,0))
         for i in range(len(allies)):
+             #allies names
             screen.blit(sans.render(allies[i].name.title(),True,WHITE),(50,260+i*30))
         screen.blit(sans.render(str(self.mode+1),True,WHITE),(1040,45))
-        screen.blit(sans.render("2",True,WHITE),(1120,45))
+        screen.blit(sans.render("2",True,WHITE),(1120,45)) #page number
         if self.mode == 0:
+            #Overview mode
             for i in range(len(allies)):
                 screen.blit(sans.render(allies[i].__class__.__name__,True,WHITE),(300,260+i*30))
                 screen.blit(sans.render(str(allies[i].lv),True,WHITE),(640,260+i*30))
@@ -2018,6 +2020,7 @@ class UnitsScreen():
                 screen.blit(sans.render(str(allies[i].hp),True,WHITE),(880,260+i*30))
                 screen.blit(sans.render("/"+str(allies[i].maxhp),True,WHITE),(980,260+i*30))
         if self.mode == 1:
+            #Fighting skills mode
             for i in range(len(allies)):
                 screen.blit(sans.render(str(allies[i].stren),True,WHITE),(320,260+i*30))
                 screen.blit(sans.render(str(allies[i].skl),True,WHITE),(455,260+i*30))
@@ -2038,16 +2041,21 @@ class StartMenu():
         self.buttonhl = buttonhl
         self.buttonhlstretch = buttonhlstretch
         self.buttons = [Button(500,420,200,50,
-                               FilledSurface((200,50),self.buttonnormal,"START",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),self.buttonhl,"START",BLACK,monospace,(30,10)),
-                               FilledSurface((200,50),self.buttonhl,"START",WHITE,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonnormal,"NEW GAME",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"NEW GAME",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"NEW GAME",WHITE,monospace,(30,10)),
+                               ["changemode(NewGame())"]),
+                        Button(500,490,200,50,
+                               FilledSurface((200,50),self.buttonnormal,"LOAD GAME",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"LOAD GAME",BLACK,monospace,(30,10)),
+                               FilledSurface((200,50),self.buttonhl,"LOAD GAME",WHITE,monospace,(30,10)),
                                ["changemode(LoadGame())"]),
-                        Button(450,490,300,50,
+                        Button(450,560,300,50,
                                FilledSurface((300,50),self.buttonnormalstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",BLACK,monospace,(30,10)),
                                FilledSurface((300,50),self.buttonhlstretch,"INSTRUCTIONS",WHITE,monospace,(30,10)),
                                ["changemode(InstructionScreen())"]),
-                        Button(500,560,200,50,
+                        Button(500,650,200,50,
                                FilledSurface((200,50),self.buttonnormal,"CREDITS",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"CREDITS",BLACK,monospace,(30,10)),
                                FilledSurface((200,50),self.buttonhl,"CREDITS",WHITE,monospace,(30,10)),
@@ -2455,6 +2463,8 @@ addAlly(player)
                         self.ipos -= 1
                     elif kp[K_RETURN] and len(name) > 0 and name.lower() not in usedNames:
                         #if user presses return and there exists a valid name
+                        self.doneselectingname = True
+                        self.selectingclass = True
                         self.buttons1[0].click() #triggers the submit button click
                     elif kp[K_LEFT]:
                         #moves insertion point to the left
@@ -2662,8 +2672,6 @@ class Game():
         return steps
     def animWalk(self,p,ms,x,y):
         "uses ms for moveablesquares and x and y for end point"
-        #WIP!!!
- #       draw.rect(screen,GREEN,(self.selected.x*30,self.selected.y*30,30,30)) #coverup to cover the character when animated
         screen.blit(self.filler,(0,0))
         self.drawPeople([a for a in allies if a != p],[e for e in enemies if e != p])
         snap = screen.copy()
@@ -2729,7 +2737,6 @@ class Game():
         return 1
     def drawArrow(self,ms,x,y):
         "draws an arrow from self.selected.x,y to self.selectx,y"
-        #WIP - find smart way to figure out which one to draw using indices of 2x2 array
         steps = [(self.selected.x,self.selected.y)]+self.getPath(ms,x,y)
         if len(steps) == 1:
             return 0
