@@ -6,7 +6,7 @@ from random import *
 from feweapons import *
 from queue import *
 from math import *
-#import winsound
+import winsound
 #----COLORS----#
 BLACK = (0,0,0,255)
 WHITE = (255,255,255,255)
@@ -686,7 +686,7 @@ def getOptimalAlly(enemy,stage,attackableAllies,moveableSquares):
 #----STORY FUNCTIONS----#
 def drawSentence(screen,sentence,x=10,y=530,fnt=sans):
     "draws the sentence as a dialogue box"
-    #winsound.Beep(500,33)
+    winsound.Beep(500,33)
     screen.blit(storytextBG,(0,520))    
     words = sentence.split()
     for i in range(len(words)):
