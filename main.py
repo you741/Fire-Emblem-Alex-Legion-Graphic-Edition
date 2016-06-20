@@ -2421,7 +2421,7 @@ addAlly(player)
     def run(self,screen):
         "runs new game screen within the running loop"
     #----this is all for text box----#
-        global running,name
+        global running,name,allAllies,gold,chapter
         for e in event.get():
             if e.type == QUIT:
                 running = False
@@ -2447,7 +2447,11 @@ addAlly(player)
                     #if the user is selecting his class, we check for button presses
                     for b in self.buttons2:
                         if b.istouch():
+                            gold = 0
+                            allAllies = []
+                            chapter = 0
                             b.click()
+                            return 0
             if e.type == MOUSEBUTTONUP:
                 if self.doneselectingname:
                     self.selectingclass = True
@@ -2985,7 +2989,6 @@ class Game():
                     if not self.selected.canEquip(w):
                         continue
                     if len(getAttackableEnemies(self.selected,enemies,weapon=w)) > 0:
-                        self.selected.equipWeapon(w)
                         self.menu.items.append("attack")
                         break
             #STAFF OPTION
@@ -3195,6 +3198,13 @@ class Game():
                             return 0
                         if self.menu.getOption().lower() == "attack":
                             self.mode = "itemattack"
+                            for w in [i for i in self.selected.items if type(i) == Weapon]:
+                                #checks every weapon if one yields in an attack we equip it
+                                if not self.selected.canEquip(w):
+                                    continue
+                                if len(getAttackableEnemies(self.selected,enemies,weapon=w)) > 0:
+                                    self.selected.equipWeapon(w)
+                                    break
                             self.menu.selected = 0
                             self.menu.items = [i for i in self.selected.items if type(i) == Weapon]
                             self.menu.height = 30*len(self.menu.items)
