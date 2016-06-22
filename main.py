@@ -726,7 +726,10 @@ numChaps = 7 #number of chapters - including prologue
 chapterNames = ["Prologue - The Lost one in the Woods",
                 "Chapter 1 - A Revolution to a Revolution",
                 "Chapter 2 - Breaking Defenses",
-                "Chapter 3 - Conquering Xela"]
+                "Chapter 3 - Conquering Xela",
+                "Chapter 4 - Ambush",
+                "Chapter 5 - Another Defense Break",
+                "Chapter 6 - Third Time's a Charm"]
 chapterShops = [[],
                 [vendor.setItems([vulnerary.getInstance()]),
                  armory.setItems([iron_sword.getInstance(),
