@@ -394,10 +394,10 @@ def drawHealthGain(screen,person,dam,enemy=True):
         person.hp += 1
         #cover up the health bar so that it doesn't blit on top of itself
         if enemy:
-            screen.blit(healthbarblue,(700,600))
+            screen.blit(healthbarblue,(0,600))
             x,y = 170,615 #sets enemy's health bar coordinates
         else:
-            screen.blit(healthbarblue,(0,600))
+            screen.blit(healthbarblue,(700,600))
             x,y = 870,615
         #draw health bar and amount of health
         drawHealthBar(screen,person,x,y)
@@ -461,6 +461,8 @@ def singleAttack(screen,person,person2,isenemy,stage,heal=False,stf=None):
     if heal:
         healSnd.play()
         drawHealthGain(screen,person2,dam)
+        display.flip()
+        time.wait(500)
     elif not hit:
         missSnd.play()
         screen.blit(papyrus.render("MISS!",True,WHITE,BLUE),(x,y)) #writes MISS

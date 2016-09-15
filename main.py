@@ -914,7 +914,7 @@ allAllies = [] #all allies that exist
 #----MUSIC----#
 ##add at the end because Albert's mac is funny
 ##each index represents what music is played in the chapter of that index
-chapterMusic = [conquest]*7
+chapterMusic = [conquest]*numChaps
 chapterMusic[3] = shamanInTheDark
 
 #miscellaneous
