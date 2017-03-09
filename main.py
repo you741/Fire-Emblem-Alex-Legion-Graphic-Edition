@@ -2896,7 +2896,6 @@ class Game():
                 drawChangingBar(screen,en.hp,en.hp+eterr.heal,en.maxhp,420,330,390,60,"Hp",False,RED)
                 en.hp = min(en.hp+eterr.heal,en.maxhp)
             display.flip()
-            time.wait(200)
             encoords = [(e.x,e.y) for e in enemies] #enemies' coordinates
             acoords = [(a.x,a.y) for a in allies] #allies' coordinates
             enemyMoves = getMoves(en,en.x,en.y,en.movesLeft,chapterMaps[chapter],encoords,acoords,{}) #enemy's moveableSquares
@@ -2933,7 +2932,6 @@ class Game():
             elif action == "stay":
                 pass
             display.flip()
-            time.wait(500)
             self.moved.add(en)
             self.attacked.add(en)
             fpsLimiter.tick(60)
