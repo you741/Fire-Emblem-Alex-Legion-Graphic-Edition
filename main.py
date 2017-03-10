@@ -535,6 +535,8 @@ henning = Transporter("Henning",0,0,
                [red_gem.getInstance(),speedwing.getInstance()],{},
                {"stand":henningStandSpriteP},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()],
                 deathQuote="lel I'm ded. jk m8. I'll be back next chapter, but like, i gotta scram or our stuff will get stolen.")
+
+
 henry = Mercenary("Henry",0,0,
                {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
                 "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
@@ -1531,10 +1533,11 @@ class TransferScreen():
             return 0
         self.selItem += diff
         self.selItem = min(max(self.selItem,0),len(self.shownItems)-1) #limits selected item
-        if self.selItem >= self.startPoint + 10:
-            self.startPoint += self.selItem - self.startPoint - 9 #moves startpoint if the selected item is too much bigger than the startpoint it goes up
-        if self.selItem < self.startPoint:
-            self.startPoint = self.selItem #moves startpoint up
+        if len(self.shownItems) > 15:
+            if self.selItem >= self.startPoint + 10:
+                self.startPoint += self.selItem - self.startPoint - 9 #moves startpoint if the selected item is too much bigger than the startpoint it goes up
+            if self.selItem < self.startPoint:
+                self.startPoint = self.selItem #moves startpoint up
     def draw(self):
         "draws the transfer screen"
         screen.blit(trnsferBG,(0,0))
@@ -1544,9 +1547,12 @@ class TransferScreen():
             #draws the item
             item = self.p.items[i]
             drawItem(self.p,item,80,330+60*i,350)
-        for i in range(self.startPoint,min(len(self.shownItems),self.startPoint+10)):
-            #draws all items in supply from startPoint to 10 more
+        for i in range(self.startPoint,min(len(self.shownItems),self.startPoint+15)):
+            #draws all items in supply from startPoint to 15 more
             drawItem(self.p,self.shownItems[i],640,190+(i-self.startPoint)*30)
+        if len(self.shownItems) > 15: #draws scroll
+            draw.rect(screen,RED,(1000,190,20,300))
+            draw.rect(screen,BLACK,(1000,190+self.startPoint*300//len(self.shownItems),20,int((10/len(self.shownItems))*300)))
         drawTransRect(screen,BLACK,0,680,1200,40)
         if self.mode == "select":
             screen.blit(pointer,(300,165+75*self.selAct))
@@ -1598,8 +1604,10 @@ class TransferScreen():
             item = self.shownItems[self.selItem]
             self.p.addItem(item)
             henning.supply.remove(item)
-            self.selItem -= 1
-            if self.selItem < 0:
+            self.shownItems.remove(item)
+            if self.selItem >= len(self.shownItems):
+                self.selItem -= 1
+            if len(self.shownItems) == 0:
                 self.startPoint -= 1
             self.startPoint = max(0,self.startPoint)
             self.selItem = max(0,self.selItem)
@@ -1609,6 +1617,8 @@ class TransferScreen():
         if self.mode in ["give",'take']:
             self.mode = "select"
             self.info = False
+            self.selItem = 0
+            self.startPoint = 0
             return True
         return False #returns false to exit transfer screen
     def handleMove(self):
@@ -3566,10 +3576,15 @@ class Game():
                 #------A------#
                 if e.key == K_a:
                     #cycles through allies
-                    self.currAlly += 1
-                    if self.currAlly >= len(allies):
-                        self.currAlly = 0
+                    while True:
+                        self.currAlly += 1
+                        if self.currAlly >= len(allies):
+                            self.currAlly = 0
+                        if allies[self.currAlly] not in self.moved:
+                            break
                     self.selectx,self.selecty = allies[self.currAlly].x,allies[self.currAlly].y
+                    #for i in range(30): hax for henning
+                     #  henning.addToSupply(fire.getInstance())
 
         if self.stopped:
             return 0 #ends the function if we stopped
