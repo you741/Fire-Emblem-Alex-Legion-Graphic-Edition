@@ -48,6 +48,7 @@ nameblue = transform.smoothscale(image.load("images/battle/nameblue.png"),(300,5
 namered = transform.smoothscale(image.load("images/battle/namered.png"),(300,50))
 weapontagr = transform.smoothscale(image.load("images/battle/weapontagr.png"),(450,50))
 weapontagl = transform.flip(weapontagr,True,False)
+
 #----Map Calculations----#
 
 def getMoves(person,x,y,movesleft,stage,allies,enemies,visited):
@@ -415,7 +416,7 @@ def drawFrames(screen,frames):
         fpsLimiter.tick(20)
         display.flip()
         
-def singleAttack(screen,person,person2,isenemy,stage,heal=False,stf=None):
+def singleAttack(screen,person,person2,isenemy,stage,weapanim=None,heal=False,stf=None):
     "animates a single attack"
     if heal:
         equip=stf
@@ -449,9 +450,9 @@ def singleAttack(screen,person,person2,isenemy,stage,heal=False,stf=None):
             #sets to critical attack animation
             frames,hitFrame = person.anims[person.equip.typ+"crit"]
     drawFrames(screen,frames[:hitFrame]) #draws frames up tot he hit frame
-    if equip.anims != None:
+    if weapanim != None:
         #if the person's weapon has an animation, we draw it
-        weapAnims = equip.anims
+        weapAnims = weapanim
         if isenemy:
             weapAnims = [transform.flip(img,True,False) for img in weapAnims]
         weapFiller = screen.copy() #weapon filler - only for the weapon

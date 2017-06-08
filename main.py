@@ -289,6 +289,10 @@ fluxSprite = [image.load("images/Magic/Flux/Flux"+str(i+1)+".png")
 #--HEAL
 healSprite = [image.load("images/Magic/Heal/HealFrame"+str(i+1)+".png").convert_alpha()
               for i in range(2)]*7
+weaponanims = {"Fire":fireSprite,
+               "Lightning":lightningSprite,
+               "Flux":fluxSprite,
+               "Heal":healSprite}
 LS(400)
 #MAP SPRITES
 #--allies
@@ -423,7 +427,7 @@ castle = Terrain("Castle",0,0,1,castleImg)
 castlePiece = Terrain("Castle",0,0,1)
 gate = Terrain("Gate",2,20,2,heal=6)
 fort = Terrain("Fort",2,20,2,fortImg,heal=6)
-throne = Terrain("Throne",30,3,3,throneImg)
+throne = Terrain("Throne",3,30,3,throneImg)
 water = Terrain("Water",0,10,3,waterImg)
 chest = Chest("Chest",0,0,1,chestImg)
 wall = Terrain("Wall",0,0,1,wallImg)
@@ -431,6 +435,8 @@ floor = Terrain("Floor",0,0,1,floorImg)
 #ITEMS
 #Troll weapons
 real_knife = Weapon("Real Knife",99,1,1000,999,"Sword",600,9999)
+#legendary weapons
+
 #Bows
 iron_bow = Weapon("Iron Bow",6,5,45,85,"Bow",100,540,0,2,46,False,["PegasusKnight","FalcoKnight"],2)
 steel_bow = Weapon("Steel Bow",9,9,30,70,"Bow",200,720,0,2,30,False,["PegasusKnight","FalcoKnight"],2)
@@ -620,7 +626,7 @@ merc2 = Mercenary("Mercenary",0,0,
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 merc4 = Mercenary("Mercenary",0,0,
                 {"lv":10,"stren":8,"defen":6,"skl":12,"lck":3,
-                "spd":13,"con":6,"move":5,"res":0,"hp":27,"maxhp":227},{},[steel_sword.getInstance()],{"Sword":300},
+                "spd":13,"con":6,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
 alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
@@ -952,7 +958,6 @@ def save(file):
     global chapter, allAllies
     file["chapter"] = chapter + 1
     chapter += 1
-    ##this will need more work here when we need to modify ally list based on chapter
     for a in allAllies:
         stringifyImages(a) #stringify all images of allies
     file["allAllies"] = allAllies #save allAllies
@@ -1093,7 +1098,7 @@ def attack(person,person2):
     equipped = ally.equip
     broke = False
     enBroke = False
-    if not singleAttack(screen,person,person2,isenemy,chapterMaps[chapter]):
+    if not singleAttack(screen,person,person2,isenemy,chapterMaps[chapter],weaponanims.get(person.equip.name)):
         if person == ally:
             broke = True
         else:
@@ -1106,8 +1111,9 @@ def attack(person,person2):
     if checkDead(ally,enemy):
         #gains exp
         if enemy.hp == 0:
-            expgain = getExpGain(ally,enemy,True) #gains exp on a kill
-            drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
+            if ally.lv < 20:
+                expgain = getExpGain(ally,enemy,True) #gains exp on a kill
+                drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
             needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
             if needLevelUp:
                 #level up
@@ -1126,7 +1132,7 @@ def attack(person,person2):
     if canAttackTarget(person2,person.x,person.y):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
-        if not singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter]):
+        if not singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter],weaponanims.get(person2.equip.name)):
             if person2 == ally:
                 broke = True
             else:
@@ -1158,13 +1164,14 @@ def attack(person,person2):
     #Draws damage for attack 3
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y) and not broke:
         screen.blit(actionFiller,(0,0)) #covers both persons
-        if not singleAttack(screen,ally,enemy,False,chapterMaps[chapter]):
+        if not singleAttack(screen,ally,enemy,False,chapterMaps[chapter],weaponanims.get(ally.equip.name)):
             broke = True
         person2hit = ally == person2 #person2hit becomes true if ally was person2
         wexpGain += equipped.wexp
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y) and not enBroke:
         screen.blit(actionFiller,(0,0)) #covers both persons
-        singleAttack(screen,enemy,ally,True,chapterMaps[chapter])
+        if not singleAttack(screen,enemy,ally,True,chapterMaps[chapter],weaponanims.get(enemy.equip.name)):
+            broke = True
     if handleEvents(event.get()):
         quit()
     kill = False
@@ -1213,7 +1220,7 @@ def heal(person,person2,stf):
     if handleEvents(event.get()):
         quit()
     screen.blit(actionFiller,(0,0))
-    if not singleAttack(screen,person,person2,False,chapterMaps[chapter],True,stf):
+    if not singleAttack(screen,person,person2,False,chapterMaps[chapter],weaponanims["Heal"],True,stf):
         #heal function
         dispTempMsg(screen,stf.name+" Broke!",centerX=True,centerY=True)
     expgain = 20 + person.stren + stf.heal
@@ -1299,19 +1306,12 @@ def stringifyImages(ally):
         name = "player"+ally.__class__.__name__ #we add the class for the player
     for i,k in enumerate(ally.anims):
         ally.anims[k] = name+k.title()+"Sprite"+("P" if ally.promoted else "")
-    for w in [i for i in ally.items if type(i) in [Weapon,Staff]]:
-        #goes through all weapons and imagifies them
-        if w.anims != None:
-            #changes all weapons with an animation to be stringified
-            w.anims = w.name.lower()+"Sprite"
+
 def imagifyStrings(ally):
     "imagifies all strings in ally - opposite of stringifyImages"
     for i,k in enumerate(ally.anims):
         ally.anims[k] = eval(ally.anims[k]) #creates an image from the string using eval
-    for w in [i for i in ally.items if type(i) in [Weapon,Staff]]:
-        #goes through all weapons and imagifies them
-        if w.anims != None:
-            w.anims = eval(w.anims)
+
     #resets the faces
     if ally.name.lower() not in usedNames:
         #if it's the player we set to player face
@@ -2400,8 +2400,8 @@ class NewGame():
                                 FilledSurface((300,400),self.magehl,"",BLACK,monospace,(40,10)),
                                 FilledSurface((300,400),self.magehl,"",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':5,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
-{'maxhp':55,'defen':10,'res':50,'stren':35,'spd':100,'skl':50,'lck':55},
+                                 """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':7,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
+{'maxhp':55,'defen':10,'res':55,'stren':45,'spd':65,'skl':50,'lck':55},
 [fire.getInstance(),vulnerary.getInstance()],
 {'Anima':200},
 {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
@@ -2414,8 +2414,8 @@ addAlly(player)
                                 FilledSurface((300,400),self.knighthl,"",BLACK,monospace,(40,10)),
                                 FilledSurface((300,400),self.knighthl,"",BLACK,monospace,(40,10)),
                                 ["global player",
-                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":8,"spd":5,"res":0,"skl":6,"lck":4,"con":12,"move":4},
-{"stren":55,"defen":50,"skl":45,"lck":40,"spd":30,"res":15,"maxhp":65},
+                                 """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":10,"spd":5,"res":0,"skl":6,"lck":4,"con":12,"move":4},
+{"stren":60,"defen":70,"skl":55,"lck":30,"spd":25,"res":30,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
 {"Lance":200},
 {"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
@@ -3585,7 +3585,16 @@ class Game():
                     self.selectx,self.selecty = allies[self.currAlly].x,allies[self.currAlly].y
                     #for i in range(30): hax for henning
                      #  henning.addToSupply(fire.getInstance())
-
+                #-----CHEATS------#
+                if e.key == K_b:
+                    allies.append(brandon)
+                    allAllies.append(brandon)
+                    brandon.x = 20
+                    brandon.y = 20
+                if e.key == K_l:
+                    brandon.gainExp(100)
+                    brandon.levelUp()
+                    drawLevelUp(screen,brandon)
         if self.stopped:
             return 0 #ends the function if we stopped
         #-----END OF EVENT LOOP----#

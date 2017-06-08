@@ -200,6 +200,8 @@ class Person():
         return exp
     def gainExp(self,exp):
         "gains exp, returns whether should level up or not"
+        if self.lv == 20:
+            return False
         exp = self.getExpGain(exp)
         self.exp += exp
         if self.exp >= 100:
@@ -218,7 +220,7 @@ class Person():
         return False
     def levelUp(self):
         "levels up"
-        if self.exp < 100:
+        if self.exp < 100 or self.lv == 20:
             #if we are less than 100 exp we cannot level up
             return False
         self.lv += 1
