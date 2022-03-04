@@ -253,17 +253,21 @@ def drawLevelUp(screen,person):
     for i,k in enumerate(statCoords):
         screen.blit(sans.render(k.title()+": "+str(person.stats[k]),True,WHITE),statCoords[k])
     display.flip()
-    time.wait(300)
+    time.wait(200)
+    waitTime = 300
     for i,k in enumerate(statCoords):
         #draws a +1 next to every stat gained
-        if person.stats[k] != eval("person."+k):                            
-            if handleEvents(event.get()):
+        if person.stats[k] != eval("person."+k):
+            er = handleEvents(event.get())
+            if er == 1:
                 quit()
+            elif er == -1:
+                waitTime = 1
             newStatValue = eval("person."+k)
             screen.blit(sans.render("+1 = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
             person.stats[k] = newStatValue
             display.flip()
-            time.wait(500)
+            time.wait(waitTime)
     time.wait(1500)
     screen.blit(screenBuff,(0,0))
 def drawPromotion(screen,person,oldPerson):
@@ -285,12 +289,12 @@ def drawPromotion(screen,person,oldPerson):
     screen.blit(sans.render(person.name+" LV "+str(person.lv),True,WHITE),(300,240))
     display.flip()
     time.wait(500)
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     for i,k in enumerate(statCoords):
         #draws a +1 next to every stat gained
         if oldPerson.stats[k] != person.stats[k]:                            
-            if handleEvents(event.get()):
+            if handleEvents(event.get()) == 1:
                 quit()
             newStatValue = person.stats[k]
             screen.blit(sans.render("+"+str(person.stats[k]-oldPerson.stats[k])+" = "+str(newStatValue),True,WHITE),(statCoords[k][0]+150,statCoords[k][1])) #new stat 150 more to the right
@@ -299,10 +303,10 @@ def drawPromotion(screen,person,oldPerson):
     for i,k in enumerate(person.mast):
         if k not in oldPerson.mast:
             dispTempMsg(screen,"You can now use "+k+" weapons",centerX=True,centerY=True)
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
     time.wait(1500)                            
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     screen.blit(screenBuff,(0,0))
 def drawHealthBar(screen,person,x,y):
@@ -365,9 +369,25 @@ def drawBattleInfo(screen,ally,enemy,stage,heal=False,stf=False):
         
 def drawHealthLoss(screen,person,dam,enemy=True):
     "draws a depleting health bar lowering at 20 FPS"
-    for i in range(dam):      
-        if handleEvents(event.get()):
+    for i in range(dam):
+        er = handleEvents(event.get())
+        if er == 1:
             quit()
+        elif er == -1:
+            person.hp -= dam - i
+            person.hp = max(0, person.hp)
+            #cover up the health bar so that it doesn't blit on top of itself
+            if enemy:
+                screen.blit(healthbarred,(0,600))
+                x,y = 170,615 #sets enemy's health bar coordinates
+            else:
+                screen.blit(healthbarblue,(700,600)) #ally's covering
+                x,y = 870,615
+            drawHealthBar(screen,person,x,y)
+            screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
+            display.flip()
+            fpsLimiter.tick(20) #lowers health at 20 FPS
+            return
         #for every point of damage we loop and remove it
         if person.hp == 0:
             break
@@ -386,9 +406,25 @@ def drawHealthLoss(screen,person,dam,enemy=True):
         fpsLimiter.tick(20) #lowers health at 20 FPS
 def drawHealthGain(screen,person,dam,enemy=True):
     "draws a increasing health bar lowering at 20 FPS"
-    for i in range(dam):      
-        if handleEvents(event.get()):
+    for i in range(dam):
+        er = handleEvents(event.get())
+        if er == 1:
             quit()
+        elif er == -1:
+            person.hp += dam - i
+            person.hp = min(person.maxhp, person.hp)
+            #cover up the health bar so that it doesn't blit on top of itself
+            if enemy:
+                screen.blit(healthbarblue,(0,600))
+                x,y = 170,615 #sets enemy's health bar coordinates
+            else:
+                screen.blit(healthbarblue,(700,600))
+                x,y = 870,615                
+            drawHealthBar(screen,person,x,y)
+            screen.blit(sans.render(str(person.hp),True,WHITE),(x+160,y+5))
+            display.flip()
+            fpsLimiter.tick(20) #lowers health at 20 FPS
+            return
         #for every point of damage we loop and remove it
         if person.hp == person.maxhp:
             break
@@ -409,47 +445,54 @@ def drawFrames(screen,frames):
     "draws all frames with an FPS of 20"
     filler = screen.copy().subsurface(Rect(0,0,1200,600))
     for f in frames:      
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
+        elif handleEvents(event.get()) == -1:
+            screen.blit(filler,(0,0))
+            screen.blit(frames[-1],(0,0)) #blits all frames
+            fpsLimiter.tick(20)
+            display.flip()
+            return
         screen.blit(filler,(0,0))
         screen.blit(f,(0,0)) #blits all frames
         fpsLimiter.tick(20)
         display.flip()
         
-def singleAttack(screen,person,person2,isenemy,stage,weapanim=None,heal=False,stf=None):
+def singleAttack(screen,person,person2,personAnims,person2Anims,isenemy,stage,weapanim=None,heal=False,stf=None):
     "animates a single attack"
+    waitTime = 500
     if heal:
         equip=stf
         dam = person.getHeal(stf) #damage is negative for the heals
         hit = True
         crit = False
         if person2.equip == None:
-            screen.blit(transform.flip(person2.anims["stand"],True,False),(0,0))
+            screen.blit(transform.flip(person2Anims["stand"],True,False),(0,0))
         else:
-            screen.blit(transform.flip(person2.anims[person2.equip.typ][0][0],True,False),(0,0))
+            screen.blit(transform.flip(person2Anims[person2.equip.typ][0][0],True,False),(0,0))
         filler = screen.copy().subsurface(Rect(0,0,1200,600))
         x = 25
         y = 300
-        frames,hitFrame = person.anims["Staff"]
+        frames,hitFrame = personAnims["Staff"]
     else:
         equip = person.equip
         hit,dam,crit = getAttackResults(person,person2,stage) #gets attack results
         #draws person 2's standing sprite
         if person2.equip == None:
-            screen.blit(person2.anims["stand"],(0,0))
+            screen.blit(person2Anims["stand"],(0,0))
         else:
-            screen.blit(person2.anims[person2.equip.typ][0][0],(0,0))
+            screen.blit(person2Anims[person2.equip.typ][0][0],(0,0))
         filler = screen.copy().subsurface(Rect(0,0,1200,600))
         #sets x and y for the text "MISS" and "NO DAMAGE"
         x = 725 if isenemy else 25
         y = 300
         if not crit or not hit:
             #sets to attack animation with weapon
-            frames,hitFrame = person.anims[person.equip.typ]
+            frames,hitFrame = personAnims[person.equip.typ]
         if crit and hit:
             #sets to critical attack animation
-            frames,hitFrame = person.anims[person.equip.typ+"crit"]
-    drawFrames(screen,frames[:hitFrame]) #draws frames up tot he hit frame
+            frames,hitFrame = personAnims[person.equip.typ+"crit"]
+    drawFrames(screen,frames[:hitFrame]) #draws frames up to the hit frame
     if weapanim != None:
         #if the person's weapon has an animation, we draw it
         weapAnims = weapanim
@@ -458,22 +501,25 @@ def singleAttack(screen,person,person2,isenemy,stage,weapanim=None,heal=False,st
         weapFiller = screen.copy() #weapon filler - only for the weapon
         drawFrames(screen,weapAnims) #draws all weapon's animation
         screen.blit(weapFiller,(0,0)) #covers the weapon's final frame
-
+    if handleEvents(event.get()) == 1:
+        quit()
+    elif handleEvents(event.get()) == -1:
+        waitTime = 1
     if heal:
         healSnd.play()
         drawHealthGain(screen,person2,dam)
         display.flip()
-        time.wait(500)
+        time.wait(waitTime)
     elif not hit:
         missSnd.play()
         screen.blit(papyrus.render("MISS!",True,WHITE,BLUE),(x,y)) #writes MISS
         display.flip()
-        time.wait(500)
+        time.wait(waitTime)
     elif dam == 0:
         nodamageSnd.play()
         screen.blit(papyrus.render("NO DAMAGE!",True,WHITE,BLUE),(x,y)) #writes NO DAMAGE
         display.flip()
-        time.wait(500)
+        time.wait(waitTime)
     else:
         if crit:
             critSnd.play()
@@ -490,7 +536,7 @@ def singleAttack(screen,person,person2,isenemy,stage,weapanim=None,heal=False,st
             #the weapon broke!
             person.removeItem(equip) #removes the weapon
             return False
-    time.wait(300)
+    time.wait(waitTime)
     return True
 
 def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=True,col=BLUE):
@@ -521,8 +567,11 @@ def drawChangingBar(screen,amount,newAmount,total,x,y,width,height,label,wrap=Tr
         screen.blit(sans.render(str(appAmount),True,WHITE),(x+2,y+5)) #writes amount
         display.flip()
         time.wait(50)      
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
+        elif handleEvents(event.get()) == -1:
+            display.flip()
+            break
     screen.blit(screenBuff,(0,0))
 def dispTempMsg(screen,msg,x=0,y=0,width=0,height=30,tim=750,centerX=False,centerY=False,fnt=sans):
     "displays message temporarily"
@@ -603,7 +652,7 @@ def pathtoAlly(enemy,stage,allies,enemies):
                 if 0 <= y+d[1] < len(stage) and 0 <= x+d[0] < len(stage[0]):
                     nterr = stage[y+d[1]][x+d[0]] #terrain
                     q.put((cost+nterr.hind,(x+d[0],y+d[1]),node[2] + [(x + d[0], y + d[1])]))
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
     return -1
 
@@ -744,5 +793,8 @@ def handleEvents(events):
     "handles events and checks for quit"
     for e in events:
         if e.type == QUIT:
-            return True #checks if user quits
-    return False
+            return 1 #checks if user quits
+        if e.type == KEYDOWN:
+            if e.key in [K_RETURN]:
+                return -1
+    return 0

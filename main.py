@@ -39,7 +39,7 @@ def LS(prog):
     "displays loading screen based on prog"
     screen.blit(loadingScreen,(0,0))
     draw.rect(screen,(230,240,90),(219,532,prog,82))                
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     display.flip()
     
@@ -447,15 +447,22 @@ silver_lance = Weapon("Silver Lance",14,10,20,75,"Lance",500,1200)
 long_lance = Weapon("Long Lance",8,12,20,65,"Lance",200,900,maxrnge=2)
 slim_lance = Weapon("Slim Lance",4,4,20,90,"Lance",100,450,5)
 #Anima Magic
-fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2,anims=fireSprite)
-elfire = Weapon("Fire",8,6,30,80,"Anima",200,1000,0,1,30,True,maxrnge=2,anims=fireSprite)
+weapon_anims = {}
+fire = Weapon("Fire",5,4,40,90,"Anima",100,560,0,1,40,True,maxrnge=2)
+weapon_anims["Fire"] = fireSprite
+elfire = Weapon("Elfire",8,6,30,80,"Anima",200,1000,0,1,30,True,maxrnge=2)
+weapon_anims["Elfire"] = fireSprite
 #Light Magic
-lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,anims=lightningSprite,sup_eff=["Revenant"])
-shine = Weapon("Shine",6,7,30,85,"Light",200,800,5,1,30,True,maxrnge=2,anims=lightningSprite,sup_eff=["Revenant"])
+lightning = Weapon("Lightning",4,6,35,95,"Light",100,630,5,1,35,True,maxrnge=2,sup_eff=["Revenant"])
+weapon_anims["Lightning"] = lightningSprite
+shine = Weapon("Shine",6,7,30,85,"Light",200,800,5,1,30,True,maxrnge=2,sup_eff=["Revenant"])
+weapon_anims["Shine"] = lightningSprite
 #Dark Magic
-flux = Weapon("Flux",7,8,45,80,"Dark",100,900,0,1,45,True,maxrnge=2,anims=fluxSprite)
+flux = Weapon("Flux",7,8,45,80,"Dark",100,900,0,1,45,True,maxrnge=2)
+weapon_anims["Flux"] = fluxSprite
 #Staves
-heal = Staff("Heal",30,100,600,10,"Heals an injured ally",anims=healSprite)
+heal = Staff("Heal",30,100,600,10,"Heals an injured ally")
+weapon_anims["Heal"] = healSprite
 #Swords
 slim_sword = Weapon("Slim Sword",3,2,30,100,"Sword",100,480,5)
 steel_sword = Weapon("Steel Sword",8,10,30,80,"Sword",200,600)
@@ -502,231 +509,222 @@ LS(550)
 name = "" #name of player
 usedNames = ["yoyo","albert","franny","gary","stefano","henry","henning","brandon","eric","alex","villager","kevin","inori","yuno"] #names the player cannot use
 player = None #player is defined in NewGame or LoadGame
+anims = {}
 yoyo = Lord("Yoyo",0,0,
                {"lv":1,"stren":5,"defen":3,"skl":7,"lck":7,
                 "spd":6,"con":5,"move":5,"res":4,"hp":21,"maxhp":21},
                {"stren":40,"defen":20,"skl":70,"lck":70,
                 "spd":40,"res":40,"maxhp":60},
-               [rapier.getInstance(),lightning.getInstance(),vulnerary.getInstance()],{"Sword":200,"Light":100},
-               {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite,
-                "Light":yoyoLightSprite,"Lightcrit":yoyoLightcritSprite},faces["Yoyo"],deathQuote="Sorry everyone... I'm nothing but a failure...")
+               [rapier.getInstance(),lightning.getInstance(),vulnerary.getInstance()],{"Sword":200,"Light":100},deathQuote="Sorry everyone... I'm nothing but a failure...")
+anims["Yoyo"] = {"Sword":yoyoSwordSprite,"Swordcrit":yoyoSwordcritSprite,"stand":yoyoStandSprite, "Light":yoyoLightSprite, "Lightcrit":yoyoLightcritSprite}
 albert = Paladin("Albert",0,0,
               {"lv":1,"stren":12,"defen":10,"skl":19,"lck":6,
                 "spd":15,"con":10,"move":8,"res":8,"hp":38,"maxhp":38},
                {"stren":25,"defen":20,"skl":35,"lck":35,
                 "spd":25,"res":10,"maxhp":40},
               [silver_lance.getInstance(),steel_sword.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Sword':300,'Lance':500},
-              {'stand':albertStandSpriteP,'Lance':albertLanceSpriteP,'Lancecrit':albertLancecritSpriteP,
-               'Sword':albertSwordSpriteP,'Swordcrit':albertSwordcritSpriteP},faces["Albert"],
                  deathQuote="Sigh... I don't even understand how I died... I'm OP. If someone were controlling me I'd call them a n00b...")
+anims["Albert"] = {'stand':albertStandSpriteP,'Lance':albertLanceSpriteP,'Lancecrit':albertLancecritSpriteP, 'Sword':albertSwordSpriteP,'Swordcrit':albertSwordcritSpriteP}
 franny = Cavalier("Franny",0,0,
                   {"lv":3,"stren":7,"defen":5,"skl":9,"lck":4,
                    "spd":8,"con":10,"move":7,"res":1,"hp":24,"maxhp":24},
                   {"stren":35,"defen":25,"skl":50,"spd":55,"lck":45,"res":15,"maxhp":70},
                   [iron_lance.getInstance(),iron_sword.getInstance(),vulnerary.getInstance()],{'Lance':200,'Sword':200},
-                  {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite,
-                   'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite},faces["Franny"],
                   deathQuote="Lo siento amigos mío... Señor Albert... protegéis Señor You Zhou...")
+anims["Franny"] = {'stand':frannyStandSprite,'Lance':frannyLanceSprite,'Lancecrit':frannyLancecritSprite, 'Sword':frannySwordSprite,'Swordcrit':frannySwordcritSprite}
 gary = Fighter("Gary",0,0,
                {"lv":3,"stren":9,"defen":6,"skl":6,"lck":4,
                 "spd":6,"con":13,"move":5,"res":0,"hp":32,"maxhp":32},
                {"stren":55,"defen":40,"skl":40,"spd":30,"lck":45,"res":10,"maxhp":85},
                [iron_axe.getInstance(),vulnerary.getInstance(),power_ring.getInstance()],{"Axe":200},
-               {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite},faces["Gary"],
                deathQuote="Rip... Welp. It's 'bout time I got shut down... *kek*... GG... WP...")
+anims["Gary"] = {"stand":garyStandSprite,"Axe":garyAxeSprite,"Axecrit":garyAxecritSprite}
 henning = Transporter("Henning",0,0,
                {"lv":1,"stren":2,"defen":10,"skl":18,"lck":5,
                 "spd":15,"con":25,"move":6,"res":7,"hp":28,"maxhp":28},
                {"stren":5,"defen":100,"skl":100,"spd":100,"lck":100,"res":75,"maxhp":100},
-               [red_gem.getInstance(),speedwing.getInstance()],{},
-               {"stand":henningStandSpriteP},faces["Henning"],[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()],
+               [red_gem.getInstance(),speedwing.getInstance()],{},[vulnerary.getInstance(),white_gem.getInstance(),red_gem.getInstance(),blue_gem.getInstance()],
                 deathQuote="lel I'm ded. jk m8. I'll be back next chapter, but like, i gotta scram or our stuff will get stolen.")
-
-
+anims["Henning"] = {"stand":henningStandSpriteP}
 henry = Mercenary("Henry",0,0,
                {"lv":5,"stren":9,"defen":5,"skl":10,"lck":9,
                 "spd":10,"con":10,"move":5,"res":2,"hp":27,"maxhp":27},
                {"stren":50,"defen":25,"skl":45,"spd":55,"lck":40,"res":10,"maxhp":75},
                [killing_edge.getInstance(),iron_sword.getInstance(),steel_sword.getInstance(),red_gem.getInstance(),vulnerary.getInstance()],{"Sword":300},
-               {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite},faces["Henry"],
                 deathQuote="I've been bested. So be it...")
+anims["Henry"] = {"stand":henryStandSprite,"Sword":henrySwordSprite,"Swordcrit":henrySwordcritSprite}
 eric = Priest("Eric",0,0,
                {"lv":5,"stren":6,"defen":2,"skl":8,"lck":8,
                 "spd":10,"con":6,"move":5,"res":8,"hp":24,"maxhp":24},
                {"stren":35,"defen":10,"skl":50,"spd":50,"lck":45,"res":35,"maxhp":60},
                [heal.getInstance(),vulnerary.getInstance(),talisman.getInstance()],{"Staff":200},
-               {"stand":ericStandSprite,"Staff":ericStaffSprite},faces["Eric"],
               deathQuote="...Why... Why now? Please fight on everyone!")
+anims["Eric"] = {"stand":ericStandSprite,"Staff":ericStaffSprite}
 brandon = Thief("Brandon",0,0,
                 {"lv":4,"stren":5,"defen":3,"skl":7,"lck":5,
                 "spd":13,"con":5,"move":6,"res":3,"hp":22,"maxhp":22},
                {"stren":25,"defen":20,"skl":45,"spd":70,"lck":30,"res":15,"maxhp":60},
                [iron_sword.getInstance(),blue_gem.getInstance(),lock_pick.getInstance(),vulnerary.getInstance()],{"Sword":100},
-               {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite},faces["Brandon"],
                 deathQuote="Ouch! That really... hurt...........")
+anims["Brandon"] = {"stand":brandonStandSprite,"Sword":brandonSwordSprite,"Swordcrit":brandonSwordcritSprite}
 stefano = Archer("Stefano",0,0,
                 {"lv":4,"stren":7,"defen":5,"skl":9,"lck":7,
                 "spd":9,"con":5,"move":5,"res":3,"hp":25,"maxhp":25},
                {"stren":40,"defen":25,"skl":50,"spd":45,"lck":35,"res":10,"maxhp":65},
                [iron_bow.getInstance(),white_gem.getInstance(),vulnerary.getInstance(),boots.getInstance()],{"Bow":200},
-               {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite},faces["Stefano"],
                  deathQuote="$!@#! I KNEW I shouldn't have joined this group. I swear I'm going to $@!# whoever let me die like a $!@# piece of !@#$!!!")
+anims["Stefano"] = {"stand":stefanoStandSprite,"Bow":stefanoBowSprite,"Bowcrit":stefanoBowcritSprite}
 kevin = Shaman("Kevin",0,0,
                {"lv":5,"stren":9,"defen":4,"skl":10,"lck":3,
                 "spd":8,"con":6,"move":5,"res":7,"hp":26,"maxhp":26},
                {"stren":55,"defen":15,"skl":45,"spd":40,"lck":20,"res":50,"maxhp":70},
                [flux.getInstance(),vulnerary.getInstance(),secret_book.getInstance()],{"Dark":200},
-               {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite},faces["Kevin"],
                deathQuote="我觉得谁控制我是哑巴。Dang it pygame no support my chinese...")
+anims["Kevin"] = {"stand":kevinStandSprite,"Dark":kevinDarkSprite,"Darkcrit":kevinDarkcritSprite}
 yuno = PegasusKnight("Yuno",0,0,
                 {"lv":8,"stren":8,"defen":6,"skl":13,"lck":9,
                 "spd":13,"con":6,"move":7,"res":9,"hp":28,"maxhp":28},
                {"stren":45,"defen":20,"skl":50,"spd":55,"lck":30,"res":45,"maxhp":75},
                [slim_lance.getInstance(),long_lance.getInstance(),vulnerary.getInstance(),dracoshield.getInstance()],{"Lance":300},
-               {"stand":yunoStandSprite,"Lance":yunoLanceSprite,"Lancecrit":yunoLancecritSprite},faces["Yuno"],
                deathQuote="Yukki..... remember me and live on!!")
+anims["Yuno"] = {"stand":yunoStandSprite,"Lance":yunoLanceSprite,"Lancecrit":yunoLancecritSprite}
 allies = [] #allies
 #ENEMIES
 #--Brigands
 bandit0 = Brigand("Bandit",0,0,
                   {"lv":1,"stren":5,"defen":2,"skl":3,"lck":0,
-                   "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+                   "spd":3,"con":8,"move":5,"res":0,"hp":20,"maxhp":20},{},[iron_axe.getInstance()],{"Axe":200},20)
+anims["Bandit"] = {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite}
 bandit1 = Brigand("Bandit",0,0,
                   {"lv":3,"stren":6,"defen":3,"skl":4,"lck":0,
-                   "spd":3,"con":9,"move":5,"res":0,"hp":22,"maxhp":22},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+                   "spd":3,"con":9,"move":5,"res":0,"hp":22,"maxhp":22},{},[iron_axe.getInstance()],{"Axe":200},20)
 alexTheBandit = Brigand("Alex the Bandit",0,0,
                         {"lv":5,"stren":8,"defen":5,"skl":4,"lck":3,
-                         "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],70,guard=True,
+                         "spd":3,"con":13,"move":5,"res":0,"hp":25,"maxhp":25},{},[iron_axe.getInstance()],{"Axe":200},70,guard=True,
                 fightQuote="How dare you kill all my friends! You're seriously going to pay!",
                 deathQuote="Ugh... how could I die to a pampered lordling... and some hobo...")
+anims["Alex the Bandit"] = {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite}
+faces["Alex the Bandit"] = faces["Bandit"]
 bandit2 = Brigand("Bandit",0,0,
                 {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
-                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance()],{"Axe":300},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance()],{"Axe":300},20)
 bandit2_v = Brigand("Bandit",0,0,
                 {"lv":5,"stren":7,"defen":4,"skl":4,"lck":0,
-                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+                "spd":4,"con":9,"move":5,"res":0,"hp":23,"maxhp":23},{},[iron_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},20)
 
 bandit4 = Brigand("Bandit",0,0,
                 {"lv":10,"stren":12,"defen":7,"skl":4,"lck":0,
-                "spd":5,"con":10,"move":5,"res":0,"hp":30,"maxhp":30},{},[steel_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},
-                {"Axe":brigandAxeSprite,"Axecrit":brigandAxecritSprite,"stand":brigandStandSprite},faces["Bandit"],20)
+                "spd":5,"con":10,"move":5,"res":0,"hp":30,"maxhp":30},{},[steel_axe.getInstance(),vulnerary.getInstance()],{"Axe":300},20)
 #--Mercenaries
 merc1 = Mercenary("Mercenary",0,0,
                 {"lv":3,"stren":5,"defen":2,"skl":8,"lck":2,
-                "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},
-                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+                "spd":8,"con":6,"move":5,"res":0,"hp":18,"maxhp":18},{},[iron_sword.getInstance()],{"Sword":200},20)
+anims["Mercenary"] = {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite}
+faces["Mercenary"] = faces["Bandit"]
 merc2 = Mercenary("Mercenary",0,0,
                 {"lv":5,"stren":6,"defen":3,"skl":9,"lck":2,
-                "spd":9,"con":6,"move":5,"res":0,"hp":19,"maxhp":19},{},[iron_sword.getInstance()],{"Sword":200},
-                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+                "spd":9,"con":6,"move":5,"res":0,"hp":19,"maxhp":19},{},[iron_sword.getInstance()],{"Sword":200},20)
 merc4 = Mercenary("Mercenary",0,0,
                 {"lv":10,"stren":8,"defen":6,"skl":12,"lck":3,
-                "spd":13,"con":6,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
-                {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["Bandit"],20)
+                "spd":13,"con":6,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},20)
 alexTheMerc = Mercenary("Alex the Merc",0,0,
                 {"lv":7,"stren":7,"defen":4,"skl":10,"lck":2,
-                "spd":9,"con":10,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},
-                 {"Sword":mercenarySwordSprite,"Swordcrit":mercenarySwordcritSprite,"stand":mercenaryStandSprite},faces["AlexTheMerc"],100,guard=True,
+                "spd":9,"con":10,"move":5,"res":0,"hp":27,"maxhp":27},{},[steel_sword.getInstance()],{"Sword":300},100,guard=True,
                 fightQuote="You think you can stand up to the LEX REAPER!? Ha! Try me",
                 deathQuote="Watch out King Alex... these men are strong... After all, they even bested me!")
+anims["Alex the Merc"] = anims["Mercenary"]
+faces["Alex the Merc"] = faces["AlexTheMerc"]
 #--Knights
 knight2 = Knight("Knight",0,0,
                 {"lv":5,"stren":8,"defen":7,"skl":3,"lck":0,
-                "spd":1,"con":12,"move":4,"res":0,"hp":20,"maxhp":20},{},[iron_lance.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20,guard=True)
+                "spd":1,"con":12,"move":4,"res":0,"hp":20,"maxhp":20},{},[iron_lance.getInstance()],{"Lance":100},20,guard=True)
+anims["Knight"] = {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite}
 alexTheKnight = Knight("Knight Alex",0,0,
                 {"lv":10,"stren":10,"defen":11,"skl":5,"lck":1,
                 "spd":4,"con":15,"move":4,"res":0,"hp":32,"maxhp":32},{},[steel_lance.getInstance(),long_lance.getInstance(),red_gem.getInstance(),body_ring.getInstance()],{"Lance":300},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["AlexTheKnight"],100,throne=True,
+                       100,throne=True,
                        fightQuote="What the-? Who are you!? How did you get past my knights!? Whatever... you're not leavin alive!",
                        deathQuote="Ugh... sorry King Alex... I was bested... Someone... tell King Alex... to be... wary")
+anims["Knight Alex"] = {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite}
+faces["Knight Alex"] = faces["AlexTheKnight"]
 knight3 = Knight("Knight",0,0,
                 {"lv":8,"stren":9,"defen":8,"skl":4,"lck":0,
-                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
+                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},20)
 knight3_v = Knight("Knight",0,0,
                 {"lv":8,"stren":10,"defen":9,"skl":4,"lck":0,
-                "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20,guard=True)
+                "spd":3,"con":15,"move":4,"res":0,"hp":25,"maxhp":25},{},[iron_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},20,guard=True)
 knight3 = Knight("Knight",0,0,
                 {"lv":8,"stren":9,"defen":8,"skl":4,"lck":0,
-                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
+                "spd":3,"con":15,"move":4,"res":0,"hp":22,"maxhp":22},{},[iron_lance.getInstance()],{"Lance":100},20)
 knight4 = Knight("Knight",0,0,
                 {"lv":10,"stren":11,"defen":10,"skl":5,"lck":0,
-                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20)
+                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance()],{"Lance":100},20)
 knight4_v = Knight("Knight",0,0,
                 {"lv":10,"stren":11,"defen":10,"skl":5,"lck":0,
-                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance(),long_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},
-                {"Lance":knightLanceSprite,"Lancecrit":knightLancecritSprite,"stand":knightStandSprite},faces["Knight"],20,guard=True)
+                "spd":4,"con":16,"move":4,"res":0,"hp":26,"maxhp":26},{},[iron_lance.getInstance(),long_lance.getInstance(),vulnerary.getInstance()],{"Lance":100},20,guard=True)
 #--Shamans
 shaman3 = Shaman("Shaman",0,0,
                 {"lv":8,"stren":8,"defen":2,"skl":5,"lck":0,
-                "spd":7,"con":8,"move":5,"res":7,"hp":20,"maxhp":20},{},[flux.getInstance()],{"Dark":200},
-                {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
+                "spd":7,"con":8,"move":5,"res":7,"hp":20,"maxhp":20},{},[flux.getInstance()],{"Dark":200},20)
+anims["Shaman"] = {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite}
 shaman3_r = Shaman("Shaman",0,0,
                 {"lv":9,"stren":8,"defen":3,"skl":6,"lck":0,
-                "spd":8,"con":8,"move":5,"res":8,"hp":21,"maxhp":21},{},[flux.getInstance(),red_gem.getInstance()],{"Dark":200},
-                {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20,guard=True)
+                "spd":8,"con":8,"move":5,"res":8,"hp":21,"maxhp":21},{},[flux.getInstance(),red_gem.getInstance()],{"Dark":200},20,guard=True)
 shaman4 = Shaman("Shaman",0,0,
                 {"lv":10,"stren":9,"defen":3,"skl":7,"lck":0,
-                "spd":9,"con":8,"move":5,"res":9,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},
-                {"Dark":shamanDarkSprite,"Darkcrit":shamanDarkcritSprite,"stand":shamanStandSprite},faces["Shaman"],20)
+                "spd":9,"con":8,"move":5,"res":9,"hp":23,"maxhp":23},{},[flux.getInstance()],{"Dark":200},20)
 #--Druids
 druid5 = Druid("Druid",0,0,
                 {"lv":1,"stren":13,"defen":6,"skl":9,"lck":0,
-                "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance()],{"Dark":500,"Staff":100},
-                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["Shaman"],100,guard=True)
+                "spd":9,"con":11,"move":6,"res":9,"hp":26,"maxhp":26},{},[flux.getInstance()],{"Dark":500,"Staff":100},100,guard=True)
+anims["Druid"] = {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite}
+faces["Druid"] = faces["Shaman"]
 alexTheDruid = Druid("Alex the Druid",0,0,
                 {"lv":1,"stren":14,"defen":7,"skl":13,"lck":0,
-                "spd":12,"con":13,"move":6,"res":9,"hp":34,"maxhp":34},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},
-                 {"Dark":druidDarkSprite,"Darkcrit":druidDarkcritSprite,"stand":druidStandSprite,"Staff":druidStaffSprite},faces["AlexTheDruid"],100,throne=True,
+                "spd":12,"con":13,"move":6,"res":9,"hp":34,"maxhp":34},{},[flux.getInstance(),guiding_ring.getInstance()],{"Dark":500,"Staff":100},100,throne=True,
                 fightQuote="You have gotten far... but the darkness will end you here. A Darkness greater than any light!",
                 deathQuote="Ha.. Ha ha... you have overcome darkness... but good luck overcoming King Alex")
+anims["Alex the Druid"] = anims["Druid"]
+faces["Alex the Druid"] = faces["AlexTheDruid"]
 #--Mages
 mage3 = Mage("Mage",0,0,
                 {"lv":8,"stren":6,"defen":3,"skl":12,"lck":2,
-                "spd":10,"con":5,"move":5,"res":7,"hp":20,"maxhp":20},{},[fire.getInstance()],{"Anima":300},
-                 {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["Mage"],100,throne=True)
+                "spd":10,"con":5,"move":5,"res":7,"hp":20,"maxhp":20},{},[fire.getInstance()],{"Anima":300},100,throne=True)
+anims["Mage"] = {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite}
 mage4 = Mage("Mage",0,0,
                 {"lv":10,"stren":6,"defen":4,"skl":13,"lck":2,
-                "spd":11,"con":5,"move":5,"res":8,"hp":22,"maxhp":22},{},[fire.getInstance()],{"Anima":300},
-                 {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["Mage"],100,guard=True)
+                "spd":11,"con":5,"move":5,"res":8,"hp":22,"maxhp":22},{},[fire.getInstance()],{"Anima":300},100,guard=True)
 alexTheMage = Mage("Alex the Mage",0,0,
                 {"lv":12,"stren":11,"defen":5,"skl":14,"lck":3,
-                "spd":12,"con":8,"move":5,"res":10,"hp":30,"maxhp":30},{},[fire.getInstance(),goddess_icon.getInstance()],{"Anima":300},
-                 {"Anima":mageAnimaSprite,"Animacrit":mageAnimacritSprite,"stand":mageStandSprite},faces["AlexTheMage"],100,throne=True,
+                "spd":12,"con":8,"move":5,"res":10,"hp":30,"maxhp":30},{},[fire.getInstance(),goddess_icon.getInstance()],{"Anima":300},100,throne=True,
                 fightQuote="You who would dare stand up to the might of the Alex Legion... burn to crisp.",
                 deathQuote="I... just needed... more power... ugh... I leave the rest to you, King Alex...")
+anims["Alex the Mage"] = anims["Mage"]
+faces["Alex the Mage"] = faces["AlexTheMage"]
 #--Sages
 alexTheSage = Sage("Sage Alex",0,0,
                 {"lv":10,"stren":13,"defen":6,"skl":16,"lck":5,
-                "spd":14,"con":6,"move":6,"res":12,"hp":33,"maxhp":33},{},[elfire.getInstance(),guiding_ring.getInstance()],{"Anima":500,"Staff":100},
-                 {"Anima":sageAnimaSprite,"Animacrit":sageAnimacritSprite,"stand":sageStandSprite,"Staff":sageStaffSprite},faces["AlexTheSage"],100,throne=True,
+                "spd":14,"con":6,"move":6,"res":12,"hp":33,"maxhp":33},{},[elfire.getInstance(),guiding_ring.getInstance()],{"Anima":500,"Staff":100},100,throne=True,
                 fightQuote="Feel the burn... you'll need to prepared for the after life.",
                 deathQuote="Ugh..... I can feel... the burn already....")
+anims["Sage Alex"] = {"Anima":sageAnimaSprite,"Animacrit":sageAnimacritSprite,"stand":sageStandSprite,"Staff":sageStaffSprite}
+faces["Sage Alex"] = faces["AlexTheSage"]
 #--Bishops
 alexTheBishop = Bishop("Bishop Alex",0,0,
                 {"lv":3,"stren":11,"defen":6,"skl":17,"lck":12,
-                "spd":12,"con":6,"move":6,"res":12,"hp":36,"maxhp":36},{},[shine.getInstance(),white_gem.getInstance()],{"Light":500,"Staff":100},
-                 {"Light":bishopLightSprite,"Lightcrit":bishopLightcritSprite,"stand":bishopStandSprite,"Staff":bishopStaffSprite},faces["AlexTheBishop"],100,throne=True,
+                "spd":12,"con":6,"move":6,"res":12,"hp":36,"maxhp":36},{},[shine.getInstance(),white_gem.getInstance()],{"Light":500,"Staff":100},100,throne=True,
                 fightQuote="The Lord will punish the Zhou family for their cruel dictatorship! Now, face his divine judgement!",
                 deathQuote="My brothers... I'm sorry... But this must be the will of God...")
+anims["Bishop Alex"] = {"Light":bishopLightSprite,"Lightcrit":bishopLightcritSprite,"stand":bishopStandSprite,"Staff":bishopStaffSprite}
+faces["Bishop Alex"] = faces["AlexTheBishop"]
 #--Monsters
 revenant3 = Revenant("Revenant",0,0,
                 {"lv":5,"stren":9,"defen":6,"skl":1,"lck":0,
-                "spd":5,"con":5,"move":5,"res":0,"hp":21,"maxhp":21},{},[claw.getInstance()],{"Claw":200},
-                {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite},faces["Revenant"],20)
+                "spd":5,"con":5,"move":5,"res":0,"hp":21,"maxhp":21},{},[claw.getInstance()],{"Claw":200},20)
+anims["Revenant"] = {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite}
 revenant5 = Revenant("Revenant",0,0,
                 {"lv":12,"stren":12,"defen":7,"skl":2,"lck":0,
-                "spd":6,"con":5,"move":5,"res":0,"hp":29,"maxhp":29},{},[claw.getInstance()],{"Claw":200},
-                {"Claw":revenantClawSprite,"Clawcrit":revenantClawcritSprite,"stand":revenantStandSprite},faces["Revenant"],20)
+                "spd":6,"con":5,"move":5,"res":0,"hp":29,"maxhp":29},{},[claw.getInstance()],{"Claw":200},20)
 enemies = []
 LS(660)
 #----CHAPTERS----#
@@ -936,36 +934,43 @@ def addAlly(ally):
     "adds an ally to the allies list - updates allAllies too"
     allies.append(ally) #adds ally to allies
     allAllies.append(ally) #adds ally to allAllies
-def load(file):
+def load(fileName):
     "loads the file into the game, and returning 0 if it is empty"
     global chapter,allAllies,player,gold
-    if "chapter" not in file:
-        file.close()
-        changemode(NewGame())#goes to new game
-    else:
-        #sets the chapter we are about to start and allAllies
-        chapter = file["chapter"]
-        allAllies = file["allAllies"]
-        gold = file["gold"]
-        for a in allAllies:
-            imagifyStrings(a) #imagify all images as they were strings while data of allies
-            if a.name.lower() not in usedNames:
-                player = a
-        file.close()
-        changemode(getStory(chapter))
-def save(file):
+    with shelve.open(fileName) as file:
+        if "chapter" not in file:
+            changemode(NewGame())#goes to new game
+        else:
+            #sets the chapter we are about to start and allAllies
+            chapter = file["chapter"]
+            allAllies = file["allAllies"]
+            gold = file["gold"]
+            alrPromoted = ["albert"]
+            for a in allAllies:
+                if a.name.lower() not in usedNames:
+                    player = a
+                    faces[player.name] = faces["Player"]
+                    if type(player) == Mage:
+                        anims[player.name] = {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite}
+                        promAnims[player.name] = promAnims["PlayerMage"]
+                    elif type(player) == Sage:
+                        anims[player.name] = promAnims["PlayerMage"]
+                        promAnims[player.name] = promAnims["PlayerMage"]
+                    else:
+                        anims[player.name] = {"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite}
+                else:
+                    if a.name.lower() not in alrPromoted and a.promoted and a.name in promAnims:
+                        anims[a.name] = promAnims[a.name]
+            changemode(getStory(chapter))
+def save(fileName):
     "saves game into file"
     global chapter, allAllies
-    file["chapter"] = chapter + 1
-    chapter += 1
-    for a in allAllies:
-        stringifyImages(a) #stringify all images of allies
-    file["allAllies"] = allAllies #save allAllies
-    for a in allAllies:
-        imagifyStrings(a) #imagify all images of allies
-    file["gold"] = gold
-    file.close()
-    changemode(getStory(chapter))
+    with shelve.open(fileName) as file:
+        file["chapter"] = chapter + 1
+        chapter += 1
+        file["allAllies"] = allAllies #save allAllies
+        file["gold"] = gold
+        changemode(getStory(chapter))
 def getSavedChapter(file):
     "gets the chapter saved file #"
     try:
@@ -1005,7 +1010,7 @@ def checkDead(ally,enemy):
         allies.remove(ally)
         if ally.deathQuote == "":
             return True
-        if not writeDialogue(screen,ally.deathQuote,name=ally.name,face=ally.face):
+        if not writeDialogue(screen,ally.deathQuote,name=ally.name,face=faces[ally.name]):
             quit()
         waiting = True #waiting for user to press a key in order to move on
         arrowflashcounter = 0
@@ -1028,7 +1033,7 @@ def checkDead(ally,enemy):
         enemies.remove(enemy)
         if enemy.deathQuote == "":
             return True
-        if not writeDialogue(screen,enemy.deathQuote,900,name=enemy.name,face=enemy.face):
+        if not writeDialogue(screen,enemy.deathQuote,900,name=enemy.name,face=faces[enemy.name]):
             quit()
         waiting = True #waiting for user to press a key in order to move on
         arrowflashcounter = 0
@@ -1047,6 +1052,15 @@ def checkDead(ally,enemy):
             display.flip()
         return True
     return False
+def handleEvents(events):
+    "handles events and checks for quit"
+    for e in events:
+        if e.type == QUIT:
+            return 1 #checks if user quits
+        if e.type == KEYDOWN:
+            if e.key in [K_RETURN]:
+                return -1
+    return 0
 def attack(person,person2):
     "attack animation of person to person2"
     #sets who is the ally and who is the enemy
@@ -1058,7 +1072,7 @@ def attack(person,person2):
         ally = person2
         enemy = person
     if enemy.fightQuote != "" and not enemy.fought:
-        if not writeDialogue(screen,enemy.fightQuote,900,530,enemy.name,enemy.face):
+        if not writeDialogue(screen,enemy.fightQuote,900,530,enemy.name,face=faces[enemy.name]):
             quit()
         enemy.fought = True #only enemy has a fightquote
         waiting = True #waiting for user to press a key in order to move on
@@ -1083,13 +1097,13 @@ def attack(person,person2):
     actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
     #blits standing sprites for ally and enemy
     if ally.equip == None:
-        screen.blit(ally.anims["stand"],(0,0))
+        screen.blit(anims[ally.name]["stand"],(0,0))
     else:
-        screen.blit(ally.anims[ally.equip.typ][0][0],(0,0))
+        screen.blit(anims[ally.name][ally.equip.typ][0][0],(0,0))
     if enemy.equip == None:
-        screen.blit(enemy.anims["stand"],(0,0))
+        screen.blit(anims[enemy.name]["stand"],(0,0))
     else:
-        screen.blit(enemy.anims[enemy.equip.typ][0][0],(0,0))
+        screen.blit(anims[enemy.name][enemy.equip.typ][0][0],(0,0))
     display.flip()
     time.wait(200)
     isenemy = person in enemies #is person an enemy? (boolean)
@@ -1098,7 +1112,7 @@ def attack(person,person2):
     equipped = ally.equip
     broke = False
     enBroke = False
-    if not singleAttack(screen,person,person2,isenemy,chapterMaps[chapter],weaponanims.get(person.equip.name)):
+    if not singleAttack(screen,person,person2,anims[person.name],anims[person2.name],isenemy,chapterMaps[chapter],weaponanims.get(person.equip.name)):
         if person == ally:
             broke = True
         else:
@@ -1106,7 +1120,8 @@ def attack(person,person2):
     wexpGain = 0
     if person == ally:
         wexpGain = equipped.wexp
-    if handleEvents(event.get()):
+    er = handleEvents(event.get())
+    if er == 1:
         quit()
     if checkDead(ally,enemy):
         #gains exp
@@ -1132,7 +1147,7 @@ def attack(person,person2):
     if canAttackTarget(person2,person.x,person.y):
         #if person2 can attack
         screen.blit(actionFiller,(0,0)) #covers both persons
-        if not singleAttack(screen,person2,person,not isenemy,chapterMaps[chapter],weaponanims.get(person2.equip.name)):
+        if not singleAttack(screen,person2,person,anims[person2.name],anims[person.name],not isenemy,chapterMaps[chapter],weaponanims.get(person2.equip.name)):
             if person2 == ally:
                 broke = True
             else:
@@ -1140,7 +1155,7 @@ def attack(person,person2):
         person2hit = True
         if ally == person2:
             wexpGain += equipped.wexp
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     if checkDead(ally,enemy):
         #gains exp if enemy died
@@ -1158,21 +1173,21 @@ def attack(person,person2):
                 dispTempMsg(screen,equipped.name+" broke!",centerX=True,centerY=True)
         display.flip()
         time.wait(500)
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
         return False
     #Draws damage for attack 3
     if ally.getAtkSpd() - 4 >= enemy.getAtkSpd() and canAttackTarget(ally,enemy.x,enemy.y) and not broke:
         screen.blit(actionFiller,(0,0)) #covers both persons
-        if not singleAttack(screen,ally,enemy,False,chapterMaps[chapter],weaponanims.get(ally.equip.name)):
+        if not singleAttack(screen,ally,enemy,anims[ally.name],anims[enemy.name],False,chapterMaps[chapter],weaponanims.get(ally.equip.name)):
             broke = True
         person2hit = ally == person2 #person2hit becomes true if ally was person2
         wexpGain += equipped.wexp
     if ally.getAtkSpd() + 4 <= enemy.getAtkSpd() and canAttackTarget(enemy,ally.x,ally.y) and not enBroke:
         screen.blit(actionFiller,(0,0)) #covers both persons
-        if not singleAttack(screen,enemy,ally,True,chapterMaps[chapter],weaponanims.get(enemy.equip.name)):
+        if not singleAttack(screen,enemy,ally,anims[enemy.name],anims[ally.name],True,chapterMaps[chapter],weaponanims.get(enemy.equip.name)):
             broke = True
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     kill = False
     if checkDead(ally,enemy):
@@ -1185,7 +1200,7 @@ def attack(person,person2):
         #if person2 did not hit and that was the ally, we only gain 1 exp
         expgain = 1
     drawChangingBar(screen,ally.exp,ally.exp+ally.getExpGain(expgain),100,420,330,360,60,"Exp")
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     needLevelUp = ally.gainExp(expgain) #sets a boolean from the result of our exp gain
     if needLevelUp:
@@ -1198,7 +1213,7 @@ def attack(person,person2):
     if broke:
         dispTempMsg(screen,equipped.name+" broke!",centerX=True,centerY=True)
     time.wait(1000)
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
 def heal(person,person2,stf):
     "draws healing animation"
@@ -1208,19 +1223,19 @@ def heal(person,person2,stf):
     drawBattleInfo(screen,person,person2,chapterMaps[chapter],True,stf)
     actionFiller = screen.copy().subsurface(Rect(0,0,1200,600)) #filler for the action
     if person.equip == None:
-        screen.blit(person.anims["stand"],(0,0))
+        screen.blit(anims[person.name]["stand"],(0,0))
     else:
-        screen.blit(person.anims[person.equip.typ][0][0],(0,0))
+        screen.blit(anims[person.name][person.equip.typ][0][0],(0,0))
     if person2.equip == None:
-        screen.blit(transform.flip(person2.anims["stand"],True,False),(0,0))
+        screen.blit(transform.flip(anims[person2.name]["stand"],True,False),(0,0))
     else:
-        screen.blit(transform.flip(person2.anims[person2.equip.typ][0][0],True,False),(0,0))
+        screen.blit(transform.flip(anims[person2.name][person2.equip.typ][0][0],True,False),(0,0))
     display.flip()
     time.wait(200)
-    if handleEvents(event.get()):
+    if handleEvents(event.get()) == 1:
         quit()
     screen.blit(actionFiller,(0,0))
-    if not singleAttack(screen,person,person2,False,chapterMaps[chapter],weaponanims["Heal"],True,stf):
+    if not singleAttack(screen,person,person2,anims[person.name],anims[person2.name],False,chapterMaps[chapter],weaponanims["Heal"],True,stf):
         #heal function
         dispTempMsg(screen,stf.name+" Broke!",centerX=True,centerY=True)
     expgain = 20 + person.stren + stf.heal
@@ -1295,29 +1310,6 @@ def itemOverflow(p,item):
         framecounter += 1
         fpsLimiter.tick(60) #LIMITS TO 60 FPS
     screen.blit(buffer,(0,0))
-#-------MANAGEMENT FUNCTIONS--------#
-#this is to help me manage image saving
-def stringifyImages(ally):
-    "stringifies all images in ally - I need to do this in order to save them into a file, as Python can't save surfaces"
-    #NOTE: to stringify means to change an image into a string representing the variable name that points to the image
-    name = ally.name.lower()
-    if ally.name.lower() not in usedNames:
-        #if ally's name isn't in used names, then it is the player
-        name = "player"+ally.__class__.__name__ #we add the class for the player
-    for i,k in enumerate(ally.anims):
-        ally.anims[k] = name+k.title()+"Sprite"+("P" if ally.promoted else "")
-
-def imagifyStrings(ally):
-    "imagifies all strings in ally - opposite of stringifyImages"
-    for i,k in enumerate(ally.anims):
-        ally.anims[k] = eval(ally.anims[k]) #creates an image from the string using eval
-
-    #resets the faces
-    if ally.name.lower() not in usedNames:
-        #if it's the player we set to player face
-        ally.face = faces["Player"]
-    else:
-        ally.face = faces[ally.name]
 #----HELPFUL CLASSES----#
 #any classes that help me code
 class FilledSurface(Surface):
@@ -1957,7 +1949,7 @@ class InfoScreen():
             for i,k in enumerate(a.mast):
                 x,y = coords[k]
                 screen.blit(superScript40.render("FEDCBAS"[a.mast[k]//100],True,WHITE),(x,y))
-        screen.blit(transform.scale(a.face,(360,320)),(75,32))
+        screen.blit(transform.scale(faces[a.name],(360,320)),(75,32))
         screen.blit(superScript40.render(a.name,True,BLACK),(144,381)) #blits name of the selected unit
         screen.blit(superScript40.render(a.__class__.__name__,True,WHITE),(15,485))
         screen.blit(superScript40.render("LV "+str(a.lv)+" EXP "+str(a.exp),True,WHITE),(15,555))
@@ -2000,7 +1992,7 @@ class StatusScreen():
         screen.blit(superScript40.render(p.name,True,WHITE),(690,370))
         screen.blit(superScript40.render(str(p.lv),True,WHITE),(910,460))
         screen.blit(superScript40.render(str(p.hp),True,WHITE),(780,510))
-        screen.blit(p.face,(1080,480))
+        screen.blit(faces[p.name],(1080,480))
         screen.blit(superScript40.render(str(p.maxhp),True,WHITE),(910,510))
         screen.blit(superScript40.render("X to go back",True,BLACK),(680,600))
 class UnitsScreen():
@@ -2247,6 +2239,9 @@ class SaveGame():
         button1Text = " " + getSavedChapter(self.file1)
         button2Text = " " + getSavedChapter(self.file2)
         button3Text = " " + getSavedChapter(self.file3)
+        self.file1.close()
+        self.file2.close()
+        self.file3.close()
         self.sbuttonnormal = transform.smoothscale(buttonnormal,(85,50))
         self.sbuttonhl = transform.smoothscale(buttonhl,(85,50))
         self.buttonoutline = transform.smoothscale(image.load("images/Buttons/buttonoutline.png"),(200,50))
@@ -2270,7 +2265,7 @@ class SaveGame():
                                 FilledSurface((85,50),self.sbuttonnormal,"SAVE",BLACK,monospace,(0,10)),
                                 FilledSurface((85,50),self.sbuttonhl,"SAVE",BLACK,monospace,(0,10)),
                                 FilledSurface((85,50),self.sbuttonhl,"SAVE",WHITE,monospace,(0,10)),
-                                ["save([currmode.file1,currmode.file2,currmode.file3][currmode.filenum-1])"]),
+                                ["save('saves/file'+str(currmode.filenum))"]),
                          Button(600,600,85,50,
                                 FilledSurface((85,50),self.sbuttonnormal,"QUIT",BLACK,monospace,(0,10)),
                                 FilledSurface((85,50),self.sbuttonhl,"QUIT",BLACK,monospace,(0,10)),
@@ -2330,22 +2325,26 @@ class LoadGame():
         button2Text = " " + getSavedChapter(self.file2)
         button3Text = " " + getSavedChapter(self.file3)
 
+        self.file1.close()
+        self.file2.close()
+        self.file3.close()
+
         #creates buttons
         self.buttons1 = [Button(500,420,200,50,
                                FilledSurface((200,50),buttonnormal,button1Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button1Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button1Text,WHITE,monospace,(0,10)),
-                               ["load(currmode.file1)"]),
+                               ["load('saves/file1')"]),
                         Button(500,480,200,50,
                                FilledSurface((200,50),buttonnormal,button2Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button2Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button2Text,WHITE,monospace,(0,10)),
-                               ["load(currmode.file2)"]),
+                               ["load('saves/file2')"]),
                         Button(500,540,200,50,
                                FilledSurface((200,50),buttonnormal,button3Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button3Text,BLACK,monospace,(0,10)),
                                FilledSurface((200,50),buttonhl,button3Text,WHITE,monospace,(0,10)),
-                               ["load(currmode.file3)"])]
+                               ["load('saves/file3')"])]
 
     def draw(self,screen):
         "draws mode on screen"
@@ -2403,8 +2402,10 @@ class NewGame():
                                  """player = Mage(name,0,0,{'lv':1,'hp':17,'maxhp':17,'stren':7,'defen':1,'spd':7,'res':5,'lck':5,'skl':6,'con':5,'move':5},
 {'maxhp':55,'defen':10,'res':55,'stren':45,'spd':65,'skl':50,'lck':55},
 [fire.getInstance(),vulnerary.getInstance()],
-{'Anima':200},
-{'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
+{'Anima':200},deathQuote='Tactical error... time to restart.')
+anims[name] = {'stand':playerMageStandSprite,'Anima':playerMageAnimaSprite,'Animacrit':playerMageAnimacritSprite}
+promAnims[name] = promAnims['PlayerMage']
+faces[name] = faces['Player']
 addAlly(player)
 """,
                                 "changemode(getStory(chapter))"]),
@@ -2417,8 +2418,9 @@ addAlly(player)
                                  """player = Knight(name,0,0,{"lv":1,"hp":26,"maxhp":26,"stren":7,"defen":10,"spd":5,"res":0,"skl":6,"lck":4,"con":12,"move":4},
 {"stren":60,"defen":70,"skl":55,"lck":30,"spd":25,"res":30,"maxhp":65},
 [iron_lance.getInstance(),vulnerary.getInstance()],
-{"Lance":200},
-{"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite},faces['Player'],deathQuote='Tactical error... time to restart.')
+{"Lance":200},deathQuote='Tactical error... time to restart.')
+anims[name] = {"Lance":playerKnightLanceSprite,"Lancecrit":playerKnightLancecritSprite,"stand":playerKnightStandSprite}
+faces[name] = faces['Player']
 addAlly(player)
 """,
                                  "changemode(getStory(chapter))"])]
@@ -2700,7 +2702,7 @@ class Game():
             else:
                 screen.blit(enemyMapSprites[p.__class__.__name__][num%4],(cord[0]*30,cord[1]*30)) 
             display.flip()                
-            if handleEvents(event.get()):
+            if handleEvents(event.get()) == 1:
                 quit()
             time.wait(100)
             num += 1
@@ -2861,7 +2863,7 @@ class Game():
                 draw.rect(screen,YELLOW,(a.x*30,a.y*30,30,30),2)
                 display.flip()
                 time.wait(500)
-                if handleEvents(event.get()):
+                if handleEvents(event.get()) == 1:
                     quit()
                 drawChangingBar(screen,a.hp,a.hp+aterr.heal,a.maxhp,420,330,390,60,"Hp",False)
                 a.hp = min(a.hp+aterr.heal,a.maxhp)
@@ -2869,7 +2871,7 @@ class Game():
             e.movesLeft = e.move
         screen.blit(screenBuff,(0,0)) #covers up text
         display.flip()
-        if handleEvents(event.get()):
+        if handleEvents(event.get()) == 1:
             quit()
         self.mode = "freemove" #sets the mode back to freemove
     def endTurn(self):
@@ -2901,7 +2903,7 @@ class Game():
             if eterr.heal != 0 and en.hp < en.maxhp:
                 display.flip()
                 time.wait(500)
-                if handleEvents(event.get()):
+                if handleEvents(event.get()) == 1:
                     quit()
                 drawChangingBar(screen,en.hp,en.hp+eterr.heal,en.maxhp,420,330,390,60,"Hp",False,RED)
                 en.hp = min(en.hp+eterr.heal,en.maxhp)
@@ -3345,7 +3347,8 @@ class Game():
                                         nameOfPersonProm = "Player"+self.selected.__class__.__name__
                                         nameOfPerson = "Player"
                                     self.selected.removeItem(self.selectedItem)
-                                    newPerson = self.selected.promote(promAnims[nameOfPersonProm])
+                                    newPerson = self.selected.promote()
+                                    anims[self.selected.name] = promAnims[self.selected.name]
                                     allies[ind] = newPerson
                                     exec("global "+nameOfPerson.lower()+"\n"+nameOfPerson.lower()+"=newPerson") #resets new person as well
                                     drawPromotion(screen,newPerson,oldPerson)
@@ -3726,8 +3729,8 @@ class Game():
                 #first we set which item selected out of the two menus
                 #this is based on which ally the selector is on
                 #which is determined by the first element of menuselect
-                screen.blit(self.selected.face,(240,190))
-                screen.blit(self.selected2.face,(630,190))
+                screen.blit(faces[self.selected.name],(240,190))
+                screen.blit(faces[self.selected2.name],(630,190))
                 self.menu.draw(self.selected,self.selected2)
                 drawTransRect(screen,BLACK,0,680,1200,40)
                 if self.menu.firstSelection == None:

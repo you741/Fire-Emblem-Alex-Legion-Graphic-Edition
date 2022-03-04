@@ -14,7 +14,7 @@ weaponTriangle = {"Sword":"Axe",
 #in the format advantageous:disadvantageous
 class Person():
     "person class - root of all classes"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
         "initializes person"
         #takes in stats and growth - dictionaries
         self.name = name
@@ -23,8 +23,6 @@ class Person():
         self.growths = growths #growth percentage
         self.items = items #items
         self.mast = mast #mastery of weapons
-        self.anims = anims #animations
-        self.face = face #face
         #the way animations are stored is through a dictionary
         #each key points to a list of frames
         #some items will be a tuple that represents
@@ -256,14 +254,13 @@ class Person():
         return self
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)")
 class Mage(Person):
     "mage class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Mage,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
-    def promote(self,promAnims):
-        "uses promAnims to added the animations of the promoted class"
+    def promote(self):
         newStats = {"lv":1,
                     "maxhp":self.maxhp+2,"hp":self.hp+2,
                     "stren":self.stren+3,"spd":self.spd+2,
@@ -272,12 +269,12 @@ class Mage(Person):
                     "con":self.con+1,"move":self.move+1}
         newMast = {"Anima":min(600,self.mast["Anima"]+100),
                    "Staff":100}
-        return Sage(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+        return Sage(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
 
 class Sage(Mage):
     "sage class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Sage,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Sage,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.promoted = True
 class Knight(Person):
     "knight class"
@@ -287,8 +284,7 @@ class Myrmidon(Person):
     pass
 class Lord(Person):
     "lord class"
-    def promote(self,promAnims):
-        "uses promAnims to added the animations of the promoted class"
+    def promote(self):
         newStats = {"lv":1,
                     "maxhp":self.maxhp+4,"hp":self.hp+4,
                     "stren":self.stren+3,"spd":self.spd+3,
@@ -299,11 +295,11 @@ class Lord(Person):
                    "Light":min(600,self.mast["Light"]+100),
                    "Dark":100,
                    "Anima":100}
-        return KnightLord(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+        return KnightLord(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
 class KnightLord(Lord):
     "KnightLord class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(KnightLord,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(KnightLord,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.caps = {"maxhp":60,
                      "stren":25,
                      "skl":30,
@@ -315,18 +311,18 @@ class KnightLord(Lord):
         self.promoted = True
 class Brigand(Person):
     "brigand class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Brigand,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.mountainous = True
 class Cavalier(Person):
     "cavalier class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Cavalier,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.mounted = True
 class Paladin(Cavalier):
     "paladin class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Paladin,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Paladin,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.caps = {"maxhp":60,
                      "stren":27,
                      "skl":29,
@@ -337,20 +333,20 @@ class Paladin(Cavalier):
         self.promoted = True
 class Fighter(Person):
     "fighter class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Fighter,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
 class Mercenary(Person):
     "mercenary class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Mercenary,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
 class Thief(Person):
     "thief class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Thief,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Thief,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
 class Transporter(Person):
     "transporter class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,supply,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Transporter,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,supply,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Transporter,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.mounted = True
         self.promoted = True
         self.caps = {"maxhp":60,
@@ -377,14 +373,13 @@ class Transporter(Person):
             return True
     def getInstance(self):
         "gets instance of person"
-        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),self.anims,self.face,[i.getInstance() for i in self.supply],self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)")
+        return eval(self.__class__.__name__+"(self.name,self.x,self.y,deepcopy(self.stats),self.growths,[i.getInstance() for i in self.items],deepcopy(self.mast),[i.getInstance() for i in self.supply],self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)")
 class Priest(Person):
     "priest class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Priest,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Priest,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
-    def promote(self,promAnims):
-        "uses promAnims to added the animations of the promoted class"
+    def promote(self):
         newStats = {"lv":1,
                     "maxhp":self.maxhp+2,"hp":self.hp+2,
                     "stren":self.stren+3,"spd":self.spd+3,
@@ -393,24 +388,23 @@ class Priest(Person):
                     "con":self.con+1,"move":self.move+1}
         newMast = {"Staff":min(600,self.mast["Staff"]+100),
                    "Light":100}
-        return Bishop(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+        return Bishop(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
 
 class Bishop(Priest):
     "Bishop class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Bishop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Bishop,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.promoted = True
 class Archer(Person):
     "archer class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Archer,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Archer,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
 class Shaman(Person):
     "shaman class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Shaman,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Shaman,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.magical = True
-    def promote(self,promAnims):
-        "uses promAnims to added the animations of the promoted class"
+    def promote(self):
         newStats = {"lv":1,
                     "maxhp":self.maxhp+3,"hp":self.hp+3,
                     "stren":self.stren+2,"spd":self.spd+2,
@@ -419,22 +413,22 @@ class Shaman(Person):
                     "con":self.con+2,"move":self.move+1}
         newMast = {"Dark":min(600,self.mast["Dark"]+100),
                    "Staff":100}
-        return Druid(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,promAnims,self.face,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
+        return Druid(self.name,self.x,self.y,newStats,self.growths,self.items,newMast,self.gift,self.exp,self.fightQuote,self.deathQuote,self.guard,self.throne)
 class Druid(Shaman):
     "druid class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Druid,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Druid,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.promoted = True
 class Revenant(Person):
     "revenant class"
     pass
 class PegasusKnight(Person):
     "pegasus knight class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(PegasusKnight,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(PegasusKnight,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)
         self.flying = True
         self.mounted = True
 class Poop(Person):
     "poop class"
-    def __init__(self,name,x,y,stats,growths,items,mast,anims,face,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
-        super(Poop,self).__init__(name,x,y,stats,growths,items,mast,anims,face,gift,exp,fightQuote,deathQuote,guard,throne)
+    def __init__(self,name,x,y,stats,growths,items,mast,gift=0,exp=0,fightQuote="",deathQuote="",guard=False,throne=False):
+        super(Poop,self).__init__(name,x,y,stats,growths,items,mast,gift,exp,fightQuote,deathQuote,guard,throne)

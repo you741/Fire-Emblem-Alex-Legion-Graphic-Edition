@@ -3,3 +3,6 @@ __pycache__/feweapons.cpython-37.pyc
 __pycache__/festaples.cpython-37.pyc
 __pycache__/feclasses.cpython-37.pyc
 __pycache__/feterrain.cpython-37.pyc
+*.dat
+*.dir
+*.bak

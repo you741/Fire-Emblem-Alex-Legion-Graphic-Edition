@@ -14,7 +14,7 @@ class Item():
         "returns an intance of the item"
         return Item(self.name,self.maxdur,self.cost,self.desc,self.dur)
 class Weapon(Item):
-    def __init__(self,name,mt,wt,maxdur,acc,typ,mast,cost,crit=0,rnge=1,dur=None,mag=False,sup_eff=[],maxrnge=1,wexp=3,desc="",prf="",anims=None):
+    def __init__(self,name,mt,wt,maxdur,acc,typ,mast,cost,crit=0,rnge=1,dur=None,mag=False,sup_eff=[],maxrnge=1,wexp=3,desc="",prf=""):
         super(Weapon,self).__init__(name,maxdur,cost,desc,dur)
         self.mt = mt
         self.wt = wt
@@ -28,21 +28,19 @@ class Weapon(Item):
         self.sup_eff = sup_eff
         self.maxrnge = maxrnge
         self.prf = prf
-        self.anims = anims
     def getInstance(self):
         "gets instance of weapon"
-        return Weapon(self.name,self.mt,self.wt,self.maxdur,self.acc,self.typ,self.mast,self.cost,self.crit,self.rnge,self.dur,self.mag,self.sup_eff,self.maxrnge,self.wexp,self.desc,self.prf,self.anims)
+        return Weapon(self.name,self.mt,self.wt,self.maxdur,self.acc,self.typ,self.mast,self.cost,self.crit,self.rnge,self.dur,self.mag,self.sup_eff,self.maxrnge,self.wexp,self.desc,self.prf)
 class Staff(Item):
-    def __init__(self,name,maxdur,mast,cost,heal=0,desc="",dur=None,wexp=3,anims=None):
+    def __init__(self,name,maxdur,mast,cost,heal=0,desc="",dur=None,wexp=3):
         super(Staff,self).__init__(name,maxdur,cost,desc,dur)
         self.typ = "Staff"
         self.heal = heal
-        self.anims = anims
         self.wexp = wexp
         self.mast = mast
     def getInstance(self):
         "gets instance of staff"
-        return Staff(self.name,self.maxdur,self.mast,self.cost,self.heal,self.desc,self.dur,self.wexp,self.anims)
+        return Staff(self.name,self.maxdur,self.mast,self.cost,self.heal,self.desc,self.dur,self.wexp)
 class Consumable(Item):
     def __init__(self,name,hpGain,maxdur,cost,desc="",dur=None):
         super(Consumable,self).__init__(name,maxdur,cost,desc,dur)
